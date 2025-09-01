@@ -6,10 +6,17 @@ import { useAssessmentStore } from '@/lib/store';
 import { logAssessmentStart, logQuestionAnswered } from '@/lib/events';
 import Likert from '@/components/Likert';
 import ProgressBar from '@/components/ProgressBar';
+import questionsData from '@/content/questions.json';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-interface Question {
+interface ScoredQuestion {
   id: string;
-  domain?: string;
+  domain: string;
+  prompt: string;
+}
+
+interface ReflectiveQuestion {
+  id: string;
   prompt: string;
 }
 
@@ -18,8 +25,8 @@ interface QuestionsData {
     note: string;
     domains: string[];
   };
-  scored: Question[];
-  reflective: Question[];
+  scored: ScoredQuestion[];
+  reflective: ReflectiveQuestion[];
 }
 
 // Fallback component for missing/invalid questions
@@ -49,11 +56,13 @@ function QuestionsFallback() {
 export default function AssessmentPage() {
   const router = useRouter();
   const { answers, setAnswer, reset } = useAssessmentStore();
-  const [questionsData, setQuestionsData] = useState<QuestionsData | null>(null);
   const [reflectiveAnswers, setReflectiveAnswers] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentSection, setCurrentSection] = useState<'scored' | 'reflective'>('scored');
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
   useEffect(() => {
     // Load questions data
@@ -66,16 +75,7 @@ export default function AssessmentPage() {
           return;
         }
         
-        // Load questions.json directly
-        const questionsResponse = await fetch('/content/questions.json');
-        if (!questionsResponse.ok) {
-          setError('Failed to load questions.json');
-          setLoading(false);
-          return;
-        }
-        
-        const data: QuestionsData = await questionsResponse.json();
-        setQuestionsData(data);
+        // Use imported questions data directly - instant loading!
         setLoading(false);
         logAssessmentStart();
       } catch (error) {
@@ -100,7 +100,7 @@ export default function AssessmentPage() {
   }
 
   // Show error state
-  if (error || !questionsData) {
+  if (error) {
     return <QuestionsFallback />;
   }
 
@@ -116,8 +116,25 @@ export default function AssessmentPage() {
   const scoredQuestions = questionsData.scored;
   const reflectiveQuestions = questionsData.reflective;
   const totalScored = scoredQuestions.length;
+  const totalReflective = reflectiveQuestions.length;
   const answeredScored = scoredQuestions.filter(q => answers[q.id] !== undefined).length;
-  const canSubmit = answeredScored === totalScored;
+
+  // Get current question based on section and index
+  const getCurrentQuestion = () => {
+    if (currentSection === 'scored') {
+      return scoredQuestions[currentQuestionIndex];
+    } else {
+      return reflectiveQuestions[currentQuestionIndex];
+    }
+  };
+
+  const currentQuestion = getCurrentQuestion();
+  const totalQuestions = currentSection === 'scored' ? totalScored : totalReflective;
+  const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
+  const isFirstQuestion = currentQuestionIndex === 0;
+
+  // Check if we can move to reflective questions
+  const canMoveToReflective = answeredScored === totalScored;
 
   const handleScoredAnswer = (questionId: string, value: number) => {
     setAnswer(questionId, value);
@@ -131,115 +148,230 @@ export default function AssessmentPage() {
     }));
   };
 
+  const handleNext = () => {
+    if (currentSection === 'scored' && isLastQuestion) {
+      // Move to reflective questions
+      if (canMoveToReflective) {
+        setCurrentSection('reflective');
+        setCurrentQuestionIndex(0);
+      }
+    } else if (currentSection === 'reflective' && isLastQuestion) {
+      // Submit assessment
+      handleSubmit();
+    } else {
+      // Move to next question
+      setCurrentQuestionIndex(prev => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentSection === 'reflective' && isFirstQuestion) {
+      // Move back to scored questions
+      setCurrentSection('scored');
+      setCurrentQuestionIndex(totalScored - 1);
+    } else {
+      // Move to previous question
+      setCurrentQuestionIndex(prev => prev - 1);
+    }
+  };
+
   const handleSubmit = async () => {
-    if (!canSubmit) return;
+    console.log('=== SUBMISSION DEBUG ===');
+    console.log('Answers:', answers);
+    console.log('Reflective:', reflectiveAnswers);
+    console.log('Can move to reflective:', canMoveToReflective);
+    console.log('Current section:', currentSection);
+    console.log('Is last question:', isLastQuestion);
     
+    setDebugInfo('Starting submission...');
     setIsSubmitting(true);
+    
     try {
+      const submissionData = {
+        answers,
+        reflective: reflectiveAnswers
+      };
+      
+      console.log('Submitting data:', submissionData);
+      setDebugInfo('Sending request to API...');
+      
       const response = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          answers,
-          reflective: reflectiveAnswers
-        })
+        body: JSON.stringify(submissionData)
       });
       
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      
+      setDebugInfo(`Response status: ${response.status}`);
+      
       if (response.ok) {
-        const { id } = await response.json();
-        router.push(`/results?submission=${id}`);
+        const result = await response.json();
+        console.log('Success result:', result);
+        setDebugInfo('Submission successful! Redirecting...');
+        router.push(`/results?submission=${result.id}`);
       } else {
         const errorData = await response.json();
-        console.error('Submission error:', errorData);
-        alert('Failed to submit assessment. Please try again.');
+        console.error('API Error:', errorData);
+        setDebugInfo(`API Error: ${JSON.stringify(errorData)}`);
+        alert(`Failed to submit assessment: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Submission error:', error);
+      console.error('Network/JS Error:', error);
+      setDebugInfo(`Network Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       alert('Failed to submit assessment. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const getProgressInfo = () => {
+    if (currentSection === 'scored') {
+      return {
+        current: currentQuestionIndex + 1,
+        total: totalScored,
+        label: `Question ${currentQuestionIndex + 1} of ${totalScored}`,
+        section: 'Scored Questions'
+      };
+    } else {
+      return {
+        current: currentQuestionIndex + 1,
+        total: totalReflective,
+        label: `Reflection ${currentQuestionIndex + 1} of ${totalReflective}`,
+        section: 'Reflection Questions'
+      };
+    }
+  };
+
+  const progressInfo = getProgressInfo();
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-2xl mx-auto px-6">
+        {/* Debug Info */}
+        {debugInfo && (
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+            <strong>Debug:</strong> {debugInfo}
+          </div>
+        )}
+        
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Trajectory Life Assessment
           </h1>
           <p className="text-gray-600">
-            Answer honestly. Take your time.
+            {progressInfo.section}
           </p>
         </div>
 
         {/* Progress */}
         <ProgressBar 
-          current={answeredScored} 
-          total={totalScored}
-          label={`${answeredScored}/${totalScored} scored questions answered`}
+          current={progressInfo.current} 
+          total={progressInfo.total}
+          label={progressInfo.label}
         />
 
-        {/* Scored Questions */}
-        <div className="space-y-8 mb-12">
-          {scoredQuestions.map((question, index) => (
-            <div key={question.id} className="bg-white p-8 rounded-lg shadow-sm">
-              <div className="mb-4">
-                <span className="text-sm text-gray-500">Question {index + 1} of {totalScored}</span>
-                <span className="mx-2 text-gray-300">•</span>
-                <span className="text-sm text-gray-500 capitalize">{question.domain}</span>
-              </div>
-              
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                {question.prompt}
-              </h2>
-              
-              <Likert 
-                value={answers[question.id] || null}
-                onChange={(value) => handleScoredAnswer(question.id, value)}
-              />
+        {/* Question Card */}
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8 min-h-[400px] flex flex-col">
+          {/* Question Header */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm text-gray-500 capitalize">
+                {currentSection === 'scored' ? currentQuestion.domain : 'Reflection'}
+              </span>
+              <span className="text-sm text-gray-500">
+                {progressInfo.label}
+              </span>
             </div>
-          ))}
-        </div>
+            
+            <h2 className="text-2xl font-semibold text-gray-900 leading-relaxed">
+              {currentQuestion.prompt}
+            </h2>
+          </div>
 
-        {/* Reflective Questions */}
-        <div className="space-y-8 mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Reflection Questions
-          </h2>
-          
-          {reflectiveQuestions.map((question, index) => (
-            <div key={question.id} className="bg-white p-8 rounded-lg shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                {question.prompt}
-              </h3>
-              
+          {/* Question Content */}
+          <div className="flex-1 flex flex-col justify-center">
+            {currentSection === 'scored' ? (
+              <Likert 
+                value={answers[currentQuestion.id] || null}
+                onChange={(value) => handleScoredAnswer(currentQuestion.id, value)}
+              />
+            ) : (
               <textarea
-                value={reflectiveAnswers[question.id] || ''}
-                onChange={(e) => handleReflectiveAnswer(question.id, e.target.value)}
+                value={reflectiveAnswers[currentQuestion.id] || ''}
+                onChange={(e) => handleReflectiveAnswer(currentQuestion.id, e.target.value)}
                 placeholder="Share your thoughts..."
                 className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
-            </div>
-          ))}
+            )}
+          </div>
         </div>
 
-        {/* Submit Button */}
-        <div className="text-center">
+        {/* Navigation */}
+        <div className="flex items-center justify-between">
           <button
-            onClick={handleSubmit}
-            disabled={!canSubmit || isSubmitting}
-            className="px-8 py-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg"
+            onClick={handlePrevious}
+            disabled={isFirstQuestion && currentSection === 'scored'}
+            className="flex items-center px-6 py-3 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {isSubmitting ? 'Submitting...' : 'Get Your Results'}
+            <ChevronLeft className="w-5 h-5 mr-2" />
+            Previous
           </button>
-          
-          {!canSubmit && (
-            <p className="text-sm text-gray-500 mt-4">
-              Please answer all {totalScored} scored questions to continue.
-            </p>
-          )}
+
+          <div className="text-center">
+            {currentSection === 'scored' && !canMoveToReflective && (
+              <p className="text-sm text-gray-500">
+                {totalScored - answeredScored} questions remaining
+              </p>
+            )}
+            {currentSection === 'reflective' && isLastQuestion && (
+              <p className="text-sm text-gray-500">
+                Ready to submit
+              </p>
+            )}
+          </div>
+
+          <button
+            onClick={handleNext}
+            disabled={
+              (currentSection === 'scored' && !answers[currentQuestion.id]) ||
+              (currentSection === 'reflective' && !reflectiveAnswers[currentQuestion.id]) ||
+              isSubmitting
+            }
+            className="flex items-center px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {isSubmitting ? (
+              'Submitting...'
+            ) : currentSection === 'reflective' && isLastQuestion ? (
+              'Get Results'
+            ) : (
+              <>
+                Next
+                <ChevronRight className="w-5 h-5 ml-2" />
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Quick Navigation Dots */}
+        <div className="flex justify-center mt-8 space-x-2">
+          {Array.from({ length: totalQuestions }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentQuestionIndex(i)}
+              className={`w-3 h-3 rounded-full transition-colors ${
+                i === currentQuestionIndex 
+                  ? 'bg-gray-900' 
+                  : currentSection === 'scored'
+                    ? answers[scoredQuestions[i]?.id]
+                    : reflectiveAnswers[reflectiveQuestions[i]?.id]
+                    ? 'bg-green-500'
+                    : 'bg-gray-300'
+              }`}
+            />
+          ))}
         </div>
       </div>
     </div>

@@ -13,7 +13,9 @@
     "studio": "npx prisma studio",
     "db:reset": "rm -f prisma/dev.db && npx prisma migrate dev --name reset",
     "typecheck": "tsc --noEmit",
-    "validate:questions": "tsx scripts/validate-questions.ts"
+    "validate:questions": "tsx scripts/validate-questions.ts",
+    "test:db": "tsx scripts/test-db.ts",
+    "test:submission": "tsx scripts/test-submission.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",
