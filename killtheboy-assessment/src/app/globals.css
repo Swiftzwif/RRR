@@ -1,26 +1,190 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Inspiring Sky & Canyon Color System */
+  --sky-50: #F0F9FF;
+  --sky-100: #E0F2FE;
+  --sky-200: #BAE6FD;
+  --sky-300: #7DD3FC;
+  --sky-400: #38BDF8;
+  --sky-500: #0EA5E9;
+  --sky-600: #0284C7;
+  --sky-700: #0369A1;
+  --sky-800: #075985;
+  
+  /* Canyon Accent Colors (refined) */
+  --sunset: #F59E0B;
+  --sunset-dark: #D97706;
+  --glow: #FCD34D;
+  
+  /* Inspiring Status Colors */
+  --success: #10B981;
+  --warn: #F59E0B;
+  --danger: #EF4444;
+
+  /* Surfaces */
+  --background: var(--sky-50);
+  --foreground: var(--sky-800);
+  --card: rgba(255, 255, 255, 0.95);
+  --header-bg: rgba(240, 249, 255, 0.95);
+  --footer-bg: var(--sky-800);
+
+  /* CTA */
+  --cta-bg: var(--sky-400);
+  --cta-bg-strong: var(--sky-500);
+  
+  /* Typography */
+  --font-display: 'General Sans', 'Clash Display', ui-sans-serif, system-ui;
+  --font-body: 'Inter', ui-sans-serif, system-ui;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Strata Design System */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), ui-sans-serif, system-ui, -apple-system;
+  line-height: 1.6;
+}
+
+h1,h2,h3,h4,h5,h6 { 
+  font-family: var(--font-display), ui-sans-serif, system-ui; 
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--sunset);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Strata Design System Utilities */
+
+/* Inspiring sky gradients */
+.strata-gradient {
+  background: linear-gradient(135deg, var(--sky-50) 0%, var(--sky-200) 50%, var(--sky-50) 100%);
+}
+
+.sky-gradient {
+  background: linear-gradient(135deg, var(--sky-400) 0%, var(--sky-500) 100%);
+}
+
+.sunset-gradient {
+  background: linear-gradient(135deg, var(--sunset) 0%, var(--sunset-dark) 100%);
+}
+
+/* Inspiring text effects */
+.strata-text {
+  background: linear-gradient(135deg, var(--sky-400), var(--sky-600));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Sky-inspired shadows */
+.strata-shadow {
+  box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.2);
+}
+
+.strata-glow {
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+}
+
+/* Strata animations */
+@keyframes strata-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes strata-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+  50% { box-shadow: 0 0 20px 4px rgba(56, 189, 248, 0.2); }
+}
+
+.animate-strata-float { animation: strata-float 6s ease-in-out infinite; }
+.animate-strata-pulse { animation: strata-pulse 3s infinite; }
+
+/* Strata card styles */
+.strata-card {
+  background: var(--card);
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(10px);
+}
+
+/* Strata button styles */
+.strata-button {
+  background: var(--cta-bg);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  box-shadow: 0 4px 20px -4px rgba(56, 189, 248, 0.15);
+}
+
+.strata-button:hover {
+  background: var(--cta-bg-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -8px rgba(56, 189, 248, 0.25);
+}
+
+.strata-button:active {
+  transform: translateY(0);
+}
+
+/* Strata meter styles */
+.strata-meter {
+  background: rgba(56, 189, 248, 0.1);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.strata-meter-fill {
+  background: linear-gradient(90deg, var(--sky-400), var(--sky-500));
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Strata divider styles */
+.strata-divider {
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent);
+  height: 1px;
+  margin: 2rem 0;
+}
+
+/* Strata form styles */
+.strata-input {
+  background: rgba(56, 189, 248, 0.05);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  color: var(--foreground);
+  transition: all 0.3s ease;
+}
+
+.strata-input:focus {
+  outline: none;
+  border-color: var(--sky-400);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+.strata-input::placeholder {
+  color: var(--sky-500);
 }

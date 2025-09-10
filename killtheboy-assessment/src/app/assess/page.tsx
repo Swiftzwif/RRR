@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useAssessmentStore } from '@/lib/store';
 import { logAssessmentStart, logQuestionAnswered } from '@/lib/events';
 import Likert from '@/components/Likert';
-import ProgressBar from '@/components/ProgressBar';
 import questionsData from '@/content/questions.json';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Starfield from '@/components/Starfield';
+import ShipProgress from '@/components/ShipProgress';
+ 
 
 interface ScoredQuestion {
   id: string;
@@ -63,28 +65,24 @@ export default function AssessmentPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentSection, setCurrentSection] = useState<'scored' | 'reflective'>('scored');
   const [debugInfo, setDebugInfo] = useState<string>('');
+  
 
   useEffect(() => {
-    // Load questions data
-    const loadQuestions = async () => {
+    // Non-blocking validation; UI loads regardless
+    const validate = async () => {
       try {
-        const response = await fetch('/api/validate-questions');
-        if (!response.ok) {
-          setError('Questions validation failed');
-          setLoading(false);
-          return;
+        const res = await fetch('/api/validate-questions');
+        if (!res.ok) {
+          console.warn('validate-questions returned non-OK', await res.text());
         }
-        
-        // Use imported questions data directly - instant loading!
+      } catch (e) {
+        console.warn('validate-questions request failed', e);
+      } finally {
         setLoading(false);
         logAssessmentStart();
-      } catch (error) {
-        setError('Failed to load questions');
-        setLoading(false);
       }
     };
-    
-    loadQuestions();
+    validate();
   }, []);
 
   // Show loading state
@@ -245,48 +243,44 @@ export default function AssessmentPage() {
   };
 
   const progressInfo = getProgressInfo();
+  const domainLabel = currentSection === 'scored'
+    ? (currentQuestion as ScoredQuestion).domain
+    : 'Reflection';
+
+  // Overall progress across all questions
+  const overallTotal = totalScored + totalReflective;
+  const overallCurrent = currentSection === 'scored' ? (currentQuestionIndex + 1) : (totalScored + currentQuestionIndex + 1);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-2xl mx-auto px-6">
+    <div className="min-h-screen py-10 relative text-[var(--foreground)]">
+      <Starfield density={80} speed={0.35} />
+      <div className="max-w-3xl mx-auto px-6">
         {/* Debug Info */}
         {debugInfo && (
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
-            <strong>Debug:</strong> {debugInfo}
+          <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 text-amber-900 px-4 py-3 text-sm">
+            <strong className="font-semibold">Debug:</strong> {debugInfo}
           </div>
         )}
-        
+
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Trajectory Life Assessment
-          </h1>
-          <p className="text-gray-600">
-            {progressInfo.section}
-          </p>
+        <div className="text-center mb-6">
+          <p className="text-xs tracking-widest text-neutral-600 mb-2">ASSESSMENT</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-neutral-900">Trajectory Life Assessment</h1>
         </div>
 
-        {/* Progress */}
-        <ProgressBar 
-          current={progressInfo.current} 
-          total={progressInfo.total}
-          label={progressInfo.label}
-        />
+        {/* Progress: Rocket with overall fraction */}
+        <ShipProgress current={overallCurrent} total={overallTotal} label={`${overallCurrent} / ${overallTotal}`} />
 
         {/* Question Card */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8 min-h-[400px] flex flex-col">
+        <div key={`${currentSection}-${currentQuestionIndex}`} className="bg-[var(--card)] border border-neutral-200 rounded-2xl shadow-sm p-8 md:p-10 mb-8 min-h-[420px] flex flex-col anim-fade-slide-up">
           {/* Question Header */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm text-gray-500 capitalize">
-                {currentSection === 'scored' ? currentQuestion.domain : 'Reflection'}
-              </span>
-              <span className="text-sm text-gray-500">
-                {progressInfo.label}
-              </span>
+              <span className="text-xs tracking-wider text-neutral-500 uppercase">{domainLabel}</span>
+              <span className="text-xs text-neutral-500">{progressInfo.label}</span>
             </div>
-            
-            <h2 className="text-2xl font-semibold text-gray-900 leading-relaxed">
+
+            <h2 className="text-2xl md:text-3xl font-semibold text-neutral-900 leading-relaxed">
               {currentQuestion.prompt}
             </h2>
           </div>
@@ -294,7 +288,7 @@ export default function AssessmentPage() {
           {/* Question Content */}
           <div className="flex-1 flex flex-col justify-center">
             {currentSection === 'scored' ? (
-              <Likert 
+              <Likert
                 value={answers[currentQuestion.id] || null}
                 onChange={(value) => handleScoredAnswer(currentQuestion.id, value)}
               />
@@ -303,7 +297,7 @@ export default function AssessmentPage() {
                 value={reflectiveAnswers[currentQuestion.id] || ''}
                 onChange={(e) => handleReflectiveAnswer(currentQuestion.id, e.target.value)}
                 placeholder="Share your thoughts..."
-                className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                className="w-full h-36 p-4 border border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-500 rounded-xl resize-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
               />
             )}
           </div>
@@ -313,8 +307,9 @@ export default function AssessmentPage() {
         <div className="flex items-center justify-between">
           <button
             onClick={handlePrevious}
+            aria-label="Previous question"
             disabled={isFirstQuestion && currentSection === 'scored'}
-            className="flex items-center px-6 py-3 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center px-3 py-3 text-neutral-700 hover:text-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <ChevronLeft className="w-5 h-5 mr-2" />
             Previous
@@ -322,25 +317,24 @@ export default function AssessmentPage() {
 
           <div className="text-center">
             {currentSection === 'scored' && !canMoveToReflective && (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-600">
                 {totalScored - answeredScored} questions remaining
               </p>
             )}
             {currentSection === 'reflective' && isLastQuestion && (
-              <p className="text-sm text-gray-500">
-                Ready to submit
-              </p>
+              <p className="text-sm text-neutral-600">Ready to submit</p>
             )}
           </div>
 
           <button
             onClick={handleNext}
+            aria-label={currentSection === 'reflective' && isLastQuestion ? 'Submit assessment' : 'Next question'}
             disabled={
               (currentSection === 'scored' && !answers[currentQuestion.id]) ||
               (currentSection === 'reflective' && !reflectiveAnswers[currentQuestion.id]) ||
               isSubmitting
             }
-            className="flex items-center px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center rounded-full bg-neutral-900 text-white px-6 py-3 font-semibold hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? (
               'Submitting...'
@@ -361,14 +355,13 @@ export default function AssessmentPage() {
             <button
               key={i}
               onClick={() => setCurrentQuestionIndex(i)}
+              aria-label={`Jump to ${currentSection === 'scored' ? 'question' : 'reflection'} ${i + 1}`}
               className={`w-3 h-3 rounded-full transition-colors ${
-                i === currentQuestionIndex 
-                  ? 'bg-gray-900' 
+                i === currentQuestionIndex
+                  ? 'bg-neutral-900'
                   : currentSection === 'scored'
-                    ? answers[scoredQuestions[i]?.id]
-                    : reflectiveAnswers[reflectiveQuestions[i]?.id]
-                    ? 'bg-green-500'
-                    : 'bg-gray-300'
+                    ? (answers[scoredQuestions[i]?.id] ? 'bg-neutral-600' : 'bg-neutral-300')
+                    : (reflectiveAnswers[reflectiveQuestions[i]?.id] ? 'bg-neutral-600' : 'bg-neutral-300')
               }`}
             />
           ))}

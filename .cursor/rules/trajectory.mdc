@@ -1,0 +1,193 @@
+---
+alwaysApply: true
+description: Trajectory Professional Assessment Platform - Stoic, authoritative design for high-value men seeking financial transformation
+---
+
+# Trajectory Professional Assessment Platform
+
+## Project Overview
+
+Professional, stoic assessment platform targeting high-value men ready to transition into the Fastlane. Clean, authoritative design with precise spacing and minimal visual noise. Functional assessment end-to-end (store to Supabase, gate results by email/login). Stripe checkout for course & coaching; webhook grants access. TBD modules render premium "coming soon" with end-goal briefs + notify capture.
+
+## Tech Stack
+
+- **Framework**: Next.js (App Router, TypeScript)
+- **Styling**: Tailwind CSS with professional, stoic design system
+- **Animations**: Minimal, purposeful transitions only
+- **Database**: Supabase
+- **Payments**: Stripe
+- **Validation**: Zod for API inputs
+
+## Design System
+
+### Design Philosophy
+
+**Inspiring Sky Authority**: Sophisticated sky-inspired design that makes you feel alive and ready to soar
+**Breathable Experience**: Generous whitespace, clean layouts that let content breathe like open sky
+**Memorable Journey**: Every interaction feels intentional and uplifting - like reaching for the heavens
+**Masculine Sophistication**: Strong typography, confident spacing, purposeful hierarchy that inspires action
+
+### Color Palette
+
+```css
+/* Inspiring Sky & Canyon Color System */
+colors: {
+  // Sky-Inspired Base Colors
+  'sky-50': '#F0F9FF',        /* Lightest sky - clean backgrounds */
+  'sky-100': '#E0F2FE',       /* Light sky - subtle contrast */
+  'sky-200': '#BAE6FD',       /* Medium sky - gentle borders */
+  'sky-300': '#7DD3FC',       /* Baby blue - soft accents */
+  'sky-400': '#38BDF8',       /* Electric blue - primary actions */
+  'sky-500': '#0EA5E9',       /* Strong blue - hover states */
+  'sky-600': '#0284C7',       /* Deep blue - strong text */
+  'sky-700': '#0369A1',       /* Darker blue - headings */
+  'sky-800': '#075985',       /* Deepest blue - authoritative */
+  
+  // Canyon Accent Colors (refined)
+  'sunset': '#F59E0B',        /* Golden sunset - warm highlights */
+  'sunset-dark': '#D97706',   /* Deep sunset - hover states */
+  'glow': '#FCD34D',          /* Warm glow - highlights */
+  
+  // Inspiring Status Colors
+  'success': '#10B981',       /* Growth, achievement */
+  'warn': '#F59E0B',          /* Caution, attention */
+  'danger': '#EF4444'         /* Error, critical */
+}
+```
+
+### Typography
+
+- **Primary**: Inter (clean, professional, highly readable)
+- **Display**: Clash Display/General Sans (canyon-inspired, authoritative headings)
+- **Monospace**: JetBrains Mono (technical, precise)
+
+### Spacing & Layout
+
+- **Generous Spacing**: 8px grid system with extra breathing room (16, 24, 32, 48, 64, 96, 128px)
+- **Professional Radius**: Subtle border radius (8-12px) for modern feel without being bubbly
+- **Clean Lines**: 1px borders, subtle shadows for depth
+- **Breathable Layouts**: Extra whitespace between sections, comfortable reading experience
+
+## Architecture Principles
+
+### File Structure
+
+- **Components**: Keep small, composable, presentational when possible
+- **Business Logic**: Centralized in `/lib` directory
+- **API Routes**: Use server actions or route handlers for secure operations
+- **Never expose secrets client-side**
+
+### Performance & Accessibility
+
+- **Animations**: Subtle, no layout thrash, 60fps target
+- **A11y**: Strong accessibility, AA contrast, keyboard navigation on assessment
+- **Responsive**: Support sm–xl breakpoints
+- **Performance**: Limit blur/filters, Lighthouse pass for a11y & performance
+
+## Core Components
+
+### Required Components
+
+- `CanyonHero`: Multi-layer SVG with parallax
+- `StrataDivider`: Topographic overlay dividers
+- `AvatarBadge`: User avatar with canyon styling
+- `Meter`: Domain scoring visualization
+- `AssessmentStepper`: Step-by-step question flow
+- `ResultCard`: Assessment results display
+- `ModuleCardTBD`: Premium "coming soon" cards
+- `Paywall`: Stripe checkout integration
+- `Toast`: Notification system
+
+### Framer Motion Patterns
+
+- Hero parallax scrolling
+- Meter fill animations
+- Avatar reveal transitions
+
+## Page Structure
+
+### Required Pages
+
+- `/` - Landing with CanyonHero
+- `/story` - Brand narrative
+- `/assessment` - 15+2 question flow
+- `/results` - Avatar, domain meters, CTAs
+- `/course` - Premium content (gated)
+- `/coaching` - Coaching application (gated)
+- `/community` - Community access (gated)
+- `/auth/signin` - Authentication
+
+## Assessment Flow
+
+### Question System
+
+- Import from [questions.json](mdc:killtheboy-assessment/src/content/questions.json)
+- Step-by-step flow with progress tracking
+- Compute domain scores + avatar via [scoring.ts](mdc:killtheboy-assessment/src/lib/scoring.ts)
+
+### Results Gating
+
+- If user not authenticated: require email input
+- Store to Supabase assessments table with email
+- Navigate to `/results` after email capture
+
+## Results Page
+
+- Render Avatar and domain meters
+- 7/30-day suggested actions (placeholder mapping by lowest domains)
+- CTA cards for Course (Stripe Checkout) and Coaching Interview (Stripe Checkout)
+
+## Payment Integration
+
+### Stripe Setup
+
+- Client-side checkout implementation
+- Webhook handler at `/api/stripe/webhook`
+- On success: write purchases row
+- **Course**: Unlock `/course` access
+- **Coaching**: Create coaching_applications + redirect to `ENV:COACHING_SCHEDULER_URL`
+
+## TBD Modules
+
+### Premium Content
+
+- `/course` (locked until purchase): ModuleCardTBD items with end-goal blurbs
+- `/community`: Gated page with Lodge description
+- "Notify me" email capture via `POST /api/notify`
+
+## Environment Variables
+
+### Required
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+COACHING_SCHEDULER_URL=
+```
+
+## Development Guidelines
+
+### Code Quality
+
+- Use Zod for API input validation
+- Keep components small and composable
+- No blocking animations
+- Server actions for secure operations
+
+### Testing & QA
+
+- Validate keyboard navigation
+- Check focus states
+- Respect reduced motion preference
+- Responsive design (sm–xl)
+- Lighthouse pass for a11y & performance
+
+## Key Files Reference
+
+- [Supabase config](mdc:killtheboy-assessment/src/lib/supabase.ts)
+- [Scoring logic](mdc:killtheboy-assessment/src/lib/scoring.ts)
+- [Questions data](mdc:killtheboy-assessment/src/content/questions.json)
+- [Global styles](mdc:killtheboy-assessment/src/app/globals.css)

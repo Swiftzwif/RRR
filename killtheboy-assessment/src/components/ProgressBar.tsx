@@ -9,17 +9,16 @@ export default function ProgressBar({ current, total, label }: ProgressBarProps)
   
   return (
     <div className="mb-8">
-      <div className="flex justify-between text-sm text-gray-600 mb-2">
+      <div className="flex justify-between text-sm text-neutral-600 mb-2">
         <span>{label || `${current} of ${total} answered`}</span>
         <span>{Math.round(progress)}%</span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-2">
-        <div 
-          className="bg-gray-900 h-2 rounded-full transition-all duration-300"
+      <div className="w-full bg-neutral-200 rounded-full h-2 overflow-hidden">
+        <div
+          className="h-2 rounded-full transition-all duration-300 bg-neutral-900"
           style={{ width: `${progress}%` }}
-        ></div>
+        />
       </div>
     </div>
   );
 }
-

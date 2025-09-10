@@ -1,51 +1,94 @@
+"use client";
+
+import CanyonHero from "@/components/CanyonHero";
+import StrataDivider from "@/components/StrataDivider";
+import { getCopy } from "@/lib/copy";
+import { motion } from "framer-motion";
+import { CheckCircle, Users, Zap } from "lucide-react";
+
 export default function HomePage() {
+  const features = (getCopy("landing.features.items") as any) || [];
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="max-w-2xl mx-auto text-center px-6">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6">
-          Welcome to KillTheBoy
-        </h1>
-        
-        <p className="text-lg text-gray-600 mb-8">
-          This is not just a quiz — it's a mirror. In 10 minutes, you'll discover what's shaping your trajectory, where you're strong, and where the noise is holding you back.
-        </p>
-        
-        <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
-          <h2 className="text-xl font-semibold mb-4">The Story: Kill the Boy</h2>
-          <p className="text-gray-700 mb-4">
-            When I turned 25, my mentor told me something I'll never forget:
-          </p>
-          <blockquote className="text-2xl font-bold text-gray-900 mb-4">
-            "Kill the boy."
-          </blockquote>
-          <p className="text-gray-700 mb-4">
-            It wasn't about violence. It was about transformation.
-          </p>
-          <p className="text-gray-700 mb-4">
-            It meant letting go of the parts of me that kept me small, reactive, average — so I could rise into discipline, presence, and responsibility.
-          </p>
-          <p className="text-lg font-semibold text-gray-900">
-            Kill the boy so the man may rise.
-          </p>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <CanyonHero />
+
+      {/* Features Section */}
+      <section className="py-24 bg-sky-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-sky-800 mb-4">
+              {getCopy("landing.features.title")}
+            </h2>
+            <p className="text-lg text-sky-600 max-w-2xl mx-auto">
+              Get insights into your life trajectory across six key domains and
+              receive personalized recommendations.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {features.map((feature: any, index: number) => (
+              <motion.div
+                key={index}
+                className="text-center p-6 bg-white rounded-lg border border-sky-200 shadow-sm"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <div className="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  {index === 0 && <Users className="w-8 h-8 text-sky-500" />}
+                  {index === 1 && <Zap className="w-8 h-8 text-sky-500" />}
+                  {index === 2 && (
+                    <CheckCircle className="w-8 h-8 text-sky-500" />
+                  )}
+                </div>
+                <h3 className="text-xl font-display font-semibold text-sky-800 mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-sky-600">{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
-        
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">The Challenge</h3>
-          <p className="text-gray-600 mb-6">
-            This assessment is your first step. It's not about perfection. It's about honesty.
-          </p>
-          <p className="text-lg font-semibold text-gray-900 mb-6">
-            So the real question is... Are you ready to kill the boy?
-          </p>
+      </section>
+
+      <StrataDivider />
+
+      {/* CTA Section */}
+      <section className="py-24 bg-sky-100">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-sky-800 mb-6">
+              Ready to Discover Your Trajectory?
+            </h2>
+            <p className="text-lg text-sky-600 mb-8 max-w-2xl mx-auto">
+              Take the assessment now and start your journey to a higher
+              trajectory.
+            </p>
+            <motion.a
+              href="/assessment"
+              className="strata-button text-lg px-8 py-4 inline-block"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Start Your Assessment
+            </motion.a>
+          </motion.div>
         </div>
-        
-        <a 
-          href="/assess"
-          className="inline-block bg-gray-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
-        >
-          Begin
-        </a>
-      </div>
+      </section>
     </div>
   );
 }

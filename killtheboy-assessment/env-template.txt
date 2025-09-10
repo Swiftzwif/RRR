@@ -1,0 +1,17 @@
+# Environment Variables Template
+# Copy this to .env.local and fill in your actual values
+
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://nxtmcorzlosubfvxumpt.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54dG1jb3J6bG9zdWJmdnh1bXB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjQ4MTUsImV4cCI6MjA5MTA0MDgxNX0.8Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q
+SUPABASE_SERVICE_ROLE=your_service_role_key_here
+
+# Payment Integration (Coming Soon)
+# Stripe and other payment providers will be integrated later
+
+# Email Configuration (Coming Soon)  
+# Resend and other email providers will be integrated later
+
+# Next.js Configuration
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret_here

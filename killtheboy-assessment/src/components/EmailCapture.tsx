@@ -27,6 +27,7 @@ export default function EmailCapture({ submissionId }: EmailCaptureProps) {
       if (response.ok) {
         logLeadSubmit(submissionId, email);
         setIsSubmitted(true);
+        try { localStorage.setItem('ktb_subscribed', '1'); } catch {}
       }
     } catch (error) {
       console.error('Email submission error:', error);
@@ -37,11 +38,11 @@ export default function EmailCapture({ submissionId }: EmailCaptureProps) {
 
   if (isSubmitted) {
     return (
-      <div className="bg-green-50 p-8 rounded-lg shadow-sm text-center">
-        <h3 className="text-xl font-semibold text-green-900 mb-2">
+      <div className="bg-[var(--card)] border border-[var(--border)] p-8 rounded-lg shadow-sm text-center">
+        <h3 className="text-xl font-semibold text-[var(--foreground)] mb-2">
           Thank you!
         </h3>
-        <p className="text-green-700">
+        <p className="text-[var(--muted-fg)]">
           Your scorecard has been sent to your email.
         </p>
       </div>
@@ -49,8 +50,8 @@ export default function EmailCapture({ submissionId }: EmailCaptureProps) {
   }
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm">
-      <h3 className="text-xl font-semibold text-gray-900 mb-4">
+    <div className="bg-[var(--card)] border border-[var(--border)] p-8 rounded-lg shadow-sm">
+      <h3 className="text-xl font-semibold text-[var(--foreground)] mb-4">
         Where can we send your personalized scorecard?
       </h3>
       <form onSubmit={handleEmailSubmit} className="space-y-4">
@@ -60,15 +61,15 @@ export default function EmailCapture({ submissionId }: EmailCaptureProps) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
           required
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+          className="w-full p-3 border border-[var(--border)] rounded-lg bg-white/90 text-black placeholder:text-black/60 focus:ring-2 focus:ring-[var(--cta-bg)] focus:border-transparent"
         />
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-[var(--muted-fg)]">
           Your answers are private. Your growth is personal.
         </p>
         <button
           type="submit"
           disabled={!email || isSubmitting}
-          className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50"
+          className="w-full bg-[var(--cta-bg)] text-white py-3 rounded-lg font-semibold hover:bg-[var(--cta-bg-strong)] disabled:opacity-50"
         >
           {isSubmitting ? 'Submitting...' : 'Get My Scorecard'}
         </button>
@@ -76,4 +77,3 @@ export default function EmailCapture({ submissionId }: EmailCaptureProps) {
     </div>
   );
 }
-

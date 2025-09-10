@@ -12,19 +12,18 @@ export default function DomainMeter({ label, value, bandLabel }: DomainMeterProp
   };
 
   return (
-    <div className="border rounded-lg p-4">
+    <div className="border border-[var(--border)] bg-[var(--card)] rounded-lg p-4">
       <div className="flex justify-between items-center mb-2">
-        <span className="font-medium capitalize">{label}</span>
-        <span className="text-sm text-gray-600">{value.toFixed(1)}</span>
+        <span className="font-medium capitalize text-[var(--foreground)]">{label}</span>
+        <span className="text-sm text-[var(--muted-fg)]">{value.toFixed(1)}</span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-        <div 
+      <div className="w-full bg-black/30 rounded-full h-2 mb-2">
+        <div
           className={`h-2 rounded-full ${getColor(value)}`}
           style={{ width: `${(value / 5) * 100}%` }}
-        ></div>
+        />
       </div>
-      <span className="text-sm text-gray-600">{bandLabel}</span>
+      <span className="text-sm text-[var(--muted-fg)]">{bandLabel}</span>
     </div>
   );
 }
-
