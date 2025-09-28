@@ -15,7 +15,7 @@ export default function HomePage() {
       <CanyonHero />
 
       {/* Features Section */}
-      <section className="py-24 bg-sky-50">
+      <section className="py-24 trajectory-bg-card">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             className="text-center mb-16"
@@ -24,10 +24,10 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-sky-800 mb-4">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-gold-100 mb-4">
               {getCopy("landing.features.title")}
             </h2>
-            <p className="text-lg text-sky-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gold-300 max-w-2xl mx-auto">
               Get insights into your life trajectory across six key domains and
               receive personalized recommendations.
             </p>
@@ -37,23 +37,23 @@ export default function HomePage() {
             {features.map((feature: any, index: number) => (
               <motion.div
                 key={index}
-                className="text-center p-6 bg-white rounded-lg border border-sky-200 shadow-sm"
+                className="text-center p-6 trajectory-bg-black rounded-lg border border-gold-500/20 trajectory-shadow"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <div className="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  {index === 0 && <Users className="w-8 h-8 text-sky-500" />}
-                  {index === 1 && <Zap className="w-8 h-8 text-sky-500" />}
+                <div className="w-16 h-16 bg-gold-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  {index === 0 && <Users className="w-8 h-8 text-gold-400" />}
+                  {index === 1 && <Zap className="w-8 h-8 text-gold-400" />}
                   {index === 2 && (
-                    <CheckCircle className="w-8 h-8 text-sky-500" />
+                    <CheckCircle className="w-8 h-8 text-gold-400" />
                   )}
                 </div>
-                <h3 className="text-xl font-display font-semibold text-sky-800 mb-2">
+                <h3 className="text-xl font-display font-semibold text-gold-100 mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-sky-600">{feature.description}</p>
+                <p className="text-gold-300">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -63,7 +63,7 @@ export default function HomePage() {
       <StrataDivider />
 
       {/* CTA Section */}
-      <section className="py-24 bg-sky-100">
+      <section className="py-24 trajectory-bg-black">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -71,16 +71,16 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-sky-800 mb-6">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-gold-100 mb-6">
               Ready to Discover Your Trajectory?
             </h2>
-            <p className="text-lg text-sky-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gold-300 mb-8 max-w-2xl mx-auto">
               Take the assessment now and start your journey to a higher
               trajectory.
             </p>
             <motion.a
               href="/assessment"
-              className="strata-button text-lg px-8 py-4 inline-block"
+              className="trajectory-button text-lg px-8 py-4 inline-block"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >

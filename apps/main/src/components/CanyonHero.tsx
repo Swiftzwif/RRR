@@ -73,13 +73,13 @@ export default function CanyonHero({ className = '' }: CanyonHeroProps) {
           transition={{ duration: 0.8, ease: 'easeOut' }}
         >
           <h1 className="text-5xl md:text-7xl font-display font-bold mb-6">
-            <span className="strata-text">
+            <span className="trajectory-text-glow">
               {getCopy('landing.hero.headline')}
             </span>
           </h1>
           
           <motion.p
-            className="text-xl md:text-2xl text-sky-600 mb-8 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl md:text-2xl text-gold-300 mb-8 max-w-3xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
@@ -95,14 +95,14 @@ export default function CanyonHero({ className = '' }: CanyonHeroProps) {
           >
             <Link
               href="/assessment"
-              className="strata-button text-lg px-8 py-4 animate-strata-pulse"
+              className="trajectory-button text-lg px-8 py-4 trajectory-glow"
             >
               {getCopy('landing.hero.cta')}
             </Link>
             
             <Link
               href="/story"
-              className="text-sky-600 hover:text-sky-800 transition-colors duration-300 text-lg font-medium"
+              className="text-gold-300 hover:text-gold-100 transition-colors duration-300 text-lg font-medium"
             >
               {getCopy('landing.hero.ctaSecondary')}
             </Link>

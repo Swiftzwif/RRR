@@ -42,52 +42,54 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="antialiased font-body bg-sky-50 text-sky-800">
-        <header className="sticky top-0 z-40 bg-header-bg/95 backdrop-blur border-b border-sky-200/10">
+      <body className="antialiased font-body trajectory-bg-soft text-gold-300">
+        <header className="sticky top-0 z-40 trajectory-bg-black/95 backdrop-blur border-b border-gold-500/20">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <Link href="/" className="flex items-center">
-              <TrajectoryLogo variant="full" size="sm" showText={true} />
+            <Link href="/" className="flex items-center h-full">
+              <div className="flex items-center h-full">
+                <TrajectoryLogo variant="full" size="sm" showText={true} />
+              </div>
             </Link>
             <nav className="hidden lg:flex items-center gap-6 text-sm">
               <Link
                 href="/about"
-                className="text-sky-600 hover:text-sky-800 transition-colors"
+                className="text-gold-300 hover:text-gold-100 transition-colors"
               >
                 {getCopy("nav.about")}
               </Link>
               <Link
                 href="/story"
-                className="text-sky-600 hover:text-sky-800 transition-colors"
+                className="text-gold-300 hover:text-gold-100 transition-colors"
               >
                 {getCopy("nav.story")}
               </Link>
               <Link
                 href="/kill-the-boy"
-                className="text-sky-600 hover:text-sky-800 transition-colors"
+                className="text-gold-300 hover:text-gold-100 transition-colors"
               >
                 {getCopy("nav.killTheBoy")}
               </Link>
               <Link
                 href="/assessment"
-                className="text-sky-600 hover:text-sky-800 transition-colors"
+                className="text-gold-300 hover:text-gold-100 transition-colors"
               >
                 {getCopy("nav.assessment")}
               </Link>
               <Link
                 href="/resources"
-                className="text-sky-600 hover:text-sky-800 transition-colors"
+                className="text-gold-300 hover:text-gold-100 transition-colors"
               >
                 {getCopy("nav.resources")}
               </Link>
               <Link
                 href="/course"
-                className="text-sky-600 hover:text-sky-800 transition-colors"
+                className="text-gold-300 hover:text-gold-100 transition-colors"
               >
                 {getCopy("nav.course")}
               </Link>
               <Link
                 href="/testimonials"
-                className="text-sky-600 hover:text-sky-800 transition-colors"
+                className="text-gold-300 hover:text-gold-100 transition-colors"
               >
                 {getCopy("nav.testimonials")}
               </Link>
@@ -95,13 +97,13 @@ export default function RootLayout({
             <div className="flex items-center gap-4">
               <Link
                 href="/auth/signin"
-                className="hidden md:block text-sky-600 hover:text-sky-800 transition-colors text-sm"
+                className="hidden md:block text-gold-300 hover:text-gold-100 transition-colors text-sm"
               >
                 {getCopy("nav.signin")}
               </Link>
               <Link
                 href="/assessment"
-                className="hidden md:block strata-button text-sm px-4 py-2"
+                className="hidden md:block trajectory-button text-sm px-4 py-2"
               >
                 {getCopy("nav.assessment")}
               </Link>
