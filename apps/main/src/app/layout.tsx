@@ -1,3 +1,4 @@
+import MobileMenu from "@/components/MobileMenu";
 import { getCopy } from "@/lib/copy";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -49,12 +50,24 @@ export default function RootLayout({
             >
               {getCopy("brand.name")}
             </Link>
-            <nav className="hidden md:flex items-center gap-8 text-sm">
+            <nav className="hidden lg:flex items-center gap-6 text-sm">
+              <Link
+                href="/about"
+                className="text-sky-600 hover:text-sky-800 transition-colors"
+              >
+                {getCopy("nav.about")}
+              </Link>
               <Link
                 href="/story"
                 className="text-sky-600 hover:text-sky-800 transition-colors"
               >
                 {getCopy("nav.story")}
+              </Link>
+              <Link
+                href="/kill-the-boy"
+                className="text-sky-600 hover:text-sky-800 transition-colors"
+              >
+                {getCopy("nav.killTheBoy")}
               </Link>
               <Link
                 href="/assessment"
@@ -63,10 +76,10 @@ export default function RootLayout({
                 {getCopy("nav.assessment")}
               </Link>
               <Link
-                href="/lane-diagnostic/landing"
+                href="/resources"
                 className="text-sky-600 hover:text-sky-800 transition-colors"
               >
-                {getCopy("nav.laneDiagnostic")}
+                {getCopy("nav.resources")}
               </Link>
               <Link
                 href="/course"
@@ -75,25 +88,26 @@ export default function RootLayout({
                 {getCopy("nav.course")}
               </Link>
               <Link
-                href="/coaching"
+                href="/testimonials"
                 className="text-sky-600 hover:text-sky-800 transition-colors"
               >
-                {getCopy("nav.coaching")}
+                {getCopy("nav.testimonials")}
               </Link>
             </nav>
             <div className="flex items-center gap-4">
               <Link
                 href="/auth/signin"
-                className="text-sky-600 hover:text-sky-800 transition-colors text-sm"
+                className="hidden md:block text-sky-600 hover:text-sky-800 transition-colors text-sm"
               >
                 {getCopy("nav.signin")}
               </Link>
               <Link
                 href="/assessment"
-                className="strata-button text-sm px-4 py-2"
+                className="hidden md:block strata-button text-sm px-4 py-2"
               >
                 {getCopy("nav.assessment")}
               </Link>
+              <MobileMenu />
             </div>
           </div>
         </header>
