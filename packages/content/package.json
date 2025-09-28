@@ -1,0 +1,12 @@
+{
+  "name": "@trajectory/content",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "files": [
+    "*.json",
+    "index.js",
+    "index.d.ts"
+  ]
+}

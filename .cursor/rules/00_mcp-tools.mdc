@@ -1,0 +1,70 @@
+# MCP Tools Maximum Capacity Rule
+
+## Pre-Task MCP Check (ALWAYS RUN FIRST)
+Before starting ANY task, I must:
+
+1. **Check MCP Availability**: Identify which MCP tools can handle this task
+2. **Prefer MCP Over Standard**: Use MCP tools instead of standard tools when available
+3. **Plan MCP Workflow**: Design the optimal MCP tool chain for the task
+
+## Installed MCP Servers
+- **Supabase MCP Server**: Database operations, schema management, data queries
+- **Playwright Automation MCP**: Browser automation, testing, web scraping
+- **Agentic Control Framework (ACF) MCP**: Advanced agent control, workflow automation
+- **Linear MCP**: Project management, issue tracking, task organization
+- **Context7 MCP**: Context management, knowledge retrieval, information synthesis
+
+## MCP-First Decision Tree
+For every task, ask:
+1. Can Supabase MCP handle database operations? → Use it
+2. Can Playwright MCP handle browser/testing? → Use it
+3. Can ACF MCP handle system automation? → Use it
+4. Can Linear MCP handle project management? → Use it
+5. Can Context7 MCP handle context/knowledge? → Use it
+6. Can I chain multiple MCP tools? → Design optimal chain
+
+## Implementation
+- **NEVER** use standard tools when MCP equivalents exist
+- **ALWAYS** start with MCP tool analysis
+- **ALWAYS** design MCP workflows before execution
+- **ALWAYS** chain MCP operations for complex tasks
+
+## MCP Tool Chaining Examples
+
+### Development Workflow
+1. **Context7 MCP** → Analyze code context and requirements
+2. **Linear MCP** → Create/update relevant issues
+3. **Supabase MCP** → Handle database operations
+4. **Playwright MCP** → Test the implementation
+5. **ACF MCP** → Deploy and manage the system
+
+### Assessment System Updates
+1. **Context7 MCP** → Analyze current assessment logic
+2. **Supabase MCP** → Update database schema if needed
+3. **Playwright MCP** → Test assessment flow end-to-end
+4. **Linear MCP** → Track progress and create follow-up tasks
+
+### Bug Fix Workflow
+1. **Linear MCP** → Create bug issue
+2. **Context7 MCP** → Analyze code context around the bug
+3. **Supabase MCP** → Check database state if relevant
+4. **Playwright MCP** → Reproduce and test the fix
+5. **ACF MCP** → Deploy the fix
+
+## Critical Success Factors
+- **NEVER** use standard tools when MCP equivalents are available
+- **ALWAYS** check MCP availability before starting any task
+- **ALWAYS** chain MCP operations for complex workflows
+- **ALWAYS** use the most appropriate MCP tool for each task type
+
+## Performance Optimization
+- **Batch MCP Operations**: Group related MCP calls together
+- **Cache MCP Results**: Store frequently accessed MCP data
+- **Monitor MCP Usage**: Track which MCP tools are most effective
+- **Optimize MCP Chains**: Streamline multi-step MCP workflows
+
+## Success Metrics
+- **MCP Usage Rate**: Track percentage of tasks using MCP tools
+- **MCP Efficiency**: Measure time saved using MCP vs standard tools
+- **MCP Reliability**: Monitor success rates of MCP operations
+- **MCP Innovation**: Identify new ways to leverage MCP capabilities

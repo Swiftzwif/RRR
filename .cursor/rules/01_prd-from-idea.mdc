@@ -1,0 +1,104 @@
+# PRD Generation Process
+
+## From Jean Paul Idea → Product Requirements Document
+
+### Required PRD Structure
+
+#### 1. Problem Statement
+- **Current State**: What exists today and why it's insufficient
+- **Pain Points**: Specific frustrations and limitations
+- **Impact**: Quantified cost of inaction
+- **Alignment**: How this connects to Kill the Boy → FastLane journey
+
+#### 2. Target Users
+- **Primary**: Ambitious men 18-35 in life drift
+- **Secondary**: Men seeking structured transformation
+- **Exclusions**: Therapy/trauma cases, crisis intervention
+- **Personas**: Current assessment takers, course buyers, coaching clients
+
+#### 3. MVP Solution
+- **Core Features**: Essential functionality for initial release
+- **User Flow**: Step-by-step experience from entry to value
+- **Integration Points**: Assessment, course, coaching, payments
+- **Success Criteria**: Measurable outcomes and metrics
+
+#### 4. Non-Goals (Explicitly Exclude)
+- **Scope Creep**: Features that don't serve core mission
+- **Wrong Audience**: Non-target demographic features
+- **Technical Debt**: Shortcuts that compromise architecture
+- **Feature Bloat**: Nice-to-haves that delay core value
+
+#### 5. Success Metrics
+- **Acquisition**: New users, assessment completions
+- **Activation**: Course purchases, coaching applications
+- **Retention**: Community engagement, renewal rates
+- **Revenue**: MRR growth, LTV improvement
+- **Product**: Feature adoption, user satisfaction
+
+#### 6. Risk Assessment
+- **Technical Risks**: Architecture limitations, integration challenges
+- **Business Risks**: Market fit, competitive response
+- **Execution Risks**: Timeline, resource constraints
+- **Mitigation Plans**: Contingency strategies for each risk
+
+#### 7. Acceptance Criteria
+- **Functional**: What the feature must do
+- **Performance**: Speed, reliability, scalability requirements
+- **Design**: UI/UX standards and brand consistency
+- **Quality**: Test coverage, documentation, security
+
+### Trajectory Alignment Checklist
+
+#### Philosophy Alignment
+- [ ] Supports Kill the Boy → FastLane → Mastery journey
+- [ ] Reinforces stoic, professional brand values
+- [ ] Targets ambitious men in life drift
+- [ ] Avoids therapy/trauma/crisis intervention
+
+#### Funnel Integration
+- [ ] Connects to existing Assessment → Course → Coaching flow
+- [ ] Supports $99.99 → $24.99 → $400 pricing ladder
+- [ ] Maintains Stripe checkout and webhook gating
+- [ ] Preserves email capture and lead nurturing
+
+#### Technical Standards
+- [ ] Uses existing Next.js/TypeScript/Tailwind stack
+- [ ] Integrates with Supabase/Prisma database
+- [ ] Follows established component patterns
+- [ ] Maintains security and performance standards
+
+### PRD Template
+
+```markdown
+# [Feature Name] - Product Requirements Document
+
+## Problem Statement
+[Describe the current state, pain points, and impact]
+
+## Target Users
+[Primary and secondary audiences, personas, exclusions]
+
+## MVP Solution
+[Core features, user flow, integration points, success criteria]
+
+## Non-Goals
+[Explicitly excluded features and scope boundaries]
+
+## Success Metrics
+[Acquisition, activation, retention, revenue, product metrics]
+
+## Risk Assessment
+[Technical, business, execution risks with mitigation plans]
+
+## Acceptance Criteria
+[Functional, performance, design, quality requirements]
+
+## Trajectory Alignment
+[Philosophy, funnel, and technical alignment confirmation]
+```
+
+### Approval Process
+1. **Draft PRD**: Complete all sections with Trajectory alignment
+2. **Stakeholder Review**: Jean Paul approval for philosophy/funnel fit
+3. **Technical Review**: Engineering validation of feasibility
+4. **Final Approval**: Ready for implementation planning

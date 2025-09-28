@@ -1,0 +1,354 @@
+# Content Funnel & Conversion Strategy
+
+## 4-Step Conversion Funnel
+
+### Funnel Architecture
+```typescript
+// Core funnel structure
+export const CONVERSION_FUNNEL = {
+  step1: {
+    name: 'Assessment',
+    purpose: 'Diagnose current state and create awareness',
+    value: 'Free assessment with personalized results',
+    conversion: 'Email capture for results access',
+    nextStep: 'Results page with course offer'
+  },
+  
+  step2: {
+    name: 'Course ($99.99)',
+    purpose: 'Provide foundational knowledge and build trust',
+    value: '7 modules of transformation content',
+    conversion: 'Stripe checkout for course access',
+    nextStep: 'Course modules with coaching offer'
+  },
+  
+  step3: {
+    name: 'Interview ($24.99)',
+    purpose: 'Qualify for coaching and build relationship',
+    value: 'Personalized coaching application process',
+    conversion: 'Stripe checkout for interview scheduling',
+    nextStep: 'Coaching qualification call'
+  },
+  
+  step4: {
+    name: 'Coaching ($400/month)',
+    purpose: 'Provide personalized transformation guidance',
+    value: '1-on-1 coaching and accountability',
+    conversion: 'Monthly recurring revenue',
+    nextStep: 'Ongoing transformation journey'
+  }
+};
+```
+
+### Funnel Metrics
+```typescript
+// Key performance indicators
+export const FUNNEL_METRICS = {
+  acquisition: {
+    assessmentCompletions: 'Total assessments completed',
+    emailCaptures: 'Emails captured from assessment',
+    conversionRate: 'Assessment to email conversion %',
+    costPerLead: 'Cost to acquire each email'
+  },
+  
+  activation: {
+    coursePurchases: 'Total course sales',
+    interviewApplications: 'Total interview applications',
+    coachingQualifications: 'Total coaching qualifications',
+    conversionRates: 'Step-to-step conversion percentages'
+  },
+  
+  retention: {
+    courseCompletion: 'Course module completion rates',
+    coachingRetention: 'Monthly coaching retention rate',
+    communityEngagement: 'Community participation rates',
+    lifetimeValue: 'Average customer lifetime value'
+  },
+  
+  revenue: {
+    monthlyRecurring: 'Monthly recurring revenue (MRR)',
+    annualRecurring: 'Annual recurring revenue (ARR)',
+    averageOrderValue: 'Average order value per transaction',
+    customerAcquisitionCost: 'Cost to acquire each customer'
+  }
+};
+```
+
+## Content Strategy by Funnel Stage
+
+### Stage 1: Assessment Content
+```typescript
+// Assessment stage content strategy
+export const ASSESSMENT_CONTENT = {
+  landing: {
+    headline: 'Discover Your Leadership Archetype',
+    subheadline: 'Take the Kill the Boy assessment to reveal your current lane and transformation path',
+    valueProposition: 'In 15 minutes, understand where you are and where you need to go',
+    socialProof: 'Over 10,000 men have taken the assessment and transformed their trajectory',
+    cta: 'Begin Assessment'
+  },
+  
+  questions: {
+    purpose: 'Diagnose current state across key domains',
+    structure: '15 core questions + 2 demographic questions',
+    domains: ['Leadership', 'Execution', 'Adaptability', 'Creativity', 'Focus'],
+    scoring: 'Domain-based scoring with avatar assignment'
+  },
+  
+  results: {
+    purpose: 'Provide value while setting up next step',
+    content: [
+      'Avatar assignment and description',
+      'Domain scores and analysis',
+      'Current lane identification',
+      'Personalized recommendations',
+      'Course offer with urgency'
+    ],
+    cta: 'Access Your Transformation Guide ($99.99)'
+  }
+};
+```
+
+### Stage 2: Course Content
+```typescript
+// Course stage content strategy
+export const COURSE_CONTENT = {
+  sales: {
+    headline: 'Rethink. Redesign. Reignite.',
+    subheadline: 'The complete guide to transitioning from drift to dominion',
+    valueProposition: '7 modules designed to transform your mindset and accelerate your trajectory',
+    modules: [
+      'Kill the Boy - Identity transformation',
+      'FastLane Fundamentals - Wealth building principles',
+      'Systems & Leverage - Building scalable businesses',
+      'Strategic Thinking - Decision-making frameworks',
+      'Execution Mastery - Getting things done',
+      'Leadership Development - Leading others effectively',
+      'Mastery Path - Ongoing growth and development'
+    ],
+    guarantee: '30-day money-back guarantee',
+    cta: 'Get Instant Access ($99.99)'
+  },
+  
+  delivery: {
+    format: 'Video modules with written guides',
+    pacing: 'One module per week with reflection exercises',
+    support: 'Community access and weekly group calls',
+    assessment: 'Module completion tracking and progress reports'
+  },
+  
+  upsell: {
+    timing: 'After module 3 (Systems & Leverage)',
+    offer: 'Personalized coaching application',
+    value: '1-on-1 guidance to accelerate your transformation',
+    price: '$24.99 application fee',
+    cta: 'Apply for Coaching Interview'
+  }
+};
+```
+
+### Stage 3: Interview Content
+```typescript
+// Interview stage content strategy
+export const INTERVIEW_CONTENT = {
+  application: {
+    purpose: 'Qualify prospects and build relationship',
+    process: [
+      'Complete detailed application form',
+      'Schedule 30-minute qualification call',
+      'Assess readiness and fit',
+      'Provide personalized feedback',
+      'Offer coaching program if qualified'
+    ],
+    qualification: 'Serious commitment to transformation required'
+  },
+  
+  call: {
+    structure: [
+      'Welcome and rapport building',
+      'Review application and assessment results',
+      'Discuss current challenges and goals',
+      'Explain coaching program and expectations',
+      'Answer questions and address concerns',
+      'Make coaching offer if qualified'
+    ],
+    outcome: 'Clear next steps and coaching offer'
+  },
+  
+  followUp: {
+    qualified: 'Send coaching program details and next steps',
+    notQualified: 'Provide alternative resources and future opportunities',
+    pending: 'Schedule follow-up call for decision'
+  }
+};
+```
+
+### Stage 4: Coaching Content
+```typescript
+// Coaching stage content strategy
+export const COACHING_CONTENT = {
+  onboarding: {
+    purpose: 'Set expectations and establish foundation',
+    process: [
+      'Welcome call and program overview',
+      'Goal setting and transformation plan',
+      'Schedule regular coaching sessions',
+      'Access to exclusive community',
+      'Resource library and tools'
+    ],
+    duration: 'First week of coaching'
+  },
+  
+  sessions: {
+    frequency: 'Weekly 1-on-1 sessions',
+    duration: '60 minutes per session',
+    structure: [
+      'Progress review and accountability',
+      'Challenge discussion and problem-solving',
+      'Strategy development and planning',
+      'Action item assignment and commitment',
+      'Next session scheduling'
+    ],
+    focus: 'Accelerated transformation and goal achievement'
+  },
+  
+  support: {
+    community: 'Access to exclusive coaching client community',
+    resources: 'Additional tools, templates, and guides',
+    communication: 'Email support between sessions',
+    accountability: 'Progress tracking and milestone celebration'
+  }
+};
+```
+
+## Content Optimization Strategy
+
+### A/B Testing Framework
+```typescript
+// Content testing strategy
+export const TESTING_FRAMEWORK = {
+  headlines: {
+    purpose: 'Optimize attention and engagement',
+    variants: [
+      'Discover Your Leadership Archetype',
+      'Find Out Which Lane You\'re In',
+      'Uncover Your Transformation Path',
+      'Reveal Your Hidden Potential'
+    ],
+    metrics: 'Click-through rate, time on page, conversion rate'
+  },
+  
+  ctas: {
+    purpose: 'Optimize conversion actions',
+    variants: [
+      'Begin Assessment',
+      'Start Your Journey',
+      'Take the Assessment',
+      'Discover Your Path'
+    ],
+    metrics: 'Conversion rate, completion rate, revenue per visitor'
+  },
+  
+  pricing: {
+    purpose: 'Optimize pricing strategy',
+    variants: [
+      '$99.99',
+      '$97',
+      '$100',
+      'Only $99.99'
+    ],
+    metrics: 'Conversion rate, revenue, customer satisfaction'
+  }
+};
+```
+
+### Personalization Strategy
+```typescript
+// Content personalization approach
+export const PERSONALIZATION = {
+  avatarBased: {
+    architect: 'Focus on strategic thinking and systems building',
+    balancer: 'Emphasize adaptability and team management',
+    drifter: 'Highlight focus and discipline development'
+  },
+  
+  laneBased: {
+    fastlane: 'Advanced strategies and scaling techniques',
+    sidelane: 'Optimization and transition strategies',
+    slowlane: 'Foundation building and mindset shifts'
+  },
+  
+  behaviorBased: {
+    engaged: 'Advanced content and exclusive offers',
+    moderate: 'Standard content with regular follow-up',
+    low: 'Re-engagement campaigns and value reinforcement'
+  }
+};
+```
+
+## Content Distribution Strategy
+
+### Channel Strategy
+```typescript
+// Content distribution channels
+export const DISTRIBUTION_CHANNELS = {
+  owned: {
+    website: 'Primary content hub and conversion platform',
+    email: 'Nurture sequences and relationship building',
+    community: 'Exclusive content for paying customers'
+  },
+  
+  earned: {
+    referrals: 'Client testimonials and success stories',
+    partnerships: 'Collaborations with complementary brands',
+    media: 'Podcast appearances and interviews'
+  },
+  
+  paid: {
+    social: 'Targeted advertising on LinkedIn and Twitter',
+    search: 'Google Ads for assessment and course keywords',
+    retargeting: 'Follow-up campaigns for non-converters'
+  }
+};
+```
+
+### Content Calendar
+```typescript
+// Content publishing schedule
+export const CONTENT_CALENDAR = {
+  weekly: {
+    blog: 'One educational blog post',
+    email: 'Two nurture emails to subscribers',
+    social: 'Daily posts on LinkedIn and Twitter',
+    community: 'Weekly group call and discussion'
+  },
+  
+  monthly: {
+    video: 'One long-form educational video',
+    podcast: 'One guest appearance or interview',
+    webinar: 'One free training or Q&A session',
+    newsletter: 'Monthly roundup and insights'
+  },
+  
+  quarterly: {
+    course: 'New module or course update',
+    assessment: 'Assessment questions review and update',
+    coaching: 'Coaching program evaluation and improvement',
+    strategy: 'Content strategy review and optimization'
+  }
+};
+```
+
+## Quality Checklist
+
+### Content Funnel Review Checklist
+- [ ] Funnel stages are clearly defined and optimized
+- [ ] Content supports each stage's conversion goals
+- [ ] Value propositions are clear and compelling
+- [ ] CTAs are prominent and action-oriented
+- [ ] Personalization is implemented where appropriate
+- [ ] A/B testing is planned and executed
+- [ ] Metrics are tracked and analyzed
+- [ ] Content quality is consistent across all stages
+- [ ] User experience is smooth and intuitive
+- [ ] Conversion rates are optimized and improving

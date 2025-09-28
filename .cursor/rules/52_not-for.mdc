@@ -1,0 +1,311 @@
+# Not For & Exclusions
+
+## Explicit Exclusions
+
+### Target Audience Exclusions
+```typescript
+// Who Trajectory is NOT for
+export const NOT_FOR = {
+  demographics: {
+    age: 'Under 18 or over 50',
+    gender: 'Not targeting women (though not excluding them)',
+    income: 'Those without disposable income for personal development',
+    situation: 'Those in crisis or emergency situations'
+  },
+  
+  psychographics: {
+    mindset: 'Those seeking quick fixes or magic bullets',
+    values: 'Those not committed to personal growth and development',
+    lifestyle: 'Those unwilling to invest time and energy in transformation',
+    interests: 'Those not interested in business or entrepreneurship'
+  },
+  
+  behavior: {
+    commitment: 'Those unwilling to make long-term commitments',
+    investment: 'Those not willing to invest in their development',
+    change: 'Those resistant to change or new approaches',
+    responsibility: 'Those who blame others for their circumstances'
+  }
+};
+```
+
+### Service Exclusions
+```typescript
+// What Trajectory does NOT provide
+export const SERVICE_EXCLUSIONS = {
+  therapy: {
+    exclusion: 'Therapy or mental health treatment',
+    reason: 'Not qualified to provide clinical therapy',
+    alternative: 'Refer to licensed mental health professionals',
+    boundary: 'Focus on personal development, not mental health treatment'
+  },
+  
+  trauma: {
+    exclusion: 'Trauma therapy or trauma recovery',
+    reason: 'Requires specialized clinical training',
+    alternative: 'Refer to trauma-informed therapists',
+    boundary: 'Address limiting beliefs, not trauma healing'
+  },
+  
+  crisis: {
+    exclusion: 'Crisis intervention or emergency support',
+    reason: 'Not equipped for crisis situations',
+    alternative: 'Refer to crisis hotlines and emergency services',
+    boundary: 'Focus on growth, not crisis management'
+  },
+  
+  medical: {
+    exclusion: 'Medical advice or health treatment',
+    reason: 'Not qualified to provide medical guidance',
+    alternative: 'Refer to licensed healthcare providers',
+    boundary: 'Focus on mindset and business, not health'
+  },
+  
+  legal: {
+    exclusion: 'Legal advice or legal representation',
+    reason: 'Not qualified to provide legal guidance',
+    alternative: 'Refer to licensed attorneys',
+    boundary: 'Focus on business strategy, not legal matters'
+  },
+  
+  financial: {
+    exclusion: 'Financial advice or investment recommendations',
+    reason: 'Not qualified to provide financial advice',
+    alternative: 'Refer to licensed financial advisors',
+    boundary: 'Focus on business building, not investment advice'
+  }
+};
+```
+
+## Boundary Management
+
+### Clear Boundaries
+```typescript
+// How to maintain clear boundaries
+export const BOUNDARIES = {
+  scope: {
+    principle: 'Stay within expertise and qualifications',
+    implementation: 'Clear scope definition in all communications',
+    monitoring: 'Regular review of content and services',
+    enforcement: 'Immediate correction of scope creep'
+  },
+  
+  referrals: {
+    principle: 'Refer out when outside scope',
+    implementation: 'Maintain list of qualified referral partners',
+    monitoring: 'Track referral patterns and outcomes',
+    followup: 'Follow up on referrals when appropriate'
+  },
+  
+  communication: {
+    principle: 'Clear communication about what is and isn\'t provided',
+    implementation: 'Explicit disclaimers and boundaries',
+    monitoring: 'Regular communication review',
+    training: 'Team education on boundary maintenance'
+  },
+  
+  documentation: {
+    principle: 'Document all boundaries and exclusions',
+    implementation: 'Written policies and procedures',
+    monitoring: 'Regular policy review and updates',
+    compliance: 'Ensure all team members understand boundaries'
+  }
+};
+```
+
+### Referral Network
+```typescript
+// Professional referral partners
+export const REFERRAL_NETWORK = {
+  mentalHealth: {
+    therapists: 'Licensed therapists for mental health support',
+    counselors: 'Professional counselors for personal issues',
+    psychiatrists: 'Psychiatrists for medication management',
+    criteria: 'Licensed, experienced, aligned with values'
+  },
+  
+  healthcare: {
+    physicians: 'Primary care physicians for health issues',
+    specialists: 'Medical specialists for specific conditions',
+    wellness: 'Wellness professionals for health optimization',
+    criteria: 'Licensed, experienced, evidence-based'
+  },
+  
+  professional: {
+    lawyers: 'Business attorneys for legal matters',
+    accountants: 'CPAs for tax and accounting issues',
+    financial: 'Financial advisors for investment advice',
+    criteria: 'Licensed, experienced, client-focused'
+  },
+  
+  development: {
+    coaches: 'Other coaches for specialized areas',
+    consultants: 'Business consultants for specific expertise',
+    trainers: 'Professional trainers for skill development',
+    criteria: 'Qualified, experienced, results-oriented'
+  }
+};
+```
+
+## Content Boundaries
+
+### Content Exclusions
+```typescript
+// Content that should not be created
+export const CONTENT_EXCLUSIONS = {
+  therapy: {
+    exclusion: 'Therapy-based content or therapeutic techniques',
+    reason: 'Not qualified to provide therapeutic content',
+    alternative: 'Focus on personal development and mindset',
+    boundary: 'Address limiting beliefs, not psychological issues'
+  },
+  
+  medical: {
+    exclusion: 'Medical advice or health recommendations',
+    reason: 'Not qualified to provide medical guidance',
+    alternative: 'Focus on business and personal development',
+    boundary: 'Address mindset and strategy, not health'
+  },
+  
+  legal: {
+    exclusion: 'Legal advice or legal interpretations',
+    reason: 'Not qualified to provide legal guidance',
+    alternative: 'Focus on business strategy and implementation',
+    boundary: 'Address business decisions, not legal matters'
+  },
+  
+  financial: {
+    exclusion: 'Specific investment advice or financial recommendations',
+    reason: 'Not qualified to provide financial advice',
+    alternative: 'Focus on business building and income generation',
+    boundary: 'Address business strategy, not investment strategy'
+  },
+  
+  crisis: {
+    exclusion: 'Crisis intervention or emergency guidance',
+    reason: 'Not equipped for crisis situations',
+    alternative: 'Focus on prevention and preparation',
+    boundary: 'Address growth and development, not crisis management'
+  }
+};
+```
+
+### Content Guidelines
+```typescript
+// How to create appropriate content
+export const CONTENT_GUIDELINES = {
+  focus: {
+    principle: 'Stay focused on core expertise areas',
+    areas: ['Business building', 'Personal development', 'Mindset', 'Strategy'],
+    implementation: 'Regular content review and alignment check',
+    monitoring: 'Track content performance and audience response'
+  },
+  
+  disclaimers: {
+    principle: 'Include appropriate disclaimers',
+    implementation: 'Clear disclaimers on all content',
+    monitoring: 'Regular disclaimer review and updates',
+    compliance: 'Ensure disclaimers are legally appropriate'
+  },
+  
+  referrals: {
+    principle: 'Refer out when appropriate',
+    implementation: 'Include referral information in relevant content',
+    monitoring: 'Track referral patterns and outcomes',
+    followup: 'Follow up on referrals when appropriate'
+  },
+  
+  boundaries: {
+    principle: 'Maintain clear content boundaries',
+    implementation: 'Regular content review and boundary check',
+    monitoring: 'Track content performance and audience response',
+    enforcement: 'Immediate correction of boundary violations'
+  }
+};
+```
+
+## Client Management
+
+### Client Screening
+```typescript
+// How to screen potential clients
+export const CLIENT_SCREENING = {
+  assessment: {
+    purpose: 'Identify appropriate clients and exclude inappropriate ones',
+    process: [
+      'Initial application review',
+      'Assessment results analysis',
+      'Qualification call',
+      'Final decision and onboarding'
+    ],
+    criteria: 'Commitment, readiness, fit, and appropriateness'
+  },
+  
+  exclusion: {
+    criteria: [
+      'In crisis or emergency situation',
+      'Seeking therapy or mental health treatment',
+      'Not committed to personal growth',
+      'Unwilling to invest time and energy',
+      'Looking for quick fixes or magic bullets'
+    ],
+    process: 'Clear communication about exclusions and alternatives',
+    followup: 'Provide appropriate referrals when possible'
+  },
+  
+  boundaries: {
+    principle: 'Maintain clear boundaries throughout relationship',
+    implementation: 'Regular boundary review and reinforcement',
+    monitoring: 'Track client progress and boundary adherence',
+    enforcement: 'Address boundary violations immediately'
+  }
+};
+```
+
+### Relationship Management
+```typescript
+// How to manage client relationships
+export const RELATIONSHIP_MANAGEMENT = {
+  scope: {
+    principle: 'Maintain clear scope of services',
+    implementation: 'Regular scope review and communication',
+    monitoring: 'Track service delivery and client satisfaction',
+    adjustment: 'Adjust scope as needed while maintaining boundaries'
+  },
+  
+  referrals: {
+    principle: 'Refer out when appropriate',
+    implementation: 'Maintain referral network and process',
+    monitoring: 'Track referral patterns and outcomes',
+    followup: 'Follow up on referrals when appropriate'
+  },
+  
+  boundaries: {
+    principle: 'Maintain professional boundaries',
+    implementation: 'Clear boundary communication and enforcement',
+    monitoring: 'Regular boundary review and reinforcement',
+    training: 'Team education on boundary maintenance'
+  },
+  
+  documentation: {
+    principle: 'Document all boundary decisions and referrals',
+    implementation: 'Written policies and procedures',
+    monitoring: 'Regular documentation review and updates',
+    compliance: 'Ensure all team members understand boundaries'
+  }
+};
+```
+
+## Quality Checklist
+
+### Boundary Management Review Checklist
+- [ ] Clear exclusions are defined and communicated
+- [ ] Referral network is established and maintained
+- [ ] Content boundaries are clearly defined
+- [ ] Client screening process is implemented
+- [ ] Team members understand boundaries
+- [ ] Regular boundary review is conducted
+- [ ] Appropriate disclaimers are included
+- [ ] Referral process is documented and followed
+- [ ] Boundary violations are addressed immediately
+- [ ] Documentation is maintained and updated

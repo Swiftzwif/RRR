@@ -1,0 +1,361 @@
+# Marketing Language & Positioning
+
+## Core Messaging Framework
+
+### FastLane/SideLane/SlowLane Positioning
+Every piece of content must clearly position users within the three-lane framework:
+
+```typescript
+// Lane definitions and messaging
+export const LANE_MESSAGING = {
+  fastlane: {
+    name: 'FastLane',
+    description: 'High-leverage, scalable wealth building through business ownership',
+    characteristics: ['Scalable', 'High-leverage', 'Asset-building', 'Time-freedom'],
+    messaging: 'Build systems that work while you sleep',
+    target: 'Ambitious entrepreneurs ready to scale'
+  },
+  sidelane: {
+    name: 'SideLane',
+    description: 'Traditional employment with strategic optimization and side hustles',
+    characteristics: ['Stable', 'Optimized', 'Diversified', 'Gradual growth'],
+    messaging: 'Optimize your current path while building alternatives',
+    target: 'Career professionals seeking growth'
+  },
+  slowlane: {
+    name: 'SlowLane',
+    description: 'Conventional career path with incremental advancement',
+    characteristics: ['Traditional', 'Secure', 'Predictable', 'Limited upside'],
+    messaging: 'Safe but limited growth potential',
+    target: 'Risk-averse individuals in traditional careers'
+  }
+};
+```
+
+### Language Tone & Voice
+- **Authoritative**: Confident, knowledgeable, experienced
+- **Stoic**: Calm, measured, philosophical
+- **Masculine**: Strong, decisive, action-oriented
+- **Professional**: Sophisticated, polished, credible
+- **Inspiring**: Uplifting, motivating, aspirational
+
+## Assessment Positioning
+
+### Assessment Landing Page Copy
+```typescript
+// Assessment page messaging
+export const ASSESSMENT_COPY = {
+  headline: 'Discover Your Leadership Archetype',
+  subheadline: 'Take the Kill the Boy assessment to reveal your current lane and transformation path',
+  valueProposition: 'In 15 minutes, understand where you are and where you need to go',
+  cta: 'Begin Assessment',
+  
+  benefits: [
+    'Identify your current life lane (FastLane/SideLane/SlowLane)',
+    'Discover your leadership archetype and strengths',
+    'Receive personalized growth recommendations',
+    'Understand your transformation readiness'
+  ],
+  
+  socialProof: 'Over 10,000 men have taken the assessment and transformed their trajectory'
+};
+```
+
+### Results Page Messaging
+```typescript
+// Results page copy based on avatar type
+export const RESULTS_COPY = {
+  architect: {
+    headline: 'You are The Architect',
+    description: 'Strategic visionary who builds systems for long-term success',
+    currentLane: 'You\'re operating in the FastLane with strong strategic thinking',
+    nextSteps: 'Focus on execution and team building to scale your vision',
+    cta: 'Access Your Transformation Guide'
+  },
+  balancer: {
+    headline: 'You are The Balancer',
+    description: 'Adaptable leader who excels at managing complexity and change',
+    currentLane: 'You\'re optimizing in the SideLane with strong adaptability',
+    nextSteps: 'Develop strategic focus and risk-taking to enter the FastLane',
+    cta: 'Access Your Transformation Guide'
+  },
+  drifter: {
+    headline: 'You are The Drifter',
+    description: 'Creative free spirit seeking direction and structure',
+    currentLane: 'You\'re currently in the SlowLane, ready for transformation',
+    nextSteps: 'Build focus and discipline to accelerate your growth',
+    cta: 'Access Your Transformation Guide'
+  }
+};
+```
+
+## Course Positioning
+
+### Course Sales Copy
+```typescript
+// Course marketing messaging
+export const COURSE_COPY = {
+  headline: 'Rethink. Redesign. Reignite.',
+  subheadline: 'The complete guide to transitioning from drift to dominion',
+  price: '$99.99',
+  valueProposition: '7 modules designed to transform your mindset and accelerate your trajectory',
+  
+  modules: [
+    {
+      title: 'Kill the Boy',
+      description: 'Eliminate limiting beliefs and embrace your masculine power',
+      outcome: 'Clear vision and unshakeable confidence'
+    },
+    {
+      title: 'FastLane Fundamentals',
+      description: 'Master the principles of scalable wealth building',
+      outcome: 'Strategic framework for business success'
+    },
+    {
+      title: 'Systems & Leverage',
+      description: 'Build systems that work while you sleep',
+      outcome: 'Automated income streams and time freedom'
+    }
+  ],
+  
+  guarantee: '30-day money-back guarantee',
+  urgency: 'Limited time: Get instant access to all modules'
+};
+```
+
+### Course Module Descriptions
+```typescript
+// Individual module copy
+export const MODULE_COPY = {
+  killTheBoy: {
+    title: 'Kill the Boy',
+    tagline: 'Eliminate the weak version of yourself',
+    description: 'Transform from the boy who seeks approval to the man who commands respect. Learn the psychological frameworks that separate successful men from the masses.',
+    keyConcepts: ['Identity transformation', 'Limiting belief elimination', 'Masculine confidence building'],
+    outcomes: ['Unshakeable self-confidence', 'Clear personal mission', 'Emotional resilience']
+  },
+  
+  fastlaneFundamentals: {
+    title: 'FastLane Fundamentals',
+    tagline: 'Master the principles of scalable wealth',
+    description: 'Understand the mathematical reality of wealth building and why traditional paths lead to mediocrity. Learn to think like a business owner, not an employee.',
+    keyConcepts: ['Wealth mathematics', 'Scalability principles', 'Business ownership mindset'],
+    outcomes: ['Strategic thinking framework', 'Wealth-building blueprint', 'Business opportunity recognition']
+  }
+};
+```
+
+## Coaching Positioning
+
+### Coaching Application Copy
+```typescript
+// Coaching program messaging
+export const COACHING_COPY = {
+  headline: '1-on-1 Transformation Coaching',
+  subheadline: 'Personalized guidance to accelerate your FastLane journey',
+  price: '$400/month',
+  valueProposition: 'Direct access to Jean Paul for personalized transformation guidance',
+  
+  benefits: [
+    'Weekly 1-on-1 coaching sessions',
+    'Personalized action plans',
+    'Accountability and progress tracking',
+    'Access to exclusive community',
+    'Priority support and guidance'
+  ],
+  
+  applicationProcess: [
+    'Complete the assessment (if not already done)',
+    'Submit your coaching application',
+    'Schedule a qualification call',
+    'Begin your transformation journey'
+  ],
+  
+  investment: 'Minimum 3-month commitment for meaningful transformation'
+};
+```
+
+### Coaching Qualification Copy
+```typescript
+// Coaching qualification messaging
+export const QUALIFICATION_COPY = {
+  headline: 'Are You Ready for Transformation?',
+  description: 'Coaching is not for everyone. We work with ambitious men who are serious about change.',
+  
+  requirements: [
+    'Committed to personal growth and development',
+    'Willing to invest time and energy in transformation',
+    'Open to feedback and accountability',
+    'Ready to take massive action'
+  ],
+  
+  notFor: [
+    'Those looking for quick fixes or magic bullets',
+    'People who blame others for their circumstances',
+    'Anyone not willing to invest in their growth'
+  ],
+  
+  nextSteps: 'If this resonates, submit your application and schedule your qualification call'
+};
+```
+
+## Community Positioning
+
+### Community Access Copy
+```typescript
+// Community messaging
+export const COMMUNITY_COPY = {
+  headline: 'The Lodge',
+  subheadline: 'Exclusive community of high-achieving men on the FastLane journey',
+  description: 'Connect with like-minded men who are serious about transformation and success',
+  
+  benefits: [
+    'Private discussion forums',
+    'Weekly group coaching calls',
+    'Networking opportunities',
+    'Exclusive content and resources',
+    'Accountability partnerships'
+  ],
+  
+  access: 'Available to course purchasers and coaching clients',
+  culture: 'Professional, supportive, and focused on growth'
+};
+```
+
+## Content Marketing Framework
+
+### Blog Post Templates
+```typescript
+// Blog content framework
+export const BLOG_FRAMEWORK = {
+  structure: [
+    'Hook: Relatable problem or scenario',
+    'Agitation: Amplify the pain of staying in current lane',
+    'Solution: Introduce FastLane/SideLane/SlowLane framework',
+    'Authority: Share relevant experience or insights',
+    'CTA: Link to assessment or course'
+  ],
+  
+  topics: [
+    'Why most men stay stuck in the SlowLane',
+    'The mathematics of wealth building',
+    'How to identify FastLane opportunities',
+    'Building systems for scalable income',
+    'The psychology of transformation'
+  ],
+  
+  tone: 'Authoritative yet accessible, stoic yet inspiring'
+};
+```
+
+### Social Media Messaging
+```typescript
+// Social media content guidelines
+export const SOCIAL_MEDIA_FRAMEWORK = {
+  platforms: {
+    linkedin: 'Professional insights and business strategy',
+    twitter: 'Quick insights and engagement',
+    instagram: 'Visual quotes and lifestyle content',
+    youtube: 'Long-form educational content'
+  },
+  
+  contentTypes: [
+    'Educational posts about FastLane principles',
+    'Personal transformation stories',
+    'Business and wealth-building insights',
+    'Motivational content for ambitious men'
+  ],
+  
+  hashtags: ['#KillTheBoy', '#FastLane', '#Transformation', '#MasculineGrowth']
+};
+```
+
+## Email Marketing
+
+### Email Sequence Copy
+```typescript
+// Email marketing sequences
+export const EMAIL_SEQUENCES = {
+  welcome: {
+    subject: 'Welcome to your transformation journey',
+    content: 'Thank you for taking the assessment. Your results reveal your current lane and growth path...',
+    cta: 'View Your Results'
+  },
+  
+  nurture: {
+    subject: 'The difference between FastLane and SlowLane thinking',
+    content: 'Most men think like employees, even when they own businesses. Here\'s how to think like a true business owner...',
+    cta: 'Read More'
+  },
+  
+  course: {
+    subject: 'Your transformation guide is ready',
+    content: 'Based on your assessment results, here\'s your personalized guide to accelerate your growth...',
+    cta: 'Access Your Guide'
+  }
+};
+```
+
+## Brand Voice Guidelines
+
+### Do's and Don'ts
+```typescript
+// Brand voice guidelines
+export const BRAND_VOICE = {
+  do: [
+    'Use authoritative, confident language',
+    'Focus on masculine growth and transformation',
+    'Reference FastLane/SideLane/SlowLane framework',
+    'Share personal experiences and insights',
+    'Be direct and actionable in advice',
+    'Use stoic philosophy and principles',
+    'Focus on systems and leverage'
+  ],
+  
+  dont: [
+    'Use overly emotional or dramatic language',
+    'Make promises about specific outcomes',
+    'Use therapy or self-help language',
+    'Focus on problems without solutions',
+    'Use passive or uncertain language',
+    'Make claims without backing',
+    'Use generic motivational content'
+  ]
+};
+```
+
+### Language Examples
+```typescript
+// Good vs bad language examples
+export const LANGUAGE_EXAMPLES = {
+  good: [
+    'Transform from drift to dominion',
+    'Build systems that work while you sleep',
+    'Master the mathematics of wealth',
+    'Eliminate limiting beliefs and embrace power',
+    'Think like a business owner, not an employee'
+  ],
+  
+  bad: [
+    'Find your passion and follow your dreams',
+    'Believe in yourself and anything is possible',
+    'You are enough just as you are',
+    'Love yourself first before loving others',
+    'Everything happens for a reason'
+  ]
+};
+```
+
+## Quality Checklist
+
+### Marketing Copy Review Checklist
+- [ ] Content clearly positions within FastLane/SideLane/SlowLane framework
+- [ ] Language is authoritative and stoic
+- [ ] Messaging targets ambitious men 18-35
+- [ ] Content avoids therapy/self-help language
+- [ ] Calls-to-action are clear and compelling
+- [ ] Value propositions are specific and measurable
+- [ ] Social proof is included where relevant
+- [ ] Content aligns with Trajectory brand values
+- [ ] Copy is free of generic motivational language
+- [ ] All claims are backed by experience or data

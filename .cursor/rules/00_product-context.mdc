@@ -1,0 +1,77 @@
+# Product Context & Overview
+
+## Core Products
+
+### Assessment (Kill the Boy Quiz)
+- **Purpose**: Diagnose current life lane and transformation readiness
+- **Flow**: 15+2 questions → domain scoring → avatar assignment
+- **Output**: Personalized results with suggested actions
+- **Gating**: Email capture for results access
+- **Conversion**: Direct path to $99.99 course purchase
+
+### Course (Rethink. Redesign. Reignite.)
+- **Price**: $99.99 one-time purchase
+- **Content**: ModuleCardTBD system with "coming soon" placeholders
+- **Access**: Stripe webhook-gated after successful payment
+- **Structure**: 7 modules covering FastLane fundamentals
+- **Outcome**: Foundation for coaching application
+
+### Coaching Interview
+- **Price**: $24.99 application fee
+- **Purpose**: Qualification for $400/month coaching program
+- **Flow**: Stripe checkout → redirect to coaching scheduler
+- **Screening**: Ensure client-readiness and program fit
+- **Conversion**: Premium coaching relationship
+
+### Story & Free Resources
+- **Brand Narrative**: Jean Paul's transformation story
+- **Paul Walker Nitro Analogy**: Speed vs. control, precision vs. power
+- **Resources**: Blog content, knowledge canon references
+- **SEO**: Organic traffic generation and brand building
+
+## Website Positioning
+
+### FastLane/SideLane/SlowLane Framework
+- **FastLane**: High-leverage, scalable wealth building
+- **SideLane**: Traditional employment with optimization
+- **SlowLane**: Conventional career path with incremental growth
+- **Assessment**: Determines current lane and transformation path
+
+### Content Strategy
+- **Assessment Results**: Lane-specific recommendations
+- **Course Modules**: FastLane methodology and implementation
+- **Coaching**: Personalized FastLane execution
+- **Community**: Ongoing support and accountability
+
+## Books & Knowledge Canon
+
+### Core References
+- **Millionaire Fastlane**: MJ DeMarco's foundational framework
+- **Trajectory Code**: Kill the Boy principles and mindset
+- **Throne of the Mind**: Mental framework for transformation
+- **Stoic Philosophy**: Marcus Aurelius, Epictetus, Seneca
+
+### Restricted Sources
+- Only reference approved books and resources
+- Maintain intellectual property respect
+- Build on established frameworks, don't reinvent
+
+## Brand Documentation
+
+### Visual Identity
+- **Color Palette**: Sky-inspired blues with canyon accents
+- **Typography**: Inter (primary), Clash Display (headings)
+- **Design Philosophy**: Inspiring sky authority, breathable experience
+- **Spacing**: Generous whitespace, 8px grid system
+
+### Messaging Framework
+- **Target Audience**: Ambitious men 18-35 in life drift
+- **Value Proposition**: Structured path from drift to dominion
+- **Tone**: Professional, stoic, authoritative
+- **Exclusions**: Therapy, trauma, crisis intervention
+
+### Success Metrics
+- **Acquisition**: Assessment completions, email captures
+- **Activation**: Course purchases, coaching applications
+- **Retention**: Community engagement, coaching renewals
+- **Revenue**: MRR growth, LTV optimization

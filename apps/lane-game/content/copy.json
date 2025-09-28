@@ -1,0 +1,189 @@
+{
+  "quiz": {
+    "microcopy_top": [
+      "Take a breath. Answer honestly.",
+      "This is about you, not perfection.",
+      "Your trajectory starts with truth.",
+      "No judgment, just insight."
+    ],
+    "progress": "Question {current} of {total}",
+    "navigation": {
+      "back": "Back",
+      "next": "Next",
+      "finish": "Get My Results"
+    }
+  },
+  "levels": {
+    "labels": {
+      "energy": {
+        "low": "Drained",
+        "mid": "Surviving",
+        "high": "Energized"
+      },
+      "finances": {
+        "low": "Vulnerable",
+        "mid": "Stable",
+        "high": "Secure"
+      },
+      "relationships": {
+        "low": "Isolated",
+        "mid": "Neutral",
+        "high": "Supported"
+      },
+      "emotions": {
+        "low": "Reactive",
+        "mid": "Unsteady",
+        "high": "Calm"
+      },
+      "focus": {
+        "low": "Scattered",
+        "mid": "Distracted",
+        "high": "Laser-Focused"
+      },
+      "identity": {
+        "low": "Lost",
+        "mid": "Drifting",
+        "high": "Architect"
+      }
+    }
+  },
+  "progression": {
+    "phrases": [
+      "Charging up from {level}",
+      "{count} strong choices to {nextLevel}",
+      "Protect the standard",
+      "Building momentum",
+      "Raising your floor"
+    ],
+    "nextMilestone": {
+      "low": "2 strong choices to {midLevel}",
+      "mid": "3 strong choices to {highLevel}",
+      "high": "Maintain excellence"
+    }
+  },
+  "toasts": {
+    "levelUp": "{domain} leveled up → {level}",
+    "quizComplete": "Assessment complete!",
+    "emailSubmitted": "Results on the way!"
+  },
+  "results": {
+    "headers": {
+      "main": "Your Trajectory Snapshot",
+      "focus": "Focus Now",
+      "avatar": "You unlocked: {avatar}"
+    },
+    "subtitle": "Here's where you stand and where you're going.",
+    "focusAreas": "Focus on these two areas to evolve into {avatar}:"
+  },
+  "plays": {
+    "7day": {
+      "energy": "8-minute morning walk + water.",
+      "finances": "Track every dollar for 7 days.",
+      "relationships": "One meaningful conversation daily.",
+      "emotions": "5-minute breathwork before decisions.",
+      "focus": "Phone in another room for 2 hours.",
+      "identity": "Write your ideal day in detail."
+    },
+    "30day": {
+      "energy": "Morning routine + evening wind-down.",
+      "finances": "Automated savings + expense tracking.",
+      "relationships": "Weekly connection with key people.",
+      "emotions": "Daily meditation + emotion journal.",
+      "focus": "Deep work blocks + notification boundaries.",
+      "identity": "Values alignment + goal setting system."
+    }
+  },
+  "offer": {
+    "course": {
+      "header": "Rethink. Redesign. Reignite.",
+      "subtitle": "The Playbook for Men Ready to Level Up",
+      "description": "A comprehensive system to transform your trajectory across all six domains.",
+      "cta": "Get the Playbook",
+      "price": "$99",
+      "guarantee": "30-day money-back guarantee"
+    },
+    "interview": {
+      "header": "Personal Guidance",
+      "subtitle": "One-on-One Strategy Session",
+      "description": "Get personalized recommendations for your specific situation.",
+      "cta": "Book Interview",
+      "price": "$24.99",
+      "duration": "45 minutes"
+    },
+    "coaching": {
+      "header": "Transform Your Life",
+      "subtitle": "1:1 Coaching Program",
+      "description": "Weekly sessions to accelerate your growth and hold you accountable.",
+      "cta": "Apply for Coaching",
+      "price": "$400/month",
+      "duration": "4 sessions/month"
+    }
+  },
+  "landing": {
+    "hero": {
+      "title": "What's steering your trajectory right now?",
+      "subtitle": "Find your Trajectory Avatar in 10 minutes.",
+      "primaryCTA": "Start Free Assessment",
+      "secondaryCTA": "How it works"
+    },
+    "story": {
+      "title": "Kill the Boy",
+      "subtitle": "The story behind the assessment",
+      "bullets": [
+        "From reactive to architect",
+        "Identity-driven transformation", 
+        "Systems over motivation"
+      ]
+    },
+    "preview": {
+      "title": "See your domains in action",
+      "subtitle": "Get instant insights across six key areas"
+    }
+  },
+  "email": {
+    "gate": {
+      "title": "Your Trajectory Snapshot is ready.",
+      "subtitle": "Where should we send it?",
+      "placeholder": "Enter your email",
+      "cta": "Get My Results",
+      "privacy": "Answers are private. Growth is personal."
+    }
+  },
+  "legal": {
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "footer": "© 2024 Trajectory. All rights reserved."
+  },
+  "avatars": {
+    "balancer": {
+      "name": "BALANCER",
+      "description": "You maintain equilibrium across domains, but may lack breakthrough momentum.",
+      "evolution": "Focus on energy and focus to become an ARCHITECT."
+    },
+    "architect": {
+      "name": "ARCHITECT", 
+      "description": "You design your life with intention and build systems that work.",
+      "evolution": "You're already operating at a high level. Maintain and optimize."
+    },
+    "warrior": {
+      "name": "WARRIOR",
+      "description": "You have strong energy and focus but may struggle with relationships and emotions.",
+      "evolution": "Focus on relationships and emotions to become an ARCHITECT."
+    },
+    "sage": {
+      "name": "SAGE",
+      "description": "You have deep emotional intelligence and focus but may need more energy and financial security.",
+      "evolution": "Focus on energy and finances to become an ARCHITECT."
+    },
+    "builder": {
+      "name": "BUILDER",
+      "description": "You're strong in finances and relationships but may need more energy and focus.",
+      "evolution": "Focus on energy and focus to become an ARCHITECT."
+    },
+    "seeker": {
+      "name": "SEEKER",
+      "description": "You're exploring your identity and have potential across all domains.",
+      "evolution": "Focus on your two lowest domains to become an ARCHITECT."
+    }
+  }
+}

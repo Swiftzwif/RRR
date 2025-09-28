@@ -1,0 +1,183 @@
+# Plan to Branch & PR Workflow
+
+## From Approved Plan → Production-Ready PR
+
+### Step 1: Branch Creation
+- **Branch Naming**: `feature/[linear-issue-number]-[descriptive-name]`
+- **Base Branch**: `main` (always branch from latest main)
+- **Branch Protection**: Ensure clean working directory before branching
+
+### Step 2: Implementation Execution
+- **Atomic Commits**: Each commit should be focused and testable
+- **Commit Format**: `<type>(scope): summary [Linear-ISSUE]`
+- **Testing**: Run tests after each logical unit of work
+- **Documentation**: Update docs as you implement, not after
+
+### Step 3: PR Template Application
+
+#### PR Summary
+- **Title**: Clear, descriptive summary of changes
+- **Description**: Comprehensive overview of what was implemented
+- **Linked Issue**: Direct link to Linear issue with full context
+
+#### Implementation Notes
+- **Architecture Changes**: Database migrations, API modifications
+- **Component Updates**: New components, modified existing ones
+- **Integration Points**: Stripe, Supabase, external services
+- **Performance Impact**: Load times, bundle size, database queries
+
+#### Screenshots & Demos
+- **Before/After**: Visual changes and improvements
+- **User Flow**: Key user journeys and interactions
+- **Mobile/Desktop**: Responsive design verification
+- **Accessibility**: Keyboard navigation, screen reader compatibility
+
+#### Test Coverage
+- **Unit Tests**: Component and utility function coverage
+- **Integration Tests**: API endpoints and data flow
+- **E2E Tests**: Critical user journeys
+- **Performance Tests**: Load testing results
+- **Coverage Report**: Minimum 70% coverage on touched files
+
+#### Rollback Plan
+- **Database Rollback**: Migration reversal steps
+- **Feature Flags**: Toggle mechanisms for quick disable
+- **Quick Fixes**: Emergency patches if issues arise
+- **Monitoring**: Key metrics to watch post-deployment
+
+### Step 4: Code Review Preparation
+- **Self Review**: Review your own code before requesting review
+- **Documentation**: Ensure all new code is documented
+- **Testing**: Verify all tests pass locally
+- **Linting**: Fix all linting errors and warnings
+- **Performance**: Check bundle size and runtime performance
+
+### Step 5: Deployment Checklist
+- **Environment Variables**: New env vars documented and set
+- **Database Migrations**: Tested in staging environment
+- **API Endpoints**: Documented and tested
+- **Monitoring**: Alerts and metrics configured
+- **Rollback**: Rollback procedure tested and documented
+
+### PR Template
+
+```markdown
+## Summary
+[Brief description of what was implemented and why]
+
+## Linked Issue
+[Linear Issue Link]: [Issue Title and Description]
+
+## Implementation Notes
+
+### Architecture Changes
+- [Database migrations, API modifications, etc.]
+
+### Component Updates
+- [New components, modified existing ones, etc.]
+
+### Integration Points
+- [Stripe, Supabase, external services, etc.]
+
+### Performance Impact
+- [Load times, bundle size, database queries, etc.]
+
+## Screenshots & Demos
+[Include before/after screenshots, user flow demos, mobile/desktop views]
+
+## Test Coverage
+
+### Unit Tests
+- [ ] Component rendering and interactions
+- [ ] Utility function logic
+- [ ] API endpoint responses
+
+### Integration Tests
+- [ ] Data flow and state management
+- [ ] Authentication and authorization
+- [ ] Payment processing
+
+### E2E Tests
+- [ ] Critical user journeys
+- [ ] Assessment completion flow
+- [ ] Purchase and access gating
+
+### Coverage Report
+- [ ] Minimum 70% coverage on touched files
+- [ ] All new code paths tested
+- [ ] Edge cases covered
+
+## Rollback Plan
+
+### Database Rollback
+1. [Migration reversal steps]
+2. [Data integrity checks]
+3. [Backup restoration if needed]
+
+### Feature Flags
+- [Toggle mechanisms for quick disable]
+- [Monitoring for feature flag usage]
+
+### Quick Fixes
+- [Emergency patches if issues arise]
+- [Hotfix deployment procedure]
+
+### Monitoring
+- [Key metrics to watch post-deployment]
+- [Alert thresholds and escalation]
+
+## Deployment Checklist
+- [ ] Environment variables documented and set
+- [ ] Database migrations tested in staging
+- [ ] API endpoints documented and tested
+- [ ] Monitoring and alerts configured
+- [ ] Rollback procedure tested
+- [ ] Performance benchmarks met
+- [ ] Accessibility standards met
+- [ ] Security review completed
+
+## Additional Notes
+[Any additional context, concerns, or considerations]
+```
+
+### Commit Message Standards
+
+#### Format
+```
+<type>(scope): summary [Linear-ISSUE]
+```
+
+#### Types
+- **feat**: New feature or functionality
+- **fix**: Bug fix
+- **docs**: Documentation changes
+- **style**: Code style changes (formatting, etc.)
+- **refactor**: Code refactoring without functional changes
+- **test**: Adding or updating tests
+- **chore**: Maintenance tasks, dependency updates
+
+#### Scope Examples
+- **assessment**: Assessment-related changes
+- **payments**: Payment processing changes
+- **api**: API endpoint changes
+- **components**: UI component changes
+- **db**: Database schema changes
+- **config**: Configuration changes
+
+#### Examples
+```
+feat(assessment): add domain scoring logic [Linear-123]
+fix(payments): handle webhook edge cases [Linear-456]
+docs(api): update endpoint documentation [Linear-789]
+test(components): add unit tests for Meter component [Linear-101]
+```
+
+### Quality Gates
+- [ ] All tests pass locally and in CI
+- [ ] Code coverage meets minimum requirements
+- [ ] Documentation is updated and accurate
+- [ ] Performance benchmarks are met
+- [ ] Accessibility standards are maintained
+- [ ] Security review is completed
+- [ ] Rollback plan is tested and documented
+- [ ] Monitoring and alerts are configured

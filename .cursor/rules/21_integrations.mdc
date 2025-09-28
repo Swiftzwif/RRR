@@ -1,0 +1,532 @@
+# Third-Party Integrations
+
+## Integration Architecture
+
+### Integration Patterns
+- **API-First**: All integrations use well-defined APIs
+- **Async Processing**: Use webhooks and queues for long-running operations
+- **Error Handling**: Comprehensive error handling and retry logic
+- **Monitoring**: Track integration health and performance
+- **Security**: Secure API keys and data transmission
+
+### Integration Types
+```
+External Services
+├── Supabase (Database & Auth)
+├── Stripe (Payments)
+├── Linear (Project Management)
+├── Slack (Notifications)
+├── Notion (Documentation)
+└── MCP Tools (Development)
+```
+
+## Supabase Integration
+
+### Database Connection
+```typescript
+// lib/supabase.ts
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/supabase';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});
+
+// Server-side client for API routes
+export const supabaseAdmin = createClient<Database>(
+  supabaseUrl,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  }
+);
+```
+
+### Authentication Integration
+```typescript
+// lib/auth.ts
+import { supabase } from './supabase';
+
+export async function signInWithEmail(email: string, password: string) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  
+  if (error) {
+    throw new Error(`Authentication failed: ${error.message}`);
+  }
+  
+  return data;
+}
+
+export async function signUpWithEmail(email: string, password: string) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+    },
+  });
+  
+  if (error) {
+    throw new Error(`Registration failed: ${error.message}`);
+  }
+  
+  return data;
+}
+```
+
+### Database Operations
+```typescript
+// lib/database.ts
+import { supabase } from './supabase';
+
+export async function saveAssessment(assessment: AssessmentData) {
+  const { data, error } = await supabase
+    .from('assessments')
+    .insert(assessment)
+    .select()
+    .single();
+  
+  if (error) {
+    throw new Error(`Failed to save assessment: ${error.message}`);
+  }
+  
+  return data;
+}
+
+export async function getAssessment(id: string) {
+  const { data, error } = await supabase
+    .from('assessments')
+    .select('*')
+    .eq('id', id)
+    .single();
+  
+  if (error) {
+    throw new Error(`Failed to fetch assessment: ${error.message}`);
+  }
+  
+  return data;
+}
+```
+
+## Stripe Integration
+
+### Payment Processing
+```typescript
+// lib/stripe.ts
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2023-10-16',
+});
+
+export async function createCheckoutSession(
+  priceId: string,
+  customerEmail: string,
+  successUrl: string,
+  cancelUrl: string
+) {
+  const session = await stripe.checkouts.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [
+      {
+        price: priceId,
+        quantity: 1,
+      },
+    ],
+    customer_email: customerEmail,
+    success_url: successUrl,
+    cancel_url: cancelUrl,
+    mode: 'payment',
+  });
+  
+  return session;
+}
+```
+
+### Webhook Handling
+```typescript
+// app/api/stripe/webhook/route.ts
+import { stripe } from '@/lib/stripe';
+import { supabaseAdmin } from '@/lib/supabase';
+
+export async function POST(request: Request) {
+  const payload = await request.text();
+  const signature = request.headers.get('stripe-signature')!;
+  
+  let event: Stripe.Event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+  } catch (err) {
+    console.error('Webhook signature verification failed:', err);
+    return new Response('Webhook signature verification failed', { status: 400 });
+  }
+  
+  switch (event.type) {
+    case 'checkout.session.completed':
+      await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+      break;
+    
+    case 'payment_intent.succeeded':
+      await handlePaymentSucceeded(event.data.object as Stripe.PaymentIntent);
+      break;
+    
+    default:
+      console.log(`Unhandled event type: ${event.type}`);
+  }
+  
+  return new Response('Webhook processed', { status: 200 });
+}
+
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  // Grant access to purchased content
+  await supabaseAdmin
+    .from('purchases')
+    .insert({
+      user_id: session.customer_email,
+      product_type: session.metadata?.product_type,
+      stripe_session_id: session.id,
+      amount: session.amount_total,
+    });
+}
+```
+
+## Linear Integration
+
+### Project Management
+```typescript
+// lib/linear.ts
+import { LinearClient } from '@linear/sdk';
+
+const linear = new LinearClient({
+  apiKey: process.env.LINEAR_API_KEY!,
+});
+
+export async function createLinearIssue(
+  title: string,
+  description: string,
+  teamId: string
+) {
+  const issue = await linear.createIssue({
+    title,
+    description,
+    team: { id: teamId },
+  });
+  
+  return issue;
+}
+
+export async function updateLinearIssue(
+  issueId: string,
+  updates: { title?: string; description?: string; state?: string }
+) {
+  const issue = await linear.updateIssue(issueId, updates);
+  return issue;
+}
+```
+
+### Issue Tracking
+```typescript
+// lib/issue-tracking.ts
+export async function trackFeatureRequest(
+  title: string,
+  description: string,
+  priority: 'low' | 'medium' | 'high' | 'urgent'
+) {
+  const teamId = process.env.LINEAR_TEAM_ID!;
+  
+  const issue = await createLinearIssue(title, description, teamId);
+  
+  // Set priority
+  await linear.updateIssue(issue.id, {
+    priority: priority === 'urgent' ? 1 : priority === 'high' ? 2 : priority === 'medium' ? 3 : 4,
+  });
+  
+  return issue;
+}
+```
+
+## Slack Integration
+
+### Notifications
+```typescript
+// lib/slack.ts
+import { WebClient } from '@slack/web-api';
+
+const slack = new WebClient(process.env.SLACK_BOT_TOKEN);
+
+export async function sendSlackNotification(
+  channel: string,
+  message: string,
+  blocks?: any[]
+) {
+  await slack.chat.postMessage({
+    channel,
+    text: message,
+    blocks,
+  });
+}
+
+export async function notifyNewAssessment(assessment: AssessmentData) {
+  const message = `New assessment completed by ${assessment.user_email}`;
+  const blocks = [
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*New Assessment Completed*\n\n*User:* ${assessment.user_email}\n*Avatar:* ${assessment.avatar}\n*Scores:* ${JSON.stringify(assessment.scores)}`,
+      },
+    },
+  ];
+  
+  await sendSlackNotification('#assessments', message, blocks);
+}
+```
+
+### Error Monitoring
+```typescript
+// lib/error-monitoring.ts
+export async function notifyError(error: Error, context: string) {
+  const message = `Error in ${context}: ${error.message}`;
+  const blocks = [
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*Error Alert*\n\n*Context:* ${context}\n*Error:* ${error.message}\n*Stack:* \`\`\`${error.stack}\`\`\``,
+      },
+    },
+  ];
+  
+  await sendSlackNotification('#alerts', message, blocks);
+}
+```
+
+## Notion Integration
+
+### Documentation Sync
+```typescript
+// lib/notion.ts
+import { Client } from '@notionhq/client';
+
+const notion = new Client({
+  auth: process.env.NOTION_TOKEN!,
+});
+
+export async function createNotionPage(
+  title: string,
+  content: string,
+  parentId: string
+) {
+  const response = await notion.pages.create({
+    parent: { page_id: parentId },
+    properties: {
+      title: {
+        title: [
+          {
+            text: {
+              content: title,
+            },
+          },
+        ],
+      },
+    },
+    children: [
+      {
+        object: 'block',
+        type: 'paragraph',
+        paragraph: {
+          rich_text: [
+            {
+              type: 'text',
+              text: {
+                content: content,
+              },
+            },
+          ],
+        },
+      },
+    ],
+  });
+  
+  return response;
+}
+```
+
+### Knowledge Base Sync
+```typescript
+// lib/knowledge-sync.ts
+export async function syncAssessmentResults(assessment: AssessmentData) {
+  const title = `Assessment Results - ${assessment.user_email}`;
+  const content = `
+    **Assessment Results**
+    
+    **Avatar:** ${assessment.avatar}
+    **Scores:** ${JSON.stringify(assessment.scores, null, 2)}
+    **Completed:** ${assessment.completed_at}
+    
+    **Recommendations:**
+    - Focus on leadership development
+    - Improve execution consistency
+    - Build strategic thinking skills
+  `;
+  
+  const parentId = process.env.NOTION_ASSESSMENTS_DATABASE_ID!;
+  await createNotionPage(title, content, parentId);
+}
+```
+
+## MCP Tools Integration
+
+### Development Tools
+```typescript
+// lib/mcp-tools.ts
+export interface MCPTool {
+  name: string;
+  description: string;
+  execute: (params: any) => Promise<any>;
+}
+
+export const mcpTools: MCPTool[] = [
+  {
+    name: 'supabase-query',
+    description: 'Execute Supabase queries',
+    execute: async (query: string) => {
+      const { data, error } = await supabase.rpc('execute_query', { query });
+      if (error) throw error;
+      return data;
+    },
+  },
+  {
+    name: 'stripe-webhook',
+    description: 'Process Stripe webhooks',
+    execute: async (payload: any) => {
+      // Process webhook payload
+      return { processed: true };
+    },
+  },
+];
+```
+
+### Tool Execution
+```typescript
+// lib/tool-executor.ts
+export async function executeMCPTool(toolName: string, params: any) {
+  const tool = mcpTools.find(t => t.name === toolName);
+  
+  if (!tool) {
+    throw new Error(`Unknown MCP tool: ${toolName}`);
+  }
+  
+  try {
+    const result = await tool.execute(params);
+    return { success: true, result };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+```
+
+## Integration Monitoring
+
+### Health Checks
+```typescript
+// lib/health-checks.ts
+export async function checkIntegrationHealth() {
+  const checks = {
+    supabase: await checkSupabaseHealth(),
+    stripe: await checkStripeHealth(),
+    linear: await checkLinearHealth(),
+    slack: await checkSlackHealth(),
+    notion: await checkNotionHealth(),
+  };
+  
+  const overallHealth = Object.values(checks).every(check => check.healthy);
+  
+  return {
+    healthy: overallHealth,
+    checks,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+async function checkSupabaseHealth() {
+  try {
+    const { data, error } = await supabase
+      .from('assessments')
+      .select('id')
+      .limit(1);
+    
+    return {
+      healthy: !error,
+      responseTime: Date.now(),
+      error: error?.message,
+    };
+  } catch (error) {
+    return {
+      healthy: false,
+      error: error.message,
+    };
+  }
+}
+```
+
+### Error Tracking
+```typescript
+// lib/error-tracking.ts
+export async function trackIntegrationError(
+  service: string,
+  error: Error,
+  context: any
+) {
+  const errorData = {
+    service,
+    error: error.message,
+    stack: error.stack,
+    context,
+    timestamp: new Date().toISOString(),
+  };
+  
+  // Log to console in development
+  if (process.env.NODE_ENV === 'development') {
+    console.error('Integration Error:', errorData);
+  }
+  
+  // Send to monitoring service in production
+  if (process.env.NODE_ENV === 'production') {
+    await sendToMonitoringService(errorData);
+  }
+  
+  // Notify via Slack
+  await notifyError(error, `Integration: ${service}`);
+}
+```
+
+## Quality Checklist
+
+### Integration Setup Checklist
+- [ ] All API keys are securely stored in environment variables
+- [ ] Webhook endpoints are properly configured and secured
+- [ ] Error handling is implemented for all integrations
+- [ ] Health checks are set up for monitoring
+- [ ] Rate limiting is configured where applicable
+- [ ] Data validation is implemented for all API inputs
+- [ ] Logging and monitoring are configured
+- [ ] Documentation includes integration setup instructions
+- [ ] Test environments are configured for all services
+- [ ] Backup and recovery procedures are documented

@@ -1,0 +1,383 @@
+# Architecture Decisions & Patterns
+
+## System Architecture Principles
+
+### Modular Design
+- **Component Isolation**: Components should be self-contained and testable
+- **Clear Boundaries**: Well-defined interfaces between modules
+- **Dependency Inversion**: Depend on abstractions, not concretions
+- **Single Responsibility**: Each module has one clear purpose
+
+### Data Flow Architecture
+```
+User Interaction → Component → Action → Store → API → Database
+                     ↓
+                State Update → Component Re-render → UI Update
+```
+
+### State Management Strategy
+- **Local State**: Component-level state with useState/useReducer
+- **Server State**: React Query for API data and caching
+- **Global State**: Zustand for cross-component state
+- **URL State**: Next.js router for navigation and filters
+
+## Database Architecture
+
+### Supabase Integration
+```typescript
+// ✅ Good: Typed Supabase client
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/supabase';
+
+const supabase = createClient<Database>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+```
+
+### Schema Design Principles
+- **Normalized Data**: Avoid data duplication
+- **Referential Integrity**: Foreign key constraints
+- **Audit Trails**: Created/updated timestamps
+- **Soft Deletes**: Archive instead of hard delete
+
+### Migration Strategy
+```sql
+-- ✅ Good: Versioned migrations
+-- Migration: 20240101_add_assessment_table.sql
+CREATE TABLE assessments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id),
+  scores JSONB NOT NULL,
+  avatar TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+## API Design Patterns
+
+### RESTful Endpoints
+```typescript
+// ✅ Good: RESTful API design
+GET    /api/assessments          // List assessments
+POST   /api/assessments          // Create assessment
+GET    /api/assessments/:id      // Get specific assessment
+PUT    /api/assessments/:id      // Update assessment
+DELETE /api/assessments/:id      // Delete assessment
+```
+
+### Request/Response Validation
+```typescript
+// ✅ Good: Zod schema validation
+import { z } from 'zod';
+
+const CreateAssessmentSchema = z.object({
+  scores: z.record(z.string(), z.number()),
+  avatar: z.enum(['architect', 'balancer', 'drifter']),
+});
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const validatedData = CreateAssessmentSchema.parse(body);
+  // Process validated data
+}
+```
+
+### Error Handling
+```typescript
+// ✅ Good: Consistent error responses
+interface ApiError {
+  error: string;
+  message: string;
+  statusCode: number;
+  timestamp: string;
+}
+
+export function createErrorResponse(
+  error: string, 
+  message: string, 
+  statusCode: number
+): Response {
+  const errorResponse: ApiError = {
+    error,
+    message,
+    statusCode,
+    timestamp: new Date().toISOString(),
+  };
+  
+  return Response.json(errorResponse, { status: statusCode });
+}
+```
+
+## Component Architecture Patterns
+
+### Composition over Inheritance
+```typescript
+// ✅ Good: Composition pattern
+interface AssessmentCardProps {
+  assessment: Assessment;
+  actions?: React.ReactNode;
+  footer?: React.ReactNode;
+}
+
+export function AssessmentCard({ assessment, actions, footer }: AssessmentCardProps) {
+  return (
+    <Card>
+      <Card.Header>
+        <Card.Title>{assessment.title}</Card.Title>
+      </Card.Header>
+      <Card.Content>
+        <AssessmentSummary assessment={assessment} />
+      </Card.Content>
+      {actions && <Card.Footer>{actions}</Card.Footer>}
+      {footer && <Card.Footer>{footer}</Card.Footer>}
+    </Card>
+  );
+}
+```
+
+### Render Props Pattern
+```typescript
+// ✅ Good: Render props for flexible rendering
+interface DataFetcherProps<T> {
+  url: string;
+  children: (data: T | null, loading: boolean, error: Error | null) => React.ReactNode;
+}
+
+export function DataFetcher<T>({ url, children }: DataFetcherProps<T>) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  
+  useEffect(() => {
+    fetchData(url).then(setData).catch(setError).finally(() => setLoading(false));
+  }, [url]);
+  
+  return <>{children(data, loading, error)}</>;
+}
+```
+
+### Custom Hooks Pattern
+```typescript
+// ✅ Good: Custom hook for reusable logic
+export function useAssessment(assessmentId: string) {
+  const [assessment, setAssessment] = useState<Assessment | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  
+  useEffect(() => {
+    fetchAssessment(assessmentId)
+      .then(setAssessment)
+      .catch(setError)
+      .finally(() => setLoading(false));
+  }, [assessmentId]);
+  
+  return { assessment, loading, error };
+}
+```
+
+## Security Architecture
+
+### Authentication & Authorization
+```typescript
+// ✅ Good: Row Level Security (RLS) in Supabase
+CREATE POLICY "Users can only see their own assessments" ON assessments
+  FOR ALL USING (auth.uid() = user_id);
+
+// ✅ Good: Server-side validation
+export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return createErrorResponse('UNAUTHORIZED', 'Authentication required', 401);
+  }
+  // Process authenticated request
+}
+```
+
+### Input Sanitization
+```typescript
+// ✅ Good: Input sanitization
+import DOMPurify from 'dompurify';
+
+export function sanitizeInput(input: string): string {
+  return DOMPurify.sanitize(input.trim());
+}
+```
+
+### Environment Variables
+```typescript
+// ✅ Good: Environment variable validation
+const requiredEnvVars = [
+  'NEXT_PUBLIC_SUPABASE_URL',
+  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+  'STRIPE_SECRET_KEY',
+] as const;
+
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    throw new Error(`Missing required environment variable: ${envVar}`);
+  }
+}
+```
+
+## Performance Architecture
+
+### Caching Strategy
+```typescript
+// ✅ Good: Multi-layer caching
+// 1. Browser cache (Next.js automatic)
+// 2. CDN cache (Vercel Edge Network)
+// 3. Application cache (React Query)
+// 4. Database cache (Supabase)
+
+export function useAssessmentCache(assessmentId: string) {
+  return useQuery({
+    queryKey: ['assessment', assessmentId],
+    queryFn: () => fetchAssessment(assessmentId),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+  });
+}
+```
+
+### Code Splitting
+```typescript
+// ✅ Good: Dynamic imports for large components
+const AssessmentStepper = dynamic(() => import('./AssessmentStepper'), {
+  loading: () => <AssessmentSkeleton />,
+  ssr: false,
+});
+```
+
+### Image Optimization
+```typescript
+// ✅ Good: Next.js Image optimization
+import Image from 'next/image';
+
+export function OptimizedImage({ src, alt, ...props }) {
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={800}
+      height={600}
+      placeholder="blur"
+      blurDataURL="data:image/jpeg;base64,..."
+      {...props}
+    />
+  );
+}
+```
+
+## Integration Architecture
+
+### Third-party Services
+```typescript
+// ✅ Good: Service abstraction
+interface PaymentService {
+  createCheckoutSession(data: CheckoutData): Promise<CheckoutSession>;
+  handleWebhook(payload: WebhookPayload): Promise<void>;
+}
+
+class StripePaymentService implements PaymentService {
+  async createCheckoutSession(data: CheckoutData): Promise<CheckoutSession> {
+    // Stripe-specific implementation
+  }
+  
+  async handleWebhook(payload: WebhookPayload): Promise<void> {
+    // Stripe webhook handling
+  }
+}
+```
+
+### Event-Driven Architecture
+```typescript
+// ✅ Good: Event system for loose coupling
+interface EventBus {
+  emit(event: string, data: any): void;
+  on(event: string, handler: Function): void;
+  off(event: string, handler: Function): void;
+}
+
+class AssessmentEventBus implements EventBus {
+  private events: Map<string, Function[]> = new Map();
+  
+  emit(event: string, data: any): void {
+    const handlers = this.events.get(event) || [];
+    handlers.forEach(handler => handler(data));
+  }
+  
+  on(event: string, handler: Function): void {
+    const handlers = this.events.get(event) || [];
+    handlers.push(handler);
+    this.events.set(event, handlers);
+  }
+  
+  off(event: string, handler: Function): void {
+    const handlers = this.events.get(event) || [];
+    const filtered = handlers.filter(h => h !== handler);
+    this.events.set(event, filtered);
+  }
+}
+```
+
+## Documentation Standards
+
+### Architecture Decision Records (ADRs)
+```markdown
+# ADR-001: Database Choice - Supabase over Prisma
+
+## Status
+Accepted
+
+## Context
+We need to choose between Supabase and Prisma for our database layer.
+
+## Decision
+We will use Supabase as our primary database solution.
+
+## Consequences
+- ✅ Built-in authentication and authorization
+- ✅ Real-time subscriptions
+- ✅ Edge functions for serverless compute
+- ❌ Vendor lock-in to Supabase
+- ❌ Limited control over database configuration
+```
+
+### API Documentation
+```typescript
+/**
+ * Creates a new assessment for the authenticated user
+ * 
+ * @param assessmentData - The assessment data to create
+ * @returns Promise<Assessment> - The created assessment
+ * @throws {ValidationError} - When assessment data is invalid
+ * @throws {AuthenticationError} - When user is not authenticated
+ * 
+ * @example
+ * ```typescript
+ * const assessment = await createAssessment({
+ *   scores: { leadership: 85, execution: 72 },
+ *   avatar: 'architect'
+ * });
+ * ```
+ */
+export async function createAssessment(
+  assessmentData: CreateAssessmentData
+): Promise<Assessment> {
+  // Implementation
+}
+```
+
+## Quality Gates
+
+### Architecture Review Checklist
+- [ ] Components follow single responsibility principle
+- [ ] Clear separation of concerns between layers
+- [ ] Proper error handling and logging
+- [ ] Security best practices implemented
+- [ ] Performance considerations addressed
+- [ ] Documentation is complete and accurate
+- [ ] Tests cover critical paths
+- [ ] Monitoring and observability configured

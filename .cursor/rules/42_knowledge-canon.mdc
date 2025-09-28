@@ -1,0 +1,388 @@
+# Knowledge Canon & Reference Sources
+
+## Approved Knowledge Sources
+
+### Core Framework Books
+```typescript
+// Primary knowledge sources
+export const CORE_KNOWLEDGE = {
+  millionaireFastlane: {
+    title: 'The Millionaire Fastlane',
+    author: 'MJ DeMarco',
+    relevance: 'Foundational framework for FastLane/SideLane/SlowLane concept',
+    keyConcepts: [
+      'Wealth mathematics and compound interest',
+      'Scalability vs. linear income',
+      'Business ownership vs. employment',
+      'Time, money, and control trade-offs'
+    ],
+    usage: 'Primary reference for all FastLane positioning and content'
+  },
+  
+  trajectoryCode: {
+    title: 'The Trajectory Code',
+    author: 'Jean Paul (Internal)',
+    relevance: 'Kill the Boy principles and transformation framework',
+    keyConcepts: [
+      'Identity transformation from boy to man',
+      'Limiting belief elimination',
+      'Masculine confidence building',
+      'Strategic thinking development'
+    ],
+    usage: 'Core philosophy for all transformation content'
+  },
+  
+  throneOfTheMind: {
+    title: 'Throne of the Mind',
+    author: 'Jean Paul (Internal)',
+    relevance: 'Mental framework for transformation and growth',
+    keyConcepts: [
+      'Mental sovereignty and control',
+      'Decision-making frameworks',
+      'Emotional regulation',
+      'Strategic thinking patterns'
+    ],
+    usage: 'Psychological foundation for all personal development content'
+  }
+};
+```
+
+### Stoic Philosophy Sources
+```typescript
+// Stoic philosophy references
+export const STOIC_SOURCES = {
+  marcusAurelius: {
+    title: 'Meditations',
+    author: 'Marcus Aurelius',
+    relevance: 'Stoic principles for masculine development',
+    keyConcepts: [
+      'Virtue as the highest good',
+      'Focus on what you can control',
+      'Duty and responsibility',
+      'Resilience and perseverance'
+    ],
+    usage: 'Philosophical foundation for stoic brand positioning'
+  },
+  
+  epictetus: {
+    title: 'Enchiridion',
+    author: 'Epictetus',
+    relevance: 'Practical stoic wisdom for daily life',
+    keyConcepts: [
+      'Distinction between what is and isn\'t in our control',
+      'Desire and aversion management',
+      'Judgment and perception',
+      'Freedom through self-discipline'
+    ],
+    usage: 'Practical application of stoic principles'
+  },
+  
+  seneca: {
+    title: 'Letters from a Stoic',
+    author: 'Seneca',
+    relevance: 'Stoic wisdom for modern men',
+    keyConcepts: [
+      'Time management and mortality',
+      'Anger and emotion control',
+      'Wealth and virtue',
+      'Friendship and relationships'
+    ],
+    usage: 'Modern application of ancient wisdom'
+  }
+};
+```
+
+### Business & Entrepreneurship Sources
+```typescript
+// Business and entrepreneurship references
+export const BUSINESS_SOURCES = {
+  eMyth: {
+    title: 'The E-Myth Revisited',
+    author: 'Michael Gerber',
+    relevance: 'Systems thinking for business owners',
+    keyConcepts: [
+      'Working on vs. in your business',
+      'Systems and processes',
+      'Franchise prototype',
+      'Business development stages'
+    ],
+    usage: 'Systems building and business development content'
+  },
+  
+  leanStartup: {
+    title: 'The Lean Startup',
+    author: 'Eric Ries',
+    relevance: 'Validated learning and rapid iteration',
+    keyConcepts: [
+      'Build-Measure-Learn cycle',
+      'Minimum viable product',
+      'Validated learning',
+      'Pivot vs. persevere'
+    ],
+    usage: 'Business validation and iteration strategies'
+  },
+  
+  builtToSell: {
+    title: 'Built to Sell',
+    author: 'John Warrillow',
+    relevance: 'Building sellable businesses',
+    keyConcepts: [
+      'Business value drivers',
+      'Scalability factors',
+      'Owner independence',
+      'Exit strategy planning'
+    ],
+    usage: 'Business valuation and exit strategy content'
+  }
+};
+```
+
+## Restricted Knowledge Sources
+
+### Sources to Avoid
+```typescript
+// Sources not aligned with Trajectory philosophy
+export const RESTRICTED_SOURCES = {
+  selfHelp: [
+    'Generic motivational content',
+    'Therapy-based approaches',
+    'New Age spirituality',
+    'Positive thinking without action'
+  ],
+  
+  academic: [
+    'Academic business theory without practical application',
+    'Case studies without actionable insights',
+    'Research papers without real-world validation'
+  ],
+  
+  mainstream: [
+    'Corporate career advice',
+    'Traditional financial planning',
+    'Get-rich-quick schemes',
+    'Passive income without value creation'
+  ]
+};
+```
+
+### Content Restrictions
+```typescript
+// Content that should not be referenced
+export const CONTENT_RESTRICTIONS = {
+  avoid: [
+    'Therapy language and trauma-based approaches',
+    'Generic motivational quotes without context',
+    'Academic theories without practical application',
+    'Mainstream career advice',
+    'New Age or spiritual concepts',
+    'Passive income schemes',
+    'Get-rich-quick promises'
+  ],
+  
+  require: [
+    'Practical, actionable frameworks',
+    'Real-world examples and case studies',
+    'Measurable results and outcomes',
+    'Systems-based thinking',
+    'Masculine development focus',
+    'Business ownership mindset',
+    'Stoic philosophy principles'
+  ]
+};
+```
+
+## Knowledge Integration Framework
+
+### Content Creation Guidelines
+```typescript
+// How to integrate knowledge sources
+export const INTEGRATION_GUIDELINES = {
+  primary: {
+    source: 'Always lead with approved core sources',
+    approach: 'Use as foundation for all content',
+    example: 'Building on MJ DeMarco\'s FastLane framework...'
+  },
+  
+  supporting: {
+    source: 'Use stoic and business sources for depth',
+    approach: 'Add layers of insight and application',
+    example: 'This aligns with Marcus Aurelius\' principle of...'
+  },
+  
+  application: {
+    source: 'Connect to real-world implementation',
+    approach: 'Show how to apply the knowledge',
+    example: 'Here\'s exactly how I implemented this principle...'
+  }
+};
+```
+
+### Citation Standards
+```typescript
+// How to properly cite sources
+export const CITATION_STANDARDS = {
+  format: {
+    book: 'Author Name, "Book Title" (Year)',
+    article: 'Author Name, "Article Title," Publication (Date)',
+    personal: 'Based on personal experience and implementation'
+  },
+  
+  context: [
+    'Always provide context for the citation',
+    'Explain why the source is relevant',
+    'Connect to the reader\'s situation',
+    'Show practical application'
+  ],
+  
+  authority: [
+    'Establish the source\'s credibility',
+    'Explain the author\'s expertise',
+    'Connect to your own experience',
+    'Build on the foundation'
+  ]
+};
+```
+
+## Content Development Process
+
+### Research Methodology
+```typescript
+// How to research and develop content
+export const RESEARCH_METHODOLOGY = {
+  primary: {
+    step: 'Start with core knowledge sources',
+    purpose: 'Establish foundational framework',
+    output: 'Framework-based content structure'
+  },
+  
+  secondary: {
+    step: 'Add supporting insights from stoic/business sources',
+    purpose: 'Deepen understanding and application',
+    output: 'Multi-layered content with depth'
+  },
+  
+  application: {
+    step: 'Connect to real-world implementation',
+    purpose: 'Make content actionable and practical',
+    output: 'Ready-to-implement strategies'
+  },
+  
+  validation: {
+    step: 'Test concepts through personal experience',
+    purpose: 'Ensure accuracy and effectiveness',
+    output: 'Validated, proven content'
+  }
+};
+```
+
+### Content Validation
+```typescript
+// How to validate content against knowledge canon
+export const CONTENT_VALIDATION = {
+  alignment: [
+    'Does this align with FastLane principles?',
+    'Is this consistent with stoic philosophy?',
+    'Does this support masculine development?',
+    'Is this practical and actionable?'
+  ],
+  
+  sources: [
+    'Are sources from approved knowledge canon?',
+    'Are citations properly formatted?',
+    'Is context provided for all references?',
+    'Are sources credible and relevant?'
+  ],
+  
+  application: [
+    'Can this be immediately implemented?',
+    'Are results measurable and specific?',
+    'Is this relevant to target audience?',
+    'Does this advance the transformation journey?'
+  ]
+};
+```
+
+## Knowledge Management System
+
+### Content Library Organization
+```typescript
+// How to organize knowledge content
+export const CONTENT_ORGANIZATION = {
+  frameworks: {
+    category: 'Core frameworks and methodologies',
+    sources: ['Millionaire Fastlane', 'Trajectory Code', 'Throne of the Mind'],
+    usage: 'Foundation for all content creation'
+  },
+  
+  philosophy: {
+    category: 'Stoic principles and masculine development',
+    sources: ['Marcus Aurelius', 'Epictetus', 'Seneca'],
+    usage: 'Philosophical foundation and brand positioning'
+  },
+  
+  business: {
+    category: 'Business building and entrepreneurship',
+    sources: ['E-Myth', 'Lean Startup', 'Built to Sell'],
+    usage: 'Practical business implementation strategies'
+  },
+  
+  personal: {
+    category: 'Personal experience and case studies',
+    sources: ['Jean Paul\'s journey', 'Client transformations'],
+    usage: 'Real-world validation and social proof'
+  }
+};
+```
+
+### Content Templates
+```typescript
+// Templates for knowledge-based content
+export const CONTENT_TEMPLATES = {
+  framework: {
+    structure: [
+      'Introduce the framework from core source',
+      'Explain the key principles and concepts',
+      'Show practical application and implementation',
+      'Connect to reader\'s current situation',
+      'Provide actionable next steps'
+    ],
+    example: 'Building on MJ DeMarco\'s FastLane framework, here\'s how to...'
+  },
+  
+  principle: {
+    structure: [
+      'State the principle from stoic source',
+      'Explain the deeper meaning and context',
+      'Show modern application and relevance',
+      'Provide practical implementation steps',
+      'Connect to transformation journey'
+    ],
+    example: 'Marcus Aurelius taught us that... Here\'s how this applies to...'
+  },
+  
+  caseStudy: {
+    structure: [
+      'Present the situation or challenge',
+      'Apply the framework or principle',
+      'Show the implementation process',
+      'Reveal the results and outcomes',
+      'Extract key lessons and insights'
+    ],
+    example: 'A client came to me with this challenge... Using the FastLane framework...'
+  }
+};
+```
+
+## Quality Checklist
+
+### Knowledge Canon Review Checklist
+- [ ] All sources are from approved knowledge canon
+- [ ] Citations are properly formatted and contextualized
+- [ ] Content aligns with FastLane/SideLane/SlowLane framework
+- [ ] Stoic principles are correctly applied
+- [ ] Business concepts are practical and actionable
+- [ ] Personal experiences validate the knowledge
+- [ ] Content avoids restricted sources and approaches
+- [ ] All claims are backed by credible sources
+- [ ] Content supports masculine development focus
+- [ ] Implementation steps are clear and specific

@@ -1,0 +1,478 @@
+# UI/UX & Theming Standards
+
+## Design System Foundation
+
+### Trajectory Design Philosophy
+- **Inspiring Sky Authority**: Sophisticated sky-inspired design that makes you feel alive and ready to soar
+- **Breathable Experience**: Generous whitespace, clean layouts that let content breathe like open sky
+- **Memorable Journey**: Every interaction feels intentional and uplifting - like reaching for the heavens
+- **Masculine Sophistication**: Strong typography, confident spacing, purposeful hierarchy that inspires action
+
+### Color Palette System
+```css
+/* Inspiring Sky & Canyon Color System */
+:root {
+  /* Sky-Inspired Base Colors */
+  --sky-50: #F0F9FF;        /* Lightest sky - clean backgrounds */
+  --sky-100: #E0F2FE;       /* Light sky - subtle contrast */
+  --sky-200: #BAE6FD;       /* Medium sky - gentle borders */
+  --sky-300: #7DD3FC;       /* Baby blue - soft accents */
+  --sky-400: #38BDF8;       /* Electric blue - primary actions */
+  --sky-500: #0EA5E9;       /* Strong blue - hover states */
+  --sky-600: #0284C7;       /* Deep blue - strong text */
+  --sky-700: #0369A1;       /* Darker blue - headings */
+  --sky-800: #075985;       /* Deepest blue - authoritative */
+  
+  /* Canyon Accent Colors */
+  --sunset: #F59E0B;        /* Golden sunset - warm highlights */
+  --sunset-dark: #D97706;   /* Deep sunset - hover states */
+  --glow: #FCD34D;          /* Warm glow - highlights */
+  
+  /* Status Colors */
+  --success: #10B981;       /* Growth, achievement */
+  --warn: #F59E0B;          /* Caution, attention */
+  --danger: #EF4444;        /* Error, critical */
+}
+```
+
+### Typography Hierarchy
+```typescript
+// Typography configuration
+const typography = {
+  fontFamily: {
+    sans: ['Inter', 'system-ui', 'sans-serif'],
+    display: ['Clash Display', 'Inter', 'system-ui', 'sans-serif'],
+    mono: ['JetBrains Mono', 'monospace'],
+  },
+  fontSize: {
+    'xs': ['0.75rem', { lineHeight: '1rem' }],
+    'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+    'base': ['1rem', { lineHeight: '1.5rem' }],
+    'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+    'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+    '2xl': ['1.5rem', { lineHeight: '2rem' }],
+    '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+    '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+    '5xl': ['3rem', { lineHeight: '1' }],
+    '6xl': ['3.75rem', { lineHeight: '1' }],
+  },
+  fontWeight: {
+    normal: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+    extrabold: '800',
+  },
+};
+```
+
+## Tailwind CSS Configuration
+
+### Custom Tailwind Config
+```typescript
+// tailwind.config.js
+module.exports = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        sky: {
+          50: '#F0F9FF',
+          100: '#E0F2FE',
+          200: '#BAE6FD',
+          300: '#7DD3FC',
+          400: '#38BDF8',
+          500: '#0EA5E9',
+          600: '#0284C7',
+          700: '#0369A1',
+          800: '#075985',
+        },
+        sunset: {
+          DEFAULT: '#F59E0B',
+          dark: '#D97706',
+        },
+        glow: '#FCD34D',
+        success: '#10B981',
+        warn: '#F59E0B',
+        danger: '#EF4444',
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Clash Display', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+        '128': '32rem',
+      },
+      borderRadius: {
+        'xl': '1rem',
+        '2xl': '1.5rem',
+      },
+      boxShadow: {
+        'sky': '0 10px 25px -5px rgba(14, 165, 233, 0.1), 0 10px 10px -5px rgba(14, 165, 233, 0.04)',
+        'sunset': '0 10px 25px -5px rgba(245, 158, 11, 0.1), 0 10px 10px -5px rgba(245, 158, 11, 0.04)',
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+  ],
+};
+```
+
+### Utility Classes
+```css
+/* Custom utility classes */
+.canyon-hero-container {
+  @apply relative min-h-screen flex items-center justify-center overflow-hidden;
+}
+
+.sky-gradient-background {
+  @apply absolute inset-0 bg-gradient-to-br from-sky-50 via-sky-100 to-sky-200;
+}
+
+.strata-overlay {
+  @apply absolute inset-0 opacity-20;
+}
+
+.professional-card {
+  @apply bg-white rounded-xl shadow-sky border border-sky-200 p-8;
+}
+
+.authoritative-button {
+  @apply bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200;
+}
+
+.sunset-accent {
+  @apply text-sunset font-semibold;
+}
+```
+
+## Component Design Patterns
+
+### Professional Card Component
+```typescript
+// components/ui/ProfessionalCard.tsx
+interface ProfessionalCardProps {
+  children: React.ReactNode;
+  className?: string;
+  variant?: 'default' | 'elevated' | 'outlined';
+}
+
+export function ProfessionalCard({ 
+  children, 
+  className, 
+  variant = 'default' 
+}: ProfessionalCardProps) {
+  const variantClasses = {
+    default: 'bg-white border border-sky-200 shadow-sky',
+    elevated: 'bg-white shadow-lg border-0',
+    outlined: 'bg-transparent border-2 border-sky-300 shadow-none',
+  };
+  
+  return (
+    <div className={cn(
+      'rounded-xl p-8 transition-all duration-200',
+      variantClasses[variant],
+      className
+    )}>
+      {children}
+    </div>
+  );
+}
+```
+
+### Authoritative Button Component
+```typescript
+// components/ui/AuthoritativeButton.tsx
+interface AuthoritativeButtonProps {
+  children: React.ReactNode;
+  variant?: 'primary' | 'secondary' | 'accent';
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+  onClick?: () => void;
+}
+
+export function AuthoritativeButton({
+  children,
+  variant = 'primary',
+  size = 'md',
+  className,
+  onClick
+}: AuthoritativeButtonProps) {
+  const variantClasses = {
+    primary: 'bg-sky-600 hover:bg-sky-700 text-white',
+    secondary: 'bg-white hover:bg-sky-50 text-sky-600 border border-sky-300',
+    accent: 'bg-sunset hover:bg-sunset-dark text-white',
+  };
+  
+  const sizeClasses = {
+    sm: 'py-2 px-4 text-sm',
+    md: 'py-3 px-6 text-base',
+    lg: 'py-4 px-8 text-lg',
+  };
+  
+  return (
+    <button
+      className={cn(
+        'font-semibold rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2',
+        variantClasses[variant],
+        sizeClasses[size],
+        className
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+### Canyon Hero Component
+```typescript
+// components/CanyonHero.tsx
+export function CanyonHero() {
+  return (
+    <div className="canyon-hero-container">
+      <div className="sky-gradient-background" />
+      <div className="strata-overlay">
+        <StrataDivider />
+      </div>
+      
+      <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
+        <h1 className="font-display text-5xl md:text-6xl font-bold text-sky-800 mb-6">
+          Kill the Boy
+        </h1>
+        <p className="text-xl text-sky-600 mb-8 leading-relaxed">
+          Transform from drift to dominion through structured assessment and guided action.
+        </p>
+        <AuthoritativeButton size="lg" className="text-lg">
+          Begin Assessment
+        </AuthoritativeButton>
+      </div>
+    </div>
+  );
+}
+```
+
+## Spacing & Layout Standards
+
+### 8px Grid System
+```typescript
+// Spacing scale based on 8px grid
+const spacing = {
+  'xs': '0.5rem',    // 8px
+  'sm': '1rem',      // 16px
+  'md': '1.5rem',    // 24px
+  'lg': '2rem',      // 32px
+  'xl': '3rem',      // 48px
+  '2xl': '4rem',     // 64px
+  '3xl': '6rem',     // 96px
+  '4xl': '8rem',     // 128px
+};
+
+// Usage in components
+<div className="space-y-8"> {/* 32px between children */}
+  <section className="py-16"> {/* 64px top/bottom padding */}
+    <div className="max-w-4xl mx-auto px-6"> {/* 24px horizontal padding */}
+```
+
+### Generous Whitespace
+```typescript
+// Layout patterns with generous spacing
+export function SectionLayout({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <section className={cn("py-24 px-6", className)}>
+      <div className="max-w-6xl mx-auto">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+export function ContentLayout({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={cn("max-w-4xl mx-auto px-6 py-12", className)}>
+      {children}
+    </div>
+  );
+}
+```
+
+## Animation & Motion
+
+### Subtle Motion Principles
+- **Purposeful**: Every animation serves a functional purpose
+- **Subtle**: No distracting or excessive motion
+- **Performance**: 60fps target, respect reduced motion preferences
+- **Accessibility**: Always provide reduced motion alternatives
+
+### Framer Motion Patterns
+```typescript
+// lib/motion-variants.ts
+export const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: "easeOut" }
+};
+
+export const staggerChildren = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+export const scaleIn = {
+  initial: { scale: 0.95, opacity: 0 },
+  animate: { scale: 1, opacity: 1 },
+  transition: { duration: 0.4, ease: "easeOut" }
+};
+```
+
+### Component Animations
+```typescript
+// components/AnimatedCard.tsx
+import { motion } from 'framer-motion';
+
+export function AnimatedCard({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+      className="professional-card"
+    >
+      {children}
+    </motion.div>
+  );
+}
+```
+
+## Responsive Design
+
+### Breakpoint Strategy
+```typescript
+// Responsive breakpoints
+const breakpoints = {
+  sm: '640px',   // Small devices
+  md: '768px',   // Medium devices
+  lg: '1024px',  // Large devices
+  xl: '1280px',  // Extra large devices
+  '2xl': '1536px', // 2X large devices
+};
+
+// Mobile-first responsive patterns
+<div className="
+  grid grid-cols-1 gap-6
+  sm:grid-cols-2 sm:gap-8
+  md:grid-cols-3 md:gap-10
+  lg:grid-cols-4 lg:gap-12
+">
+```
+
+### Responsive Typography
+```typescript
+// Responsive text sizing
+<h1 className="
+  text-3xl font-bold
+  sm:text-4xl
+  md:text-5xl
+  lg:text-6xl
+  text-sky-800
+">
+  Kill the Boy
+</h1>
+
+<p className="
+  text-base leading-relaxed
+  sm:text-lg
+  md:text-xl
+  text-sky-600
+">
+  Transform from drift to dominion
+</p>
+```
+
+## Accessibility Standards
+
+### WCAG AA Compliance
+```typescript
+// Accessibility utilities
+export function accessibleButton({
+  children,
+  onClick,
+  ariaLabel,
+  className
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  ariaLabel: string;
+  className?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={ariaLabel}
+      className={cn(
+        'focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2',
+        'hover:bg-sky-50 transition-colors duration-200',
+        className
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+### Color Contrast
+```css
+/* Ensure AA contrast ratios */
+.text-sky-800 { /* 4.5:1 contrast ratio on white */ }
+.text-sky-700 { /* 4.5:1 contrast ratio on white */ }
+.text-sky-600 { /* 4.5:1 contrast ratio on white */ }
+
+/* Focus states with sufficient contrast */
+.focus\:ring-sky-500:focus {
+  ring-color: #0EA5E9; /* 4.5:1 contrast ratio */
+}
+```
+
+### Reduced Motion Support
+```css
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+## Quality Checklist
+
+### UI/UX Review Checklist
+- [ ] Design follows Trajectory philosophy (sky authority, breathable experience)
+- [ ] Color palette uses approved sky/canyon colors
+- [ ] Typography hierarchy is consistent and readable
+- [ ] Spacing follows 8px grid system with generous whitespace
+- [ ] Components use professional, stoic styling
+- [ ] Animations are subtle and purposeful
+- [ ] Responsive design works across all breakpoints
+- [ ] Accessibility standards (WCAG AA) are met
+- [ ] Color contrast ratios are sufficient
+- [ ] Focus states are clearly visible
+- [ ] Reduced motion preferences are respected
+- [ ] Performance targets are met (60fps animations)

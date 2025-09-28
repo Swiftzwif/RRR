@@ -1,0 +1,514 @@
+# Testing & Quality Assurance
+
+## Testing Strategy
+
+### Testing Pyramid
+```
+    /\
+   /  \     E2E Tests (5%)
+  /____\    - Critical user journeys
+ /      \   - Payment flows
+/        \  - Assessment completion
+
+   /____\    Integration Tests (25%)
+  /      \   - API endpoints
+ /        \  - Database operations
+/          \ - Third-party integrations
+
+/__________\  Unit Tests (70%)
+             - Component logic
+             - Utility functions
+             - Business logic
+```
+
+### Test Coverage Requirements
+- **Minimum Coverage**: 70% on all touched files
+- **Critical Paths**: 100% coverage on payment and assessment flows
+- **New Code**: 100% coverage requirement for new features
+- **Regression Prevention**: All existing tests must pass
+
+## Unit Testing
+
+### Component Testing with React Testing Library
+```typescript
+// ✅ Good: Component test with RTL
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { AssessmentStepper } from './AssessmentStepper';
+
+describe('AssessmentStepper', () => {
+  it('renders current question and progress', () => {
+    const mockQuestions = [
+      { id: '1', text: 'Question 1', type: 'likert' },
+      { id: '2', text: 'Question 2', type: 'likert' }
+    ];
+    
+    render(
+      <AssessmentStepper 
+        questions={mockQuestions}
+        currentIndex={0}
+        onAnswer={jest.fn()}
+      />
+    );
+    
+    expect(screen.getByText('Question 1')).toBeInTheDocument();
+    expect(screen.getByText('1 of 2')).toBeInTheDocument();
+  });
+  
+  it('calls onAnswer when user selects response', async () => {
+    const mockOnAnswer = jest.fn();
+    const mockQuestions = [
+      { id: '1', text: 'Question 1', type: 'likert' }
+    ];
+    
+    render(
+      <AssessmentStepper 
+        questions={mockQuestions}
+        currentIndex={0}
+        onAnswer={mockOnAnswer}
+      />
+    );
+    
+    fireEvent.click(screen.getByLabelText('Strongly Agree'));
+    
+    await waitFor(() => {
+      expect(mockOnAnswer).toHaveBeenCalledWith('1', 5);
+    });
+  });
+});
+```
+
+### Utility Function Testing
+```typescript
+// ✅ Good: Pure function testing
+import { calculateDomainScores } from '@/lib/scoring';
+
+describe('calculateDomainScores', () => {
+  it('calculates correct domain scores from responses', () => {
+    const responses = [
+      { questionId: 'leadership-1', value: 4, domain: 'leadership' },
+      { questionId: 'leadership-2', value: 5, domain: 'leadership' },
+      { questionId: 'execution-1', value: 3, domain: 'execution' },
+      { questionId: 'execution-2', value: 2, domain: 'execution' }
+    ];
+    
+    const result = calculateDomainScores(responses);
+    
+    expect(result).toEqual({
+      leadership: 4.5,
+      execution: 2.5
+    });
+  });
+  
+  it('handles empty responses gracefully', () => {
+    const result = calculateDomainScores([]);
+    
+    expect(result).toEqual({});
+  });
+  
+  it('handles single domain responses', () => {
+    const responses = [
+      { questionId: 'leadership-1', value: 4, domain: 'leadership' }
+    ];
+    
+    const result = calculateDomainScores(responses);
+    
+    expect(result).toEqual({
+      leadership: 4
+    });
+  });
+});
+```
+
+### Custom Hook Testing
+```typescript
+// ✅ Good: Custom hook testing with renderHook
+import { renderHook, act } from '@testing-library/react';
+import { useAssessment } from './useAssessment';
+
+describe('useAssessment', () => {
+  it('fetches assessment data on mount', async () => {
+    const mockAssessment = { id: '1', scores: { leadership: 85 } };
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      json: () => Promise.resolve(mockAssessment)
+    } as Response);
+    
+    const { result } = renderHook(() => useAssessment('1'));
+    
+    expect(result.current.loading).toBe(true);
+    
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+    
+    expect(result.current.loading).toBe(false);
+    expect(result.current.assessment).toEqual(mockAssessment);
+    expect(result.current.error).toBeNull();
+  });
+});
+```
+
+## Integration Testing
+
+### API Endpoint Testing
+```typescript
+// ✅ Good: API integration test
+import { createMocks } from 'node-mocks-http';
+import handler from '@/pages/api/assessments';
+
+describe('/api/assessments', () => {
+  it('creates assessment with valid data', async () => {
+    const { req, res } = createMocks({
+      method: 'POST',
+      body: {
+        scores: { leadership: 85, execution: 72 },
+        avatar: 'architect'
+      }
+    });
+    
+    await handler(req, res);
+    
+    expect(res._getStatusCode()).toBe(201);
+    const data = JSON.parse(res._getData());
+    expect(data.id).toBeDefined();
+    expect(data.scores).toEqual({ leadership: 85, execution: 72 });
+  });
+  
+  it('returns 400 for invalid data', async () => {
+    const { req, res } = createMocks({
+      method: 'POST',
+      body: {
+        scores: 'invalid',
+        avatar: 'invalid-avatar'
+      }
+    });
+    
+    await handler(req, res);
+    
+    expect(res._getStatusCode()).toBe(400);
+    const data = JSON.parse(res._getData());
+    expect(data.error).toBe('VALIDATION_ERROR');
+  });
+});
+```
+
+### Database Integration Testing
+```typescript
+// ✅ Good: Database integration test
+import { createClient } from '@supabase/supabase-js';
+
+describe('Assessment Database Operations', () => {
+  let supabase: ReturnType<typeof createClient>;
+  
+  beforeEach(async () => {
+    supabase = createClient(
+      process.env.SUPABASE_TEST_URL!,
+      process.env.SUPABASE_TEST_KEY!
+    );
+    
+    // Clean up test data
+    await supabase.from('assessments').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  });
+  
+  it('saves assessment to database', async () => {
+    const assessmentData = {
+      user_id: 'test-user-id',
+      scores: { leadership: 85, execution: 72 },
+      avatar: 'architect'
+    };
+    
+    const { data, error } = await supabase
+      .from('assessments')
+      .insert(assessmentData)
+      .select()
+      .single();
+    
+    expect(error).toBeNull();
+    expect(data).toMatchObject(assessmentData);
+    expect(data.id).toBeDefined();
+    expect(data.created_at).toBeDefined();
+  });
+});
+```
+
+## End-to-End Testing
+
+### Critical User Journey Testing
+```typescript
+// ✅ Good: E2E test with Playwright
+import { test, expect } from '@playwright/test';
+
+test.describe('Assessment Flow', () => {
+  test('complete assessment journey', async ({ page }) => {
+    // Navigate to assessment
+    await page.goto('/assessment');
+    
+    // Answer questions
+    for (let i = 0; i < 15; i++) {
+      await page.click('[data-testid="likert-option-4"]'); // Strongly Agree
+      await page.click('[data-testid="next-question"]');
+    }
+    
+    // Submit assessment
+    await page.click('[data-testid="submit-assessment"]');
+    
+    // Verify results page
+    await expect(page).toHaveURL('/results');
+    await expect(page.locator('[data-testid="domain-meters"]')).toBeVisible();
+    await expect(page.locator('[data-testid="avatar-badge"]')).toBeVisible();
+  });
+  
+  test('payment flow integration', async ({ page }) => {
+    // Complete assessment and navigate to results
+    await page.goto('/results');
+    
+    // Click on course purchase
+    await page.click('[data-testid="purchase-course"]');
+    
+    // Verify Stripe checkout redirect
+    await expect(page).toHaveURL(/checkout\.stripe\.com/);
+  });
+});
+```
+
+### Accessibility Testing
+```typescript
+// ✅ Good: Accessibility test
+import { test, expect } from '@playwright/test';
+
+test.describe('Accessibility', () => {
+  test('assessment is keyboard navigable', async ({ page }) => {
+    await page.goto('/assessment');
+    
+    // Tab through interactive elements
+    await page.keyboard.press('Tab');
+    await expect(page.locator('[data-testid="likert-option-1"]')).toBeFocused();
+    
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator('[data-testid="likert-option-2"]')).toBeFocused();
+    
+    await page.keyboard.press('Enter');
+    await expect(page.locator('[data-testid="next-question"]')).toBeEnabled();
+  });
+  
+  test('meets WCAG AA standards', async ({ page }) => {
+    await page.goto('/assessment');
+    
+    // Check for proper ARIA labels
+    const likertOptions = page.locator('[role="radio"]');
+    await expect(likertOptions.first()).toHaveAttribute('aria-label');
+    
+    // Check color contrast
+    const textElements = page.locator('text');
+    // Color contrast testing would be implemented here
+  });
+});
+```
+
+## Performance Testing
+
+### Load Testing
+```typescript
+// ✅ Good: Load test with k6
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export let options = {
+  stages: [
+    { duration: '2m', target: 100 }, // Ramp up
+    { duration: '5m', target: 100 }, // Stay at 100 users
+    { duration: '2m', target: 0 },   // Ramp down
+  ],
+};
+
+export default function () {
+  const response = http.get('https://trajectory.app/assessment');
+  
+  check(response, {
+    'status is 200': (r) => r.status === 200,
+    'response time < 2s': (r) => r.timings.duration < 2000,
+  });
+  
+  sleep(1);
+}
+```
+
+### Bundle Size Testing
+```typescript
+// ✅ Good: Bundle size test
+import { getBundleSize } from '@next/bundle-analyzer';
+
+describe('Bundle Size', () => {
+  it('main bundle is under size limit', async () => {
+    const bundleSize = await getBundleSize('./.next/static/chunks/main.js');
+    
+    expect(bundleSize).toBeLessThan(250000); // 250KB limit
+  });
+  
+  it('assessment page bundle is optimized', async () => {
+    const assessmentBundle = await getBundleSize('./.next/static/chunks/pages/assessment.js');
+    
+    expect(assessmentBundle).toBeLessThan(100000); // 100KB limit
+  });
+});
+```
+
+## Quality Gates
+
+### Pre-commit Hooks
+```json
+// package.json
+{
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm run test:unit",
+      "pre-push": "npm run test:integration && npm run test:e2e"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write",
+      "vitest related --run"
+    ]
+  }
+}
+```
+
+### CI/CD Pipeline
+```yaml
+# .github/workflows/ci.yml
+name: CI/CD Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run unit tests
+        run: npm run test:unit -- --coverage
+      
+      - name: Run integration tests
+        run: npm run test:integration
+      
+      - name: Run E2E tests
+        run: npm run test:e2e
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+      
+      - name: Check bundle size
+        run: npm run analyze:bundle
+```
+
+### Test Reporting
+```typescript
+// ✅ Good: Test coverage reporting
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    coverage: {
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        '**/coverage/**'
+      ],
+      thresholds: {
+        global: {
+          branches: 70,
+          functions: 70,
+          lines: 70,
+          statements: 70
+        }
+      }
+    }
+  }
+});
+```
+
+## Testing Best Practices
+
+### Test Organization
+- **Describe Blocks**: Group related tests logically
+- **Test Names**: Use descriptive, behavior-focused names
+- **Setup/Teardown**: Clean up test data and mocks
+- **Isolation**: Each test should be independent
+
+### Mocking Strategy
+```typescript
+// ✅ Good: Strategic mocking
+// Mock external dependencies, not internal logic
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(() => ({
+    from: jest.fn(() => ({
+      insert: jest.fn(() => ({
+        select: jest.fn(() => Promise.resolve({ data: mockData, error: null }))
+      }))
+    }))
+  }))
+}));
+
+// Don't mock internal utilities
+// ❌ Bad: Mocking internal functions
+// jest.mock('@/lib/scoring', () => ({
+//   calculateDomainScores: jest.fn()
+// }));
+```
+
+### Test Data Management
+```typescript
+// ✅ Good: Test data factories
+export function createMockAssessment(overrides: Partial<Assessment> = {}): Assessment {
+  return {
+    id: 'test-id',
+    userId: 'test-user',
+    scores: { leadership: 85, execution: 72 },
+    avatar: 'architect',
+    completedAt: new Date(),
+    ...overrides
+  };
+}
+```
+
+### Error Testing
+```typescript
+// ✅ Good: Test error scenarios
+it('handles network errors gracefully', async () => {
+  jest.spyOn(global, 'fetch').mockRejectedValue(new Error('Network error'));
+  
+  const { result } = renderHook(() => useAssessment('1'));
+  
+  await act(async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+  });
+  
+  expect(result.current.error).toBeInstanceOf(Error);
+  expect(result.current.error?.message).toBe('Network error');
+});
+```
+
+## Quality Checklist
+
+### Pre-deployment Checklist
+- [ ] All unit tests pass with >70% coverage
+- [ ] Integration tests pass for all API endpoints
+- [ ] E2E tests pass for critical user journeys
+- [ ] Performance tests meet benchmarks
+- [ ] Accessibility tests pass WCAG AA standards
+- [ ] Bundle size is within limits
+- [ ] No console.log statements in production code
+- [ ] Error handling is comprehensive
+- [ ] Security tests pass
+- [ ] Documentation is updated

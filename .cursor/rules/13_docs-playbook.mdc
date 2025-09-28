@@ -1,0 +1,537 @@
+# Documentation Playbook
+
+## Documentation Standards
+
+### Documentation Hierarchy
+```
+README.md (Project Overview)
+├── docs/
+│   ├── api/ (API Documentation)
+│   ├── components/ (Component Documentation)
+│   ├── deployment/ (Deployment Guides)
+│   └── architecture/ (Architecture Decisions)
+├── CHANGELOG.md (Release Notes)
+└── CONTRIBUTING.md (Development Guidelines)
+```
+
+### Documentation Types
+- **User Documentation**: How to use the product
+- **Developer Documentation**: How to contribute and maintain
+- **API Documentation**: Endpoint specifications and examples
+- **Architecture Documentation**: System design and decisions
+- **Deployment Documentation**: Infrastructure and deployment procedures
+
+## README.md Structure
+
+### Project Overview Template
+```markdown
+# Trajectory - Professional Assessment Platform
+
+## Overview
+Professional, stoic assessment platform targeting high-value men ready to transition into the Fastlane. Clean, authoritative design with precise spacing and minimal visual noise.
+
+## Quick Start
+\`\`\`bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your values
+
+# Run development server
+npm run dev
+
+# Run tests
+npm run test
+
+# Build for production
+npm run build
+\`\`\`
+
+## Tech Stack
+- **Framework**: Next.js (App Router, TypeScript)
+- **Styling**: Tailwind CSS with professional design system
+- **Database**: Supabase
+- **Payments**: Stripe
+- **Validation**: Zod for API inputs
+
+## Project Structure
+\`\`\`
+src/
+├── app/                 # Next.js App Router pages
+├── components/          # Reusable UI components
+├── lib/                # Business logic and utilities
+├── types/              # TypeScript type definitions
+└── content/            # Static content and data
+\`\`\`
+
+## Key Features
+- **Assessment**: 15+2 question flow with domain scoring
+- **Results**: Avatar assignment and personalized recommendations
+- **Payments**: Stripe checkout with webhook gating
+- **Course**: Premium content with access control
+- **Coaching**: Application and scheduling system
+
+## Contributing
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
+
+## License
+[License information]
+```
+
+## API Documentation
+
+### Endpoint Documentation Template
+```typescript
+/**
+ * @api {post} /api/assessments Create Assessment
+ * @apiName CreateAssessment
+ * @apiGroup Assessments
+ * @apiVersion 1.0.0
+ * 
+ * @apiDescription Creates a new assessment for the authenticated user.
+ * 
+ * @apiHeader {String} Authorization Bearer token for authentication
+ * @apiHeader {String} Content-Type application/json
+ * 
+ * @apiParam {Object} scores Domain scores object
+ * @apiParam {Number} scores.leadership Leadership domain score (0-100)
+ * @apiParam {Number} scores.execution Execution domain score (0-100)
+ * @apiParam {String} avatar Avatar type (architect|balancer|drifter)
+ * 
+ * @apiParamExample {json} Request Example:
+ * {
+ *   "scores": {
+ *     "leadership": 85,
+ *     "execution": 72
+ *   },
+ *   "avatar": "architect"
+ * }
+ * 
+ * @apiSuccess {String} id Assessment unique identifier
+ * @apiSuccess {String} userId User identifier
+ * @apiSuccess {Object} scores Domain scores
+ * @apiSuccess {String} avatar Assigned avatar
+ * @apiSuccess {String} createdAt Creation timestamp
+ * 
+ * @apiSuccessExample {json} Success Response:
+ * {
+ *   "id": "550e8400-e29b-41d4-a716-446655440000",
+ *   "userId": "user-123",
+ *   "scores": {
+ *     "leadership": 85,
+ *     "execution": 72
+ *   },
+ *   "avatar": "architect",
+ *   "createdAt": "2024-01-01T00:00:00.000Z"
+ * }
+ * 
+ * @apiError {String} VALIDATION_ERROR Invalid request data
+ * @apiError {String} UNAUTHORIZED Authentication required
+ * @apiError {String} SERVER_ERROR Internal server error
+ * 
+ * @apiErrorExample {json} Error Response:
+ * {
+ *   "error": "VALIDATION_ERROR",
+ *   "message": "Invalid avatar type",
+ *   "statusCode": 400,
+ *   "timestamp": "2024-01-01T00:00:00.000Z"
+ * }
+ */
+```
+
+### OpenAPI/Swagger Integration
+```typescript
+// api-docs.ts
+import { OpenAPIRegistry, OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
+import { z } from 'zod';
+
+const registry = new OpenAPIRegistry();
+
+// Define schemas
+const AssessmentSchema = registry.register('Assessment', z.object({
+  id: z.string().uuid(),
+  userId: z.string(),
+  scores: z.record(z.string(), z.number()),
+  avatar: z.enum(['architect', 'balancer', 'drifter']),
+  createdAt: z.string().datetime()
+}));
+
+// Define endpoints
+registry.registerPath({
+  method: 'post',
+  path: '/api/assessments',
+  tags: ['Assessments'],
+  summary: 'Create Assessment',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: AssessmentSchema
+        }
+      }
+    }
+  },
+  responses: {
+    201: {
+      description: 'Assessment created successfully',
+      content: {
+        'application/json': {
+          schema: AssessmentSchema
+        }
+      }
+    }
+  }
+});
+```
+
+## Component Documentation
+
+### Storybook Integration
+```typescript
+// AssessmentStepper.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { AssessmentStepper } from './AssessmentStepper';
+
+const meta: Meta<typeof AssessmentStepper> = {
+  title: 'Components/AssessmentStepper',
+  component: AssessmentStepper,
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: 'Step-by-step assessment interface with progress tracking and question navigation.'
+      }
+    }
+  },
+  argTypes: {
+    currentIndex: {
+      control: { type: 'number', min: 0, max: 15 },
+      description: 'Current question index (0-based)'
+    },
+    onAnswer: {
+      action: 'answered',
+      description: 'Callback when user answers a question'
+    }
+  }
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    questions: [
+      { id: '1', text: 'I take initiative in challenging situations', type: 'likert' },
+      { id: '2', text: 'I prefer to work independently', type: 'likert' }
+    ],
+    currentIndex: 0,
+    onAnswer: () => {}
+  }
+};
+
+export const MidProgress: Story = {
+  args: {
+    ...Default.args,
+    currentIndex: 8
+  }
+};
+
+export const NearCompletion: Story = {
+  args: {
+    ...Default.args,
+    currentIndex: 14
+  }
+};
+```
+
+### Component README Template
+```markdown
+# AssessmentStepper Component
+
+## Overview
+Step-by-step assessment interface that guides users through a series of questions with progress tracking and navigation controls.
+
+## Props
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| questions | Question[] | ✅ | - | Array of assessment questions |
+| currentIndex | number | ✅ | - | Current question index (0-based) |
+| onAnswer | (questionId: string, value: number) => void | ✅ | - | Callback when user answers |
+| className | string | ❌ | - | Additional CSS classes |
+
+## Usage
+\`\`\`tsx
+import { AssessmentStepper } from '@/components/AssessmentStepper';
+
+function AssessmentPage() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const questions = useAssessmentQuestions();
+  
+  const handleAnswer = (questionId: string, value: number) => {
+    // Handle answer logic
+    setCurrentIndex(prev => prev + 1);
+  };
+  
+  return (
+    <AssessmentStepper
+      questions={questions}
+      currentIndex={currentIndex}
+      onAnswer={handleAnswer}
+    />
+  );
+}
+\`\`\`
+
+## Accessibility
+- Supports keyboard navigation with arrow keys
+- Screen reader friendly with proper ARIA labels
+- Focus management during question transitions
+- High contrast mode compatible
+
+## Testing
+\`\`\`bash
+# Run component tests
+npm run test:component AssessmentStepper
+
+# Run accessibility tests
+npm run test:a11y AssessmentStepper
+\`\`\`
+```
+
+## CHANGELOG.md Format
+
+### Changelog Template
+```markdown
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- New features and functionality
+
+### Changed
+- Changes to existing functionality
+
+### Deprecated
+- Soon-to-be removed features
+
+### Removed
+- Removed features
+
+### Fixed
+- Bug fixes
+
+### Security
+- Security improvements
+
+## [1.2.0] - 2024-01-15
+
+### Added
+- Assessment progress persistence
+- Avatar customization options
+- Payment retry logic
+
+### Changed
+- Improved assessment scoring algorithm
+- Updated UI components for better accessibility
+
+### Fixed
+- Fixed payment webhook handling edge cases
+- Resolved assessment timeout issues
+
+## [1.1.0] - 2024-01-01
+
+### Added
+- Initial assessment functionality
+- Stripe payment integration
+- User authentication system
+
+### Security
+- Implemented Row Level Security (RLS) in Supabase
+- Added input validation and sanitization
+```
+
+## Architecture Documentation
+
+### System Architecture Document
+```markdown
+# System Architecture
+
+## Overview
+Trajectory is built as a modern web application using Next.js with a focus on performance, security, and maintainability.
+
+## Architecture Diagram
+\`\`\`mermaid
+graph TB
+    Client[Client Browser]
+    CDN[Vercel Edge Network]
+    App[Next.js Application]
+    DB[(Supabase Database)]
+    Auth[Supabase Auth]
+    Payments[Stripe API]
+    
+    Client --> CDN
+    CDN --> App
+    App --> DB
+    App --> Auth
+    App --> Payments
+\`\`\`
+
+## Technology Stack
+
+### Frontend
+- **Next.js 14**: React framework with App Router
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first styling
+- **shadcn/ui**: Component library
+
+### Backend
+- **Next.js API Routes**: Serverless functions
+- **Supabase**: Database and authentication
+- **Stripe**: Payment processing
+
+### Infrastructure
+- **Vercel**: Hosting and deployment
+- **Supabase**: Database hosting
+- **Stripe**: Payment infrastructure
+
+## Data Flow
+
+### Assessment Flow
+1. User starts assessment
+2. Questions loaded from content files
+3. Responses stored in local state
+4. Results calculated using scoring algorithm
+5. Assessment saved to database
+6. Results displayed with recommendations
+
+### Payment Flow
+1. User initiates purchase
+2. Stripe checkout session created
+3. User completes payment
+4. Webhook confirms payment
+5. Access granted to premium content
+
+## Security Considerations
+- Row Level Security (RLS) in Supabase
+- Input validation with Zod
+- Authentication required for sensitive operations
+- HTTPS enforced for all communications
+```
+
+## Deployment Documentation
+
+### Deployment Guide Template
+```markdown
+# Deployment Guide
+
+## Prerequisites
+- Node.js 18+ installed
+- Vercel CLI installed
+- Supabase project set up
+- Stripe account configured
+
+## Environment Setup
+
+### Required Environment Variables
+\`\`\`bash
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Stripe Configuration
+STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=your_webhook_secret
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+
+# Application Configuration
+COACHING_SCHEDULER_URL=your_coaching_scheduler_url
+\`\`\`
+
+## Deployment Steps
+
+### 1. Database Setup
+\`\`\`bash
+# Run database migrations
+npx supabase db push
+
+# Set up Row Level Security policies
+npx supabase db reset --linked
+\`\`\`
+
+### 2. Application Deployment
+\`\`\`bash
+# Deploy to Vercel
+vercel --prod
+
+# Verify deployment
+curl https://your-domain.vercel.app/api/health
+\`\`\`
+
+### 3. Post-Deployment Verification
+- [ ] Assessment flow works end-to-end
+- [ ] Payment processing functions correctly
+- [ ] Database connections are stable
+- [ ] Monitoring and alerts are configured
+
+## Rollback Procedures
+\`\`\`bash
+# Rollback to previous deployment
+vercel rollback
+
+# Rollback database changes
+npx supabase db reset --linked
+\`\`\`
+```
+
+## Documentation Maintenance
+
+### Update Triggers
+- **API Changes**: Update API documentation when endpoints change
+- **Component Changes**: Update Storybook stories and component docs
+- **Architecture Changes**: Update system architecture documentation
+- **Deployment Changes**: Update deployment guides and procedures
+
+### Documentation Review Process
+1. **Code Review**: Include documentation updates in PR reviews
+2. **Automated Checks**: Run documentation linting and validation
+3. **Regular Audits**: Monthly review of documentation accuracy
+4. **User Feedback**: Incorporate user feedback on documentation clarity
+
+### Documentation Tools
+```json
+// package.json
+{
+  "scripts": {
+    "docs:build": "storybook build",
+    "docs:serve": "storybook dev -p 6006",
+    "docs:api": "redoc-cli build api-spec.yaml",
+    "docs:validate": "markdownlint docs/**/*.md"
+  },
+  "devDependencies": {
+    "@storybook/react": "^7.0.0",
+    "redoc-cli": "^0.13.21",
+    "markdownlint-cli": "^0.35.0"
+  }
+}
+```
+
+## Quality Checklist
+
+### Documentation Review Checklist
+- [ ] README.md is up to date with current setup
+- [ ] API documentation matches actual endpoints
+- [ ] Component documentation includes all props and examples
+- [ ] CHANGELOG.md includes all recent changes
+- [ ] Architecture documentation reflects current system
+- [ ] Deployment guide is accurate and tested
+- [ ] All code examples are tested and working
+- [ ] Links and references are valid
+- [ ] Documentation follows consistent style and format

@@ -1,0 +1,4 @@
+# This file is kept for reference but npm workspaces are used instead
+# packages:
+#   - 'apps/*'
+#   - 'packages/*'

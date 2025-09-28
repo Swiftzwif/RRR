@@ -1,0 +1,264 @@
+# Code Style & Standards
+
+## TypeScript Configuration
+
+### Strict Mode Requirements
+- **Strict Type Checking**: All TypeScript strict flags enabled
+- **No Any Types**: Explicit typing required, no `any` allowed
+- **Null Safety**: Proper null/undefined handling
+- **Implicit Returns**: Explicit return types for public functions
+
+### Type Definitions
+```typescript
+// ✅ Good: Explicit types
+interface AssessmentResult {
+  id: string;
+  userId: string;
+  scores: Record<string, number>;
+  avatar: AvatarType;
+  completedAt: Date;
+}
+
+// ❌ Bad: Any types
+function processResult(result: any): any {
+  return result;
+}
+```
+
+### Import/Export Standards
+```typescript
+// ✅ Good: Named imports, clear organization
+import { AssessmentResult, AvatarType } from '@/types/assessment';
+import { calculateDomainScores } from '@/lib/scoring';
+import { Button, Card } from '@/components/ui';
+
+// ❌ Bad: Default imports for utilities
+import utils from '@/lib/utils';
+```
+
+## Function Design Principles
+
+### Small, Focused Functions
+- **Single Responsibility**: Each function does one thing well
+- **Max 50 Lines**: Keep functions concise and readable
+- **Pure Functions**: Prefer pure functions when possible
+- **Descriptive Names**: Function names should clearly indicate purpose
+
+```typescript
+// ✅ Good: Small, focused function
+function calculateDomainScore(responses: Response[]): number {
+  const totalResponses = responses.length;
+  const sum = responses.reduce((acc, response) => acc + response.value, 0);
+  return Math.round((sum / totalResponses) * 100) / 100;
+}
+
+// ❌ Bad: Large, multi-purpose function
+function processAssessment(data: any) {
+  // 100+ lines of mixed logic
+}
+```
+
+### Error Handling
+```typescript
+// ✅ Good: Explicit error handling
+async function saveAssessment(result: AssessmentResult): Promise<void> {
+  try {
+    await supabase
+      .from('assessments')
+      .insert(result);
+  } catch (error) {
+    console.error('Failed to save assessment:', error);
+    throw new Error('Assessment save failed');
+  }
+}
+
+// ❌ Bad: Silent failures
+async function saveAssessment(result: AssessmentResult) {
+  await supabase.from('assessments').insert(result);
+}
+```
+
+## Tailwind CSS Standards
+
+### Class Organization
+```typescript
+// ✅ Good: Logical grouping and sorting
+<div className="
+  flex flex-col items-center justify-center
+  w-full max-w-4xl mx-auto
+  px-6 py-8
+  bg-white rounded-lg shadow-lg
+  space-y-6
+">
+```
+
+### Custom Classes
+```typescript
+// ✅ Good: Semantic custom classes
+<div className="canyon-hero-container">
+  <div className="sky-gradient-background" />
+  <div className="strata-overlay" />
+</div>
+```
+
+### Responsive Design
+```typescript
+// ✅ Good: Mobile-first responsive design
+<div className="
+  grid grid-cols-1 gap-4
+  sm:grid-cols-2 sm:gap-6
+  md:grid-cols-3 md:gap-8
+  lg:grid-cols-4
+">
+```
+
+## Component Architecture
+
+### Component Structure
+```typescript
+// ✅ Good: Clear component structure
+interface MeterProps {
+  domain: string;
+  score: number;
+  maxScore?: number;
+  className?: string;
+}
+
+export function Meter({ 
+  domain, 
+  score, 
+  maxScore = 100, 
+  className 
+}: MeterProps) {
+  const percentage = (score / maxScore) * 100;
+  
+  return (
+    <div className={cn("meter-container", className)}>
+      {/* Component implementation */}
+    </div>
+  );
+}
+```
+
+### Props Interface
+- **Required Props**: No default values for essential props
+- **Optional Props**: Clear default values and documentation
+- **Type Safety**: Strict typing for all props
+- **Destructuring**: Destructure props in function signature
+
+### Event Handlers
+```typescript
+// ✅ Good: Typed event handlers
+const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  // Handle form submission
+};
+
+// ❌ Bad: Untyped event handlers
+const handleSubmit = (event: any) => {
+  // Handle form submission
+};
+```
+
+## File Organization
+
+### File Naming
+- **Components**: PascalCase (`AssessmentStepper.tsx`)
+- **Utilities**: camelCase (`scoring.ts`)
+- **Types**: camelCase (`assessment.types.ts`)
+- **Constants**: UPPER_SNAKE_CASE (`API_ENDPOINTS.ts`)
+
+### Import Order
+```typescript
+// 1. React and Next.js imports
+import React from 'react';
+import { useRouter } from 'next/navigation';
+
+// 2. Third-party libraries
+import { motion } from 'framer-motion';
+import { z } from 'zod';
+
+// 3. Internal utilities and types
+import { cn } from '@/lib/utils';
+import { AssessmentResult } from '@/types/assessment';
+
+// 4. Components
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
+// 5. Styles (if needed)
+import './component.css';
+```
+
+## Performance Standards
+
+### Bundle Size
+- **Component Splitting**: Use dynamic imports for large components
+- **Tree Shaking**: Ensure unused code is eliminated
+- **Image Optimization**: Use Next.js Image component
+- **Code Splitting**: Implement route-based code splitting
+
+### Runtime Performance
+```typescript
+// ✅ Good: Memoized expensive calculations
+const domainScores = useMemo(() => 
+  calculateDomainScores(responses), 
+  [responses]
+);
+
+// ✅ Good: Debounced user input
+const debouncedSearch = useDebounce(searchTerm, 300);
+```
+
+### Memory Management
+- **Cleanup**: Proper cleanup of event listeners and subscriptions
+- **Refs**: Use refs for DOM manipulation, not state
+- **Closures**: Avoid memory leaks in closures
+
+## Accessibility Standards
+
+### Semantic HTML
+```typescript
+// ✅ Good: Semantic HTML structure
+<section aria-labelledby="assessment-heading">
+  <h2 id="assessment-heading">Assessment Progress</h2>
+  <div role="progressbar" aria-valuenow={progress} aria-valuemax={100}>
+    {progress}% Complete
+  </div>
+</section>
+```
+
+### Keyboard Navigation
+```typescript
+// ✅ Good: Keyboard support
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    handleClick();
+  }
+};
+```
+
+### Screen Reader Support
+```typescript
+// ✅ Good: ARIA labels and descriptions
+<button 
+  aria-label="Complete assessment"
+  aria-describedby="assessment-help"
+  onClick={handleComplete}
+>
+  Complete
+</button>
+```
+
+## Quality Gates
+
+### Pre-commit Checklist
+- [ ] TypeScript compilation passes
+- [ ] ESLint rules satisfied
+- [ ] Prettier formatting applied
+- [ ] All tests pass
+- [ ] No console.log statements in production code
+- [ ] Proper error handling implemented
+- [ ] Accessibility standards met
+- [ ] Performance benchmarks satisfied

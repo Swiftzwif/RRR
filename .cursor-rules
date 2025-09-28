@@ -1,0 +1,292 @@
+# Trajectory Professional Assessment Platform - Complete Rules
+
+## Project Overview
+
+Professional, stoic assessment platform targeting high-value men ready to transition into the Fastlane. Clean, authoritative design with precise spacing and minimal visual noise. Functional assessment end-to-end (store to Supabase, gate results by email/login). Stripe checkout for course & coaching; webhook grants access. TBD modules render premium "coming soon" with end-goal briefs + notify capture.
+
+## Tech Stack
+
+- **Framework**: Next.js (App Router, TypeScript)
+- **Styling**: Tailwind CSS with professional, stoic design system
+- **Animations**: Minimal, purposeful transitions only
+- **Database**: Supabase
+- **Payments**: Stripe
+- **Validation**: Zod for API inputs
+
+## UI DESIGN SYSTEM - CRITICAL CONSISTENCY RULES
+
+### Design Philosophy
+
+**Inspiring Sky Authority**: Sophisticated sky-inspired design that makes you feel alive and ready to soar
+**Breathable Experience**: Generous whitespace, clean layouts that let content breathe like open sky
+**Memorable Journey**: Every interaction feels intentional and uplifting - like reaching for the heavens
+**Masculine Sophistication**: Strong typography, confident spacing, purposeful hierarchy that inspires action
+
+### MANDATORY Color Palette
+
+```css
+/* Inspiring Sky & Canyon Color System - NEVER DEVIATE */
+colors: {
+  // Sky-Inspired Base Colors
+  'sky-50': '#F0F9FF',        /* Lightest sky - clean backgrounds */
+  'sky-100': '#E0F2FE',       /* Light sky - subtle contrast */
+  'sky-200': '#BAE6FD',       /* Medium sky - gentle borders */
+  'sky-300': '#7DD3FC',       /* Baby blue - soft accents */
+  'sky-400': '#38BDF8',       /* Electric blue - primary actions */
+  'sky-500': '#0EA5E9',       /* Strong blue - hover states */
+  'sky-600': '#0284C7',       /* Deep blue - strong text */
+  'sky-700': '#0369A1',       /* Darker blue - headings */
+  'sky-800': '#075985',       /* Deepest blue - authoritative */
+  
+  // Canyon Accent Colors (refined)
+  'sunset': '#F59E0B',        /* Golden sunset - warm highlights */
+  'sunset-dark': '#D97706',   /* Deep sunset - hover states */
+  'glow': '#FCD34D',          /* Warm glow - highlights */
+  
+  // Inspiring Status Colors
+  'success': '#10B981',       /* Growth, achievement */
+  'warn': '#F59E0B',          /* Caution, attention */
+  'danger': '#EF4444'         /* Error, critical */
+}
+```
+
+### MANDATORY Typography Rules
+
+- **Primary Body Text**: Inter (clean, professional, highly readable)
+- **Display/Headings**: General Sans/Clash Display (canyon-inspired, authoritative headings)
+- **Monospace**: JetBrains Mono (technical, precise)
+- **NEVER use**: Comic Sans, Times New Roman, Arial, or any non-professional fonts
+
+### MANDATORY Spacing & Layout Rules
+
+- **Spacing Grid**: 8px grid system with extra breathing room (16, 24, 32, 48, 64, 96, 128px)
+- **Professional Radius**: Subtle border radius (8-12px) for modern feel without being bubbly
+- **Clean Lines**: 1px borders, subtle shadows for depth
+- **Breathable Layouts**: Extra whitespace between sections, comfortable reading experience
+- **NEVER**: Cramped layouts, inconsistent spacing, sharp corners on cards
+
+### MANDATORY Component Class Patterns
+
+#### Strata Design System Classes (ALWAYS USE THESE)
+
+```css
+/* Core Strata Classes - NEVER OVERRIDE */
+.strata-gradient     /* Sky-inspired background gradient */
+.strata-text         /* Sky gradient text effect */
+.strata-shadow       /* Professional sky-inspired shadow */
+.strata-glow         /* Subtle glow effect */
+.strata-card         /* Professional card styling */
+.strata-button       /* Primary button styling */
+.strata-meter        /* Progress/score meter background */
+.strata-meter-fill   /* Progress/score meter fill */
+.strata-divider      /* Section dividers */
+.strata-input        /* Form input styling */
+```
+
+#### Component Consistency Rules
+
+1. **Cards MUST use**: `strata-card` class
+   ```tsx
+   <div className="strata-card p-6">
+   ```
+
+2. **Buttons MUST use**: `strata-button` class or Button component
+   ```tsx
+   <button className="strata-button">
+   // OR
+   <Button variant="default">
+   ```
+
+3. **Meters MUST use**: `strata-meter` and `strata-meter-fill`
+   ```tsx
+   <div className="strata-meter h-3">
+     <div className="strata-meter-fill bg-sky-400" style={{width: '60%'}} />
+   </div>
+   ```
+
+4. **Text Gradients MUST use**: `strata-text` class
+   ```tsx
+   <h1 className="text-5xl font-display font-bold strata-text">
+   ```
+
+5. **Dividers MUST use**: `strata-divider` or StrataDivider component
+   ```tsx
+   <StrataDivider />
+   // OR
+   <div className="strata-divider" />
+   ```
+
+### MANDATORY Animation Rules
+
+- **Subtle Only**: No flashy or distracting animations
+- **60fps Target**: Smooth, performant animations
+- **Respect Motion Preferences**: Support `prefers-reduced-motion`
+- **Standard Durations**: 200ms (fast), 300ms (normal), 500ms (slow)
+- **Easing**: `cubic-bezier(0.22, 0.61, 0.36, 1)` for professional feel
+
+### MANDATORY Layout Patterns
+
+#### Hero Sections
+```tsx
+<section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+  <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+    <h1 className="text-5xl md:text-7xl font-display font-bold mb-6">
+      <span className="strata-text">Headline</span>
+    </h1>
+  </div>
+</section>
+```
+
+#### Content Cards
+```tsx
+<div className="strata-card p-6 mb-8">
+  <h3 className="text-xl font-display font-semibold text-sky-800 mb-4">
+  <p className="text-sky-600 leading-relaxed">
+</div>
+```
+
+#### Form Inputs
+```tsx
+<input className="strata-input w-full" />
+```
+
+### MANDATORY Accessibility Rules
+
+- **Focus Styles**: Always visible with `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sunset`
+- **Color Contrast**: AA compliance minimum
+- **Keyboard Navigation**: All interactive elements accessible
+- **Screen Readers**: Proper ARIA labels and semantic HTML
+
+### MANDATORY Responsive Rules
+
+- **Mobile First**: Design for mobile, enhance for desktop
+- **Breakpoints**: sm (640px), md (768px), lg (1024px), xl (1280px)
+- **Touch Targets**: Minimum 44px for mobile interactions
+- **Text Scaling**: Support browser zoom up to 200%
+
+### MANDATORY Performance Rules
+
+- **No Layout Thrash**: Animations must not cause reflows
+- **Efficient Selectors**: Use specific classes, avoid deep nesting
+- **Minimal Blur/Filters**: Only when necessary for design
+- **Lighthouse Targets**: 90+ Performance, 100 Accessibility
+
+## Component Architecture Rules
+
+### MANDATORY Component Patterns
+
+1. **All components MUST**:
+   - Use TypeScript with proper interfaces
+   - Accept `className` prop for extensibility
+   - Use `cn()` utility for class merging
+   - Follow naming convention: PascalCase
+
+2. **Styling MUST**:
+   - Use Tailwind classes primarily
+   - Use Strata design system classes
+   - Support dark mode if applicable
+   - Be responsive by default
+
+3. **State Management MUST**:
+   - Use appropriate React hooks
+   - Keep local state when possible
+   - Use context for shared state
+   - Never mutate props directly
+
+### MANDATORY File Structure
+
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # Basic UI components (Button, Card, etc.)
+│   └── feature/        # Feature-specific components
+├── lib/                # Utilities and configurations
+├── app/                # Next.js App Router pages
+└── content/            # Static content and data
+```
+
+### MANDATORY Import Order
+
+```tsx
+// 1. React and Next.js
+import React from 'react';
+import { motion } from 'framer-motion';
+
+// 2. External libraries
+import { cva } from 'class-variance-authority';
+
+// 3. Internal utilities
+import { cn } from '@/lib/utils';
+
+// 4. Internal components
+import { Button } from '@/components/ui/Button';
+
+// 5. Types and interfaces
+import type { ComponentProps } from 'react';
+```
+
+## Quality Assurance Rules
+
+### MANDATORY Testing Requirements
+
+- **Component Testing**: Jest + React Testing Library
+- **E2E Testing**: Playwright for critical paths
+- **Accessibility Testing**: axe-core integration
+- **Visual Regression**: Chromatic or similar
+
+### MANDATORY Code Quality
+
+- **ESLint**: Enforce coding standards
+- **Prettier**: Consistent formatting
+- **TypeScript**: Strict mode enabled
+- **Husky**: Pre-commit hooks for quality
+
+### MANDATORY Performance Monitoring
+
+- **Core Web Vitals**: Monitor LCP, FID, CLS
+- **Bundle Analysis**: Regular bundle size checks
+- **Lighthouse CI**: Automated performance testing
+- **Error Tracking**: Sentry or similar service
+
+## Security Rules
+
+### MANDATORY Security Practices
+
+- **Input Validation**: Zod schemas for all API inputs
+- **Authentication**: Supabase Auth integration
+- **Authorization**: Row Level Security (RLS) in database
+- **HTTPS**: Enforce secure connections
+- **Environment Variables**: Never expose secrets client-side
+
+## CRITICAL: UI Consistency Enforcement
+
+### NEVER DO:
+- Use colors outside the defined sky/canyon palette
+- Create custom button styles instead of using `strata-button`
+- Use inconsistent spacing (always use 8px grid)
+- Add flashy or distracting animations
+- Use non-professional fonts
+- Create cards without `strata-card` class
+- Ignore responsive design principles
+- Skip accessibility considerations
+
+### ALWAYS DO:
+- Use Strata design system classes
+- Maintain generous whitespace
+- Follow professional, stoic aesthetic
+- Test on multiple devices and screen sizes
+- Validate with accessibility tools
+- Use semantic HTML elements
+- Implement proper focus management
+- Support keyboard navigation
+
+## Implementation Priorities
+
+1. **UI Consistency**: Always use Strata design system
+2. **Accessibility**: AA compliance minimum
+3. **Performance**: 90+ Lighthouse scores
+4. **Responsive**: Mobile-first approach
+5. **Professional**: Stoic, authoritative design
+6. **Maintainable**: Clean, documented code
+
+This rule file ensures your beautiful, professional UI remains consistent across all development and maintains the inspiring sky authority that makes users feel ready to soar.

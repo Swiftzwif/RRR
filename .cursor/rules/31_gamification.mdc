@@ -1,0 +1,492 @@
+# Gamification & Avatar System
+
+## Avatar System Architecture
+
+### Avatar Types
+The assessment assigns users to one of three avatars based on their domain scores:
+
+```typescript
+// Avatar type definitions
+export type AvatarType = 'architect' | 'balancer' | 'drifter';
+
+export interface Avatar {
+  type: AvatarType;
+  name: string;
+  description: string;
+  strengths: string[];
+  growthAreas: string[];
+  color: string;
+  icon: string;
+}
+
+export const AVATARS: Record<AvatarType, Avatar> = {
+  architect: {
+    type: 'architect',
+    name: 'The Architect',
+    description: 'Strategic visionary who builds systems for long-term success',
+    strengths: ['Strategic Thinking', 'Systems Building', 'Leadership'],
+    growthAreas: ['Execution', 'Adaptability', 'Team Building'],
+    color: 'sky-600',
+    icon: '🏗️',
+  },
+  balancer: {
+    type: 'balancer',
+    name: 'The Balancer',
+    description: 'Adaptable leader who excels at managing complexity and change',
+    strengths: ['Adaptability', 'Team Management', 'Communication'],
+    growthAreas: ['Strategic Focus', 'Risk Taking', 'Innovation'],
+    color: 'sunset',
+    icon: '⚖️',
+  },
+  drifter: {
+    type: 'drifter',
+    name: 'The Drifter',
+    description: 'Creative free spirit seeking direction and structure',
+    strengths: ['Creativity', 'Flexibility', 'Openness'],
+    growthAreas: ['Focus', 'Discipline', 'Strategic Planning'],
+    color: 'sky-400',
+    icon: '🌊',
+  },
+};
+```
+
+### Avatar Assignment Logic
+```typescript
+// lib/avatar-assignment.ts
+export function assignAvatar(domainScores: Record<string, number>): AvatarType {
+  const { leadership, execution, adaptability, creativity, focus } = domainScores;
+  
+  // Calculate composite scores
+  const strategicScore = (leadership + focus) / 2;
+  const executionScore = (execution + focus) / 2;
+  const adaptabilityScore = (adaptability + creativity) / 2;
+  
+  // Assignment logic based on highest composite score
+  if (strategicScore >= executionScore && strategicScore >= adaptabilityScore) {
+    return 'architect';
+  } else if (adaptabilityScore >= executionScore) {
+    return 'balancer';
+  } else {
+    return 'drifter';
+  }
+}
+```
+
+## Avatar Badge Component
+
+### Avatar Display Component
+```typescript
+// components/AvatarBadge.tsx
+import { Avatar, AVATARS } from '@/types/avatar';
+import { cn } from '@/lib/utils';
+
+interface AvatarBadgeProps {
+  avatar: AvatarType;
+  size?: 'sm' | 'md' | 'lg';
+  showDetails?: boolean;
+  className?: string;
+}
+
+export function AvatarBadge({ 
+  avatar, 
+  size = 'md', 
+  showDetails = false,
+  className 
+}: AvatarBadgeProps) {
+  const avatarData = AVATARS[avatar];
+  
+  const sizeClasses = {
+    sm: 'w-16 h-16 text-2xl',
+    md: 'w-24 h-24 text-4xl',
+    lg: 'w-32 h-32 text-6xl',
+  };
+  
+  const colorClasses = {
+    architect: 'bg-sky-100 border-sky-300 text-sky-700',
+    balancer: 'bg-orange-100 border-orange-300 text-orange-700',
+    drifter: 'bg-sky-50 border-sky-200 text-sky-600',
+  };
+  
+  return (
+    <div className={cn('flex flex-col items-center space-y-4', className)}>
+      <div className={cn(
+        'rounded-full border-2 flex items-center justify-center font-bold',
+        sizeClasses[size],
+        colorClasses[avatar]
+      )}>
+        {avatarData.icon}
+      </div>
+      
+      {showDetails && (
+        <div className="text-center">
+          <h3 className="font-display text-xl font-semibold text-sky-800">
+            {avatarData.name}
+          </h3>
+          <p className="text-sm text-sky-600 mt-1">
+            {avatarData.description}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### Avatar Reveal Animation
+```typescript
+// components/AvatarReveal.tsx
+import { motion } from 'framer-motion';
+import { AvatarBadge } from './AvatarBadge';
+
+interface AvatarRevealProps {
+  avatar: AvatarType;
+  onComplete?: () => void;
+}
+
+export function AvatarReveal({ avatar, onComplete }: AvatarRevealProps) {
+  return (
+    <motion.div
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ 
+        duration: 0.8, 
+        ease: "easeOut",
+        onComplete 
+      }}
+      className="flex flex-col items-center justify-center min-h-[400px]"
+    >
+      <motion.div
+        initial={{ rotateY: 180 }}
+        animate={{ rotateY: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <AvatarBadge avatar={avatar} size="lg" showDetails />
+      </motion.div>
+      
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.8 }}
+        className="text-lg text-sky-600 mt-6 text-center max-w-md"
+      >
+        Your assessment reveals your leadership archetype and growth path.
+      </motion.p>
+    </motion.div>
+  );
+}
+```
+
+## Domain Scoring System
+
+### Domain Meter Component
+```typescript
+// components/DomainMeter.tsx
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+
+interface DomainMeterProps {
+  domain: string;
+  score: number;
+  maxScore?: number;
+  color?: string;
+  className?: string;
+}
+
+export function DomainMeter({ 
+  domain, 
+  score, 
+  maxScore = 100, 
+  color = 'sky',
+  className 
+}: DomainMeterProps) {
+  const percentage = (score / maxScore) * 100;
+  
+  const colorClasses = {
+    sky: 'bg-sky-500',
+    sunset: 'bg-sunset',
+    success: 'bg-success',
+  };
+  
+  return (
+    <div className={cn('space-y-2', className)}>
+      <div className="flex justify-between items-center">
+        <span className="font-medium text-sky-800 capitalize">
+          {domain.replace(/([A-Z])/g, ' $1').trim()}
+        </span>
+        <span className="text-sm font-semibold text-sky-600">
+          {score}/{maxScore}
+        </span>
+      </div>
+      
+      <div className="w-full bg-sky-100 rounded-full h-3 overflow-hidden">
+        <motion.div
+          className={cn('h-full rounded-full', colorClasses[color as keyof typeof colorClasses])}
+          initial={{ width: 0 }}
+          animate={{ width: `${percentage}%` }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+### Domain Meters Grid
+```typescript
+// components/DomainsGrid.tsx
+import { DomainMeter } from './DomainMeter';
+
+interface DomainsGridProps {
+  scores: Record<string, number>;
+  className?: string;
+}
+
+export function DomainsGrid({ scores, className }: DomainsGridProps) {
+  const domains = Object.entries(scores);
+  
+  return (
+    <div className={cn('space-y-6', className)}>
+      <h3 className="font-display text-2xl font-semibold text-sky-800">
+        Your Domain Scores
+      </h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {domains.map(([domain, score]) => (
+          <DomainMeter
+            key={domain}
+            domain={domain}
+            score={score}
+            color={score >= 80 ? 'success' : score >= 60 ? 'sky' : 'sunset'}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+## Progress Tracking
+
+### Assessment Progress Component
+```typescript
+// components/AssessmentProgress.tsx
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+
+interface AssessmentProgressProps {
+  currentStep: number;
+  totalSteps: number;
+  className?: string;
+}
+
+export function AssessmentProgress({ 
+  currentStep, 
+  totalSteps, 
+  className 
+}: AssessmentProgressProps) {
+  const progress = (currentStep / totalSteps) * 100;
+  
+  return (
+    <div className={cn('space-y-3', className)}>
+      <div className="flex justify-between items-center">
+        <span className="text-sm font-medium text-sky-700">
+          Progress
+        </span>
+        <span className="text-sm font-semibold text-sky-600">
+          {currentStep} of {totalSteps}
+        </span>
+      </div>
+      
+      <div className="w-full bg-sky-100 rounded-full h-2 overflow-hidden">
+        <motion.div
+          className="h-full bg-sky-500 rounded-full"
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+### Reflection XP System
+```typescript
+// lib/xp-system.ts
+export interface XPEntry {
+  id: string;
+  type: 'assessment_complete' | 'course_module' | 'coaching_session';
+  points: number;
+  description: string;
+  earnedAt: Date;
+}
+
+export const XP_VALUES = {
+  assessment_complete: 100,
+  course_module: 50,
+  coaching_session: 75,
+  reflection: 25,
+};
+
+export function calculateTotalXP(entries: XPEntry[]): number {
+  return entries.reduce((total, entry) => total + entry.points, 0);
+}
+
+export function getXPLevel(totalXP: number): number {
+  return Math.floor(totalXP / 100) + 1;
+}
+```
+
+## Scoreboard & Leaderboard
+
+### Personal Scoreboard
+```typescript
+// components/PersonalScoreboard.tsx
+interface PersonalScoreboardProps {
+  totalXP: number;
+  level: number;
+  avatar: AvatarType;
+  recentAchievements: XPEntry[];
+}
+
+export function PersonalScoreboard({ 
+  totalXP, 
+  level, 
+  avatar, 
+  recentAchievements 
+}: PersonalScoreboardProps) {
+  const nextLevelXP = level * 100;
+  const currentLevelXP = totalXP - ((level - 1) * 100);
+  const progressToNext = (currentLevelXP / 100) * 100;
+  
+  return (
+    <div className="professional-card">
+      <div className="flex items-center justify-between mb-6">
+        <AvatarBadge avatar={avatar} size="sm" />
+        <div className="text-right">
+          <div className="text-2xl font-bold text-sky-800">Level {level}</div>
+          <div className="text-sm text-sky-600">{totalXP} XP</div>
+        </div>
+      </div>
+      
+      <div className="space-y-2 mb-6">
+        <div className="flex justify-between text-sm">
+          <span>Progress to Level {level + 1}</span>
+          <span>{currentLevelXP}/100 XP</span>
+        </div>
+        <div className="w-full bg-sky-100 rounded-full h-2">
+          <div 
+            className="bg-sky-500 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${progressToNext}%` }}
+          />
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <h4 className="font-semibold text-sky-800">Recent Achievements</h4>
+        {recentAchievements.slice(0, 3).map((achievement) => (
+          <div key={achievement.id} className="flex items-center space-x-2">
+            <span className="text-sunset">+{achievement.points}</span>
+            <span className="text-sm text-sky-600">{achievement.description}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### Community Leaderboard
+```typescript
+// components/CommunityLeaderboard.tsx
+interface LeaderboardEntry {
+  id: string;
+  avatar: AvatarType;
+  name: string;
+  level: number;
+  totalXP: number;
+  isCurrentUser?: boolean;
+}
+
+interface CommunityLeaderboardProps {
+  entries: LeaderboardEntry[];
+  currentUser?: LeaderboardEntry;
+}
+
+export function CommunityLeaderboard({ entries, currentUser }: CommunityLeaderboardProps) {
+  const topEntries = entries.slice(0, 10);
+  
+  return (
+    <div className="professional-card">
+      <h3 className="font-display text-2xl font-semibold text-sky-800 mb-6">
+        Community Leaderboard
+      </h3>
+      
+      <div className="space-y-3">
+        {topEntries.map((entry, index) => (
+          <div
+            key={entry.id}
+            className={cn(
+              'flex items-center space-x-4 p-3 rounded-lg',
+              entry.isCurrentUser ? 'bg-sky-50 border border-sky-200' : 'hover:bg-sky-25'
+            )}
+          >
+            <div className="flex items-center space-x-2">
+              <span className="font-bold text-sky-600 w-6">
+                {index < 3 ? ['🥇', '🥈', '🥉'][index] : `#${index + 1}`}
+              </span>
+              <AvatarBadge avatar={entry.avatar} size="sm" />
+            </div>
+            
+            <div className="flex-1">
+              <div className="font-medium text-sky-800">{entry.name}</div>
+              <div className="text-sm text-sky-600">Level {entry.level} • {entry.totalXP} XP</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {currentUser && !topEntries.some(entry => entry.isCurrentUser) && (
+        <div className="mt-4 pt-4 border-t border-sky-200">
+          <div className="flex items-center space-x-4 p-3 rounded-lg bg-sky-50 border border-sky-200">
+            <div className="flex items-center space-x-2">
+              <span className="font-bold text-sky-600">
+                #{entries.findIndex(entry => entry.id === currentUser.id) + 1}
+              </span>
+              <AvatarBadge avatar={currentUser.avatar} size="sm" />
+            </div>
+            
+            <div className="flex-1">
+              <div className="font-medium text-sky-800">{currentUser.name}</div>
+              <div className="text-sm text-sky-600">Level {currentUser.level} • {currentUser.totalXP} XP</div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## Gamification Quality Checklist
+
+### Avatar System Checklist
+- [ ] Avatar assignment logic is mathematically sound
+- [ ] Avatar descriptions are inspiring and actionable
+- [ ] Avatar badges display correctly across all sizes
+- [ ] Avatar reveal animations are smooth and engaging
+- [ ] Avatar data is properly typed and validated
+
+### Scoring System Checklist
+- [ ] Domain scores are calculated accurately
+- [ ] Domain meters animate smoothly
+- [ ] Progress tracking is real-time and accurate
+- [ ] XP system rewards meaningful actions
+- [ ] Level progression feels rewarding
+
+### Engagement Features Checklist
+- [ ] Leaderboard updates in real-time
+- [ ] Personal scoreboard shows relevant achievements
+- [ ] Progress indicators are clear and motivating
+- [ ] All gamification elements respect user preferences
+- [ ] Performance impact is minimal (< 100ms)

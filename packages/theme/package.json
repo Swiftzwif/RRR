@@ -1,0 +1,16 @@
+{
+  "name": "@trajectory/theme",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "files": [
+    "tailwind.config.js",
+    "globals.css",
+    "index.js",
+    "index.d.ts"
+  ],
+  "devDependencies": {
+    "tailwindcss": "^4"
+  }
+}
