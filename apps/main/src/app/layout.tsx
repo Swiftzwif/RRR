@@ -1,5 +1,6 @@
 import MobileMenu from "@/components/MobileMenu";
 import { getCopy } from "@/lib/copy";
+import { TrajectoryLogo } from "@trajectory/ui";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link";
@@ -44,11 +45,8 @@ export default function RootLayout({
       <body className="antialiased font-body bg-sky-50 text-sky-800">
         <header className="sticky top-0 z-40 bg-header-bg/95 backdrop-blur border-b border-sky-200/10">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <Link
-              href="/"
-              className="text-lg font-display font-bold text-sky-800"
-            >
-              {getCopy("brand.name")}
+            <Link href="/" className="flex items-center">
+              <TrajectoryLogo variant="full" size="sm" showText={true} />
             </Link>
             <nav className="hidden lg:flex items-center gap-6 text-sm">
               <Link

@@ -13,6 +13,9 @@ module.exports = {
   Meter: require('./components/Meter').default,
   ResultCard: require('./components/ResultCard').default,
   
+  // Branding
+  TrajectoryLogo: require('./components/TrajectoryLogo').TrajectoryLogo,
+  
   // Utils
   cn: require('./utils/cn').cn
 };

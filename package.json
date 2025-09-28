@@ -7,14 +7,11 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:main": "cd apps/main && npm run dev",
-    "dev:lane": "cd apps/lane-game && npm run dev",
-    "build:main": "cd apps/main && npm run build",
-    "build:lane": "cd apps/lane-game && npm run build",
-    "build": "npm run build:main && npm run build:lane",
-    "lint": "cd apps/main && npm run lint && cd ../lane-game && npm run lint",
-    "typecheck": "cd apps/main && npm run typecheck && cd ../lane-game && npm run typecheck",
-    "install:all": "npm install && cd apps/main && npm install && cd ../lane-game && npm install"
+    "dev": "cd apps/main && npm run dev",
+    "build": "cd apps/main && npm run build",
+    "lint": "cd apps/main && npm run lint",
+    "typecheck": "cd apps/main && npm run typecheck",
+    "install:all": "npm install && cd apps/main && npm install"
   },
   "devDependencies": {
     "typescript": "^5",

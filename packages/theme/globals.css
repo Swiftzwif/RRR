@@ -12,10 +12,27 @@
   --sky-700: #0369A1;
   --sky-800: #075985;
   
+  /* TRAJECTORY Logo Colors (Golden & Black) */
+  --gold-50: #FFFBEB;
+  --gold-100: #FEF3C7;
+  --gold-200: #FDE68A;
+  --gold-300: #FCD34D;
+  --gold-400: #F59E0B;
+  --gold-500: #D97706;
+  --gold-600: #B45309;
+  --gold-700: #92400E;
+  --gold-800: #78350F;
+  --gold-900: #451A03;
+  
   /* Canyon Accent Colors (refined) */
   --sunset: #F59E0B;
   --sunset-dark: #D97706;
   --glow: #FCD34D;
+  
+  /* Logo-inspired backgrounds */
+  --trajectory-black: #000000;
+  --trajectory-black-soft: #0A0A0A;
+  --trajectory-black-card: #111111;
   
   /* Inspiring Status Colors */
   --success: #10B981;
@@ -187,4 +204,107 @@ h1,h2,h3,h4,h5,h6 {
 
 .strata-input::placeholder {
   color: var(--sky-500);
+}
+
+/* TRAJECTORY Logo-Inspired Styles */
+
+/* Golden gradients inspired by logo */
+.trajectory-gradient {
+  background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
+}
+
+.trajectory-gradient-soft {
+  background: linear-gradient(135deg, var(--gold-300) 0%, var(--gold-400) 100%);
+}
+
+.trajectory-gradient-dark {
+  background: linear-gradient(135deg, var(--gold-600) 0%, var(--gold-700) 100%);
+}
+
+/* Logo-inspired text effects */
+.trajectory-text {
+  background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.trajectory-text-glow {
+  background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+/* Logo-inspired backgrounds */
+.trajectory-bg-black {
+  background: var(--trajectory-black);
+  color: var(--gold-400);
+}
+
+.trajectory-bg-soft {
+  background: var(--trajectory-black-soft);
+  color: var(--gold-300);
+}
+
+.trajectory-bg-card {
+  background: var(--trajectory-black-card);
+  color: var(--gold-300);
+  border: 1px solid rgba(245, 158, 11, 0.1);
+}
+
+/* Logo-inspired shadows and glows */
+.trajectory-shadow {
+  box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.2);
+}
+
+.trajectory-glow {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+.trajectory-glow-strong {
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.5);
+}
+
+/* Logo-inspired button styles */
+.trajectory-button {
+  background: var(--gold-400);
+  color: var(--trajectory-black);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  box-shadow: 0 4px 20px -4px rgba(245, 158, 11, 0.15);
+}
+
+.trajectory-button:hover {
+  background: var(--gold-500);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -8px rgba(245, 158, 11, 0.25);
+}
+
+.trajectory-button:active {
+  transform: translateY(0);
+}
+
+/* Logo-inspired card styles */
+.trajectory-card {
+  background: var(--trajectory-black-card);
+  border: 1px solid rgba(245, 158, 11, 0.1);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(10px);
+  color: var(--gold-300);
+}
+
+/* Logo-inspired upward curve animation (like logo lines) */
+@keyframes trajectory-rise {
+  0% { transform: translateY(0px) scaleX(0.8); opacity: 0.7; }
+  50% { transform: translateY(-4px) scaleX(1); opacity: 1; }
+  100% { transform: translateY(0px) scaleX(0.8); opacity: 0.7; }
+}
+
+.animate-trajectory-rise { 
+  animation: trajectory-rise 3s ease-in-out infinite; 
 }
