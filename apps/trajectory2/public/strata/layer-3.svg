@@ -1,0 +1,10 @@
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="layer3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#B85D22;stop-opacity:0.15" />
+      <stop offset="50%" style="stop-color:#D6722C;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#B85D22;stop-opacity:0.15" />
+    </linearGradient>
+  </defs>
+  <path d="M0,600 Q150,550 300,580 Q450,560 600,590 Q750,570 900,600 Q1050,580 1200,600 L1200,800 L0,800 Z" fill="url(#layer3)"/>
+</svg>
