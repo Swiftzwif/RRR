@@ -247,4 +247,3 @@ function getDayDescription(day: number): string {
   
   return descriptions[day] || 'Continue your journey of transformation and growth.';
 }
-

@@ -1,8 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand Colors */
+  --brand-gold: #C89B3C;
+  --brand-gold-600: #B1842F;
+  --brand-gold-400: #D4A853;
+  --brand-gold-300: #E0B564;
+  
+  /* Background Elevations */
+  --bg-base: #0A0B0D;
+  --bg-elev-1: #0E0F12;
+  --bg-elev-2: #15171C;
+  --bg-elev-3: #1C1F26;
+  
+  /* Text Colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #B8BCC8;
+  --text-muted: #71758A;
+  
+  /* Borders */
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  --border-gold: rgba(200, 155, 60, 0.3);
+  
+  /* Legacy (for compatibility) */
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
   --font-body: 'Inter', ui-sans-serif, system-ui;
   --font-display: 'Inter', ui-sans-serif, system-ui;
 }
@@ -16,8 +39,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--bg-base);
+    --foreground: var(--text-primary);
   }
 }
 
@@ -30,6 +53,61 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Brand Utility Classes */
+.bg-gold {
+  background: var(--brand-gold);
+}
+
+.bg-gold-gradient {
+  background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-gold-600) 100%);
+}
+
+.text-gold {
+  color: var(--brand-gold);
+}
+
+.border-gold {
+  border-color: var(--border-gold);
+}
+
+.gold-glow {
+  box-shadow: 0 0 20px rgba(200, 155, 60, 0.3), 0 0 40px rgba(200, 155, 60, 0.1);
+}
+
+.gold-glow-sm {
+  box-shadow: 0 0 10px rgba(200, 155, 60, 0.2);
+}
+
+/* Background Elevations */
+.bg-base {
+  background: var(--bg-base);
+}
+
+.bg-elev-1 {
+  background: var(--bg-elev-1);
+}
+
+.bg-elev-2 {
+  background: var(--bg-elev-2);
+}
+
+.bg-elev-3 {
+  background: var(--bg-elev-3);
+}
+
+/* Text Utilities */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
 }
 
 /* Enhanced Custom Utility Classes with Better Contrast */

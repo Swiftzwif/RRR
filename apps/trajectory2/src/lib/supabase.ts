@@ -37,9 +37,11 @@ export interface Assessment {
 export interface Purchase {
   id: string;
   user_id?: string;
-  product: 'course' | 'coaching';
+  email?: string;
+  product: "course" | "coaching";
   amount_cents: number;
   stripe_session_id?: string;
+  square_payment_id?: string;
   created_at: string;
 }
 

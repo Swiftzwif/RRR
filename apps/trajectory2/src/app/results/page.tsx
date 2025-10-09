@@ -108,8 +108,37 @@ export default function ResultsPage() {
   };
 
   const handlePurchase = async (product: "course" | "coaching") => {
-    // TBD: Stripe integration coming soon
-    alert(`Payment integration for ${product} is coming soon! Stay tuned.`);
+    try {
+      // Get current user if any
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      // Create payment link
+      const response = await fetch("/api/payments/square/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          product,
+          userId: user?.id,
+          email: email || user?.email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create payment link");
+      }
+
+      const { url } = await response.json();
+
+      // Redirect to Square payment page
+      window.location.href = url;
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("Failed to start payment process. Please try again.");
+    }
   };
 
   if (loading) {

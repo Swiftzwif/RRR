@@ -1,93 +1,216 @@
 'use client';
 
-import { getCopy } from '@/lib/copy';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { supabase } from '@/lib/supabase';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, CheckCircle, Clock, Users } from 'lucide-react';
+import {
+  ArrowRight,
+  BookOpen,
+  CheckCircle,
+  Clock,
+  Lock,
+  Users,
+} from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from 'react';
 
 interface Module {
   title: string;
   description: string;
-  status: 'coming_soon' | 'locked' | 'unlocked';
+  lessons: string[];
+  duration: string;
+  status: "locked" | "unlocked" | "in_progress" | "completed";
   progress?: number;
 }
 
 export default function CoursePage() {
   const [hasAccess, setHasAccess] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [email, setEmail] = useState('');
+  const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
+    // Check for success param
+    if (searchParams.get("success") === "1") {
+      setPurchaseSuccess(true);
+    }
+
     const checkAccess = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
         if (user) {
           // Check if user has purchased the course
           const { data: purchase } = await supabase
-            .from('purchases')
-            .select('*')
-            .eq('user_id', user.id)
-            .eq('product', 'course')
+            .from("purchases")
+            .select("*")
+            .eq("user_id", user.id)
+            .eq("product", "course")
             .single();
 
           setHasAccess(!!purchase);
         }
       } catch (error) {
-        console.error('Error checking access:', error);
+        console.error("Error checking access:", error);
       } finally {
         setLoading(false);
       }
     };
 
     checkAccess();
-  }, []);
+  }, [searchParams]);
 
   const handlePurchase = async () => {
-    // Payment integration coming soon
-    alert('Payment integration for the course is coming soon! Stay tuned.');
-  };
-
-  const handleNotify = async (email: string) => {
     try {
-      await fetch('/api/notify', {
-        method: 'POST',
+      // Get current user if any
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      // Create payment link
+      const response = await fetch("/api/payments/square/create", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
-          topic: 'course',
+          product: "course",
+          userId: user?.id,
+          email: user?.email,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to create payment link");
+      }
+
+      const { url } = await response.json();
+
+      // Redirect to Square payment page
+      window.location.href = url;
     } catch (error) {
-      console.error('Error saving notification:', error);
-      throw error;
+      console.error("Payment error:", error);
+      alert("Failed to start payment process. Please try again.");
     }
   };
 
-  const courseData = getCopy('tbd.course') as any;
-  const modules: Module[] = (courseData.modules || []).map((module: any) => ({
-    title: module.title,
-    description: module.description,
-    status: hasAccess ? 'unlocked' : 'coming_soon',
-    progress: hasAccess ? Math.floor(Math.random() * 100) : undefined,
-  }));
+  const modules: Module[] = [
+    {
+      title: "Module 1: Kill the Boy",
+      description:
+        "Understand the power of killing the boy and awakening the commander within.",
+      lessons: [
+        "The Good Little Soldier",
+        "Breaking the Programming",
+        "Your First Command",
+      ],
+      duration: "2 hours",
+      status: hasAccess ? "completed" : "locked",
+      progress: hasAccess ? 100 : 0,
+    },
+    {
+      title: "Module 2: Command Your Attention",
+      description:
+        "Reclaim your focus from algorithms and distractions that steal your power.",
+      lessons: [
+        "The Attention Economy",
+        "Building Focus Systems",
+        "Deep Work Mastery",
+      ],
+      duration: "3 hours",
+      status: hasAccess ? "in_progress" : "locked",
+      progress: hasAccess ? 65 : 0,
+    },
+    {
+      title: "Module 3: Command Your Energy",
+      description:
+        "Master your energy management for sustainable peak performance.",
+      lessons: [
+        "Energy Audits",
+        "Physical Optimization",
+        "Mental Energy Systems",
+      ],
+      duration: "2.5 hours",
+      status: hasAccess ? "unlocked" : "locked",
+      progress: 0,
+    },
+    {
+      title: "Module 4: Command Your Money",
+      description:
+        "Transform your relationship with money and build financial command.",
+      lessons: ["Money Mindset", "Income Acceleration", "Wealth Systems"],
+      duration: "3 hours",
+      status: "locked",
+      progress: 0,
+    },
+    {
+      title: "Module 5: The Three Lanes",
+      description: "Understand the SlowLane, SideLane, and FastLane paradigms.",
+      lessons: ["Lane Analysis", "Choosing Your Path", "Lane Transitions"],
+      duration: "2 hours",
+      status: "locked",
+      progress: 0,
+    },
+    {
+      title: "Module 6: Your Vehicle Audit",
+      description:
+        "Conduct a deep audit of your current position and trajectory.",
+      lessons: ["Life Inventory", "Gap Analysis", "Upgrade Planning"],
+      duration: "2.5 hours",
+      status: "locked",
+      progress: 0,
+    },
+  ];
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen flex items-center justify-center bg-base">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-          <p className="text-slate-600 text-lg">Loading course...</p>
+          <div className="w-12 h-12 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <p className="text-secondary text-lg">Loading course...</p>
         </div>
       </div>
     );
   }
 
+  if (purchaseSuccess && !hasAccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-base">
+        <motion.div
+          className="text-center max-w-md mx-auto px-6"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          <div className="w-20 h-20 bg-gold-gradient rounded-full flex items-center justify-center mx-auto mb-6 gold-glow">
+            <CheckCircle className="w-10 h-10 text-black" />
+          </div>
+          <h1 className="text-3xl font-bold text-primary mb-4">
+            Payment Processing
+          </h1>
+          <p className="text-secondary mb-6">
+            Your payment is being processed. You'll receive an email
+            confirmation shortly with access to the course.
+          </p>
+          <Button onClick={() => window.location.reload()}>Check Access</Button>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
+    <div className="min-h-screen bg-base py-12">
       <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
         <motion.div
@@ -96,152 +219,173 @@ export default function CoursePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-sm font-semibold mb-6 shadow-lg">
-            <span className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
-            DIGITAL APPLICATION
-          </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 bg-clip-text text-transparent mb-6">
-            {courseData.title}
+          <Badge variant="outline" className="border-gold text-gold mb-6">
+            TRANSFORMATION COURSE
+          </Badge>
+          <h1 className="text-5xl md:text-6xl font-bold text-primary mb-6">
+            Rethink. Redesign. Reignite.
           </h1>
-          <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
-            {courseData.description}
+          <p className="text-xl text-secondary max-w-4xl mx-auto leading-relaxed">
+            A comprehensive course designed to help you shift from good little
+            soldier to commander of your life.
           </p>
         </motion.div>
 
-        {/* Features */}
+        {/* Stats */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/50 shadow-lg">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <BookOpen className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-xl font-display font-bold text-slate-800 mb-4">
-              Comprehensive Content
-            </h3>
-            <p className="text-slate-600 leading-relaxed">
-              Deep-dive modules covering all aspects of trajectory transformation
-            </p>
-          </div>
-          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/50 shadow-lg">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Clock className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-xl font-display font-bold text-slate-800 mb-4">
-              Self-Paced Learning
-            </h3>
-            <p className="text-slate-600 leading-relaxed">
-              Learn at your own pace with lifetime access to all materials
-            </p>
-          </div>
-          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/50 shadow-lg">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Users className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-xl font-display font-bold text-slate-800 mb-4">
-              Community Access
-            </h3>
-            <p className="text-slate-600 leading-relaxed">
-              Join a community of like-minded individuals on their journey
-            </p>
-          </div>
+          <Card className="bg-elev-2 border-[var(--border-default)] text-center">
+            <CardContent className="pt-6">
+              <Users className="w-10 h-10 text-gold mx-auto mb-3" />
+              <p className="text-2xl font-bold text-primary mb-1">2,500+</p>
+              <p className="text-secondary">Active Students</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-elev-2 border-[var(--border-default)] text-center">
+            <CardContent className="pt-6">
+              <Clock className="w-10 h-10 text-gold mx-auto mb-3" />
+              <p className="text-2xl font-bold text-primary mb-1">15+ Hours</p>
+              <p className="text-secondary">Video Content</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-elev-2 border-[var(--border-default)] text-center">
+            <CardContent className="pt-6">
+              <BookOpen className="w-10 h-10 text-gold mx-auto mb-3" />
+              <p className="text-2xl font-bold text-primary mb-1">6 Modules</p>
+              <p className="text-secondary">Transformational</p>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Modules */}
         <motion.div
           className="space-y-6 mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
         >
+          <h2 className="text-3xl font-bold text-primary mb-8">
+            Course Modules
+          </h2>
+
           {modules.map((module, index) => (
             <motion.div
-              key={index}
-              className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-lg hover:shadow-xl transition-all duration-300"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
+              key={module.title}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 * index }}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">{index + 1}</span>
+              <Card
+                className={`bg-elev-2 border-[var(--border-default)] ${
+                  module.status === "locked" && !hasAccess ? "opacity-60" : ""
+                }`}
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <CardTitle className="text-xl text-primary">
+                          {module.title}
+                        </CardTitle>
+                        {module.status === "locked" && !hasAccess && (
+                          <Lock className="w-5 h-5 text-muted" />
+                        )}
+                        {module.status === "completed" && (
+                          <CheckCircle className="w-5 h-5 text-green-500" />
+                        )}
+                      </div>
+                      <CardDescription className="text-secondary mb-3">
+                        {module.description}
+                      </CardDescription>
+                      <div className="flex items-center gap-4 text-sm text-muted">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {module.duration}
+                        </span>
+                        <span>{module.lessons.length} lessons</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-display font-bold text-slate-800 mb-2">
-                      {module.title}
-                    </h3>
-                    <p className="text-slate-600 leading-relaxed">
-                      {module.description}
+                </CardHeader>
+                {module.progress !== undefined && module.progress > 0 && (
+                  <CardContent>
+                    <Progress value={module.progress} className="h-2" />
+                    <p className="text-sm text-muted mt-2">
+                      {module.progress}% complete
                     </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  {module.status === 'unlocked' && (
-                    <div className="flex items-center space-x-2 text-green-600">
-                      <CheckCircle className="w-5 h-5" />
-                      <span className="font-semibold">Unlocked</span>
-                    </div>
-                  )}
-                  {module.status === 'coming_soon' && (
-                    <div className="flex items-center space-x-2 text-blue-600">
-                      <Clock className="w-5 h-5" />
-                      <span className="font-semibold">Coming Soon</span>
-                    </div>
-                  )}
-                  <ArrowRight className="w-5 h-5 text-slate-400" />
-                </div>
-              </div>
+                  </CardContent>
+                )}
+              </Card>
             </motion.div>
           ))}
         </motion.div>
 
         {/* CTA */}
-        <motion.div
-          className="text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          {hasAccess ? (
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-10 rounded-3xl border border-green-200/50 shadow-lg max-w-2xl mx-auto">
-              <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-6" />
-              <h3 className="text-2xl font-display font-bold text-slate-800 mb-4">
-                You're All Set!
-              </h3>
-              <p className="text-slate-600 mb-6 leading-relaxed">
-                You have full access to the course. Start your transformation journey today.
-              </p>
-              <button className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl">
-                Access Course
-              </button>
+        {!hasAccess && (
+          <motion.div
+            className="bg-elev-2 rounded-3xl p-12 text-center border border-[var(--border-gold)] gold-glow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            <h2 className="text-4xl font-bold text-primary mb-6">
+              Ready to Transform Your Trajectory?
+            </h2>
+            <p className="text-xl text-secondary mb-8 max-w-3xl mx-auto">
+              Get lifetime access to all modules, future updates, and our
+              private community of high-performers.
+            </p>
+            <div className="text-5xl font-bold text-gold mb-2">$99.99</div>
+            <p className="text-secondary mb-8">
+              One-time payment • Lifetime access
+            </p>
+
+            <Button size="lg" onClick={handlePurchase} className="group">
+              Get Instant Access
+              <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" />
+            </Button>
+
+            <div className="mt-8 flex items-center justify-center gap-6 text-sm text-muted">
+              <span className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-gold" />
+                30-day money back guarantee
+              </span>
+              <span className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-gold" />
+                Secure payment via Square
+              </span>
             </div>
-          ) : (
-            <div className="bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 text-white p-12 rounded-3xl shadow-2xl max-w-2xl mx-auto">
-              <h3 className="text-2xl font-display font-bold text-white mb-4">
-                Ready to Transform Your Trajectory?
-              </h3>
-              <p className="text-blue-200 mb-8 leading-relaxed">
-                Get lifetime access to the complete course and start your journey to a higher trajectory.
-              </p>
-              <div className="text-4xl font-bold text-orange-400 mb-8">
-                $199.99 → $99.99
-              </div>
-              <div className="text-lg text-blue-200 mb-8">
-                50% OFF - Limited to first 250 people
-              </div>
-              <button
-                onClick={handlePurchase}
-                className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-10 py-5 rounded-2xl hover:from-orange-600 hover:to-red-600 hover:scale-105 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl text-lg"
-              >
-                Get the Course
-              </button>
-            </div>
-          )}
-        </motion.div>
+          </motion.div>
+        )}
+
+        {/* Access Dashboard */}
+        {hasAccess && (
+          <motion.div
+            className="bg-elev-2 rounded-3xl p-12 text-center border border-[var(--border-gold)]"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            <h2 className="text-3xl font-bold text-primary mb-6">
+              Welcome Back, Commander
+            </h2>
+            <p className="text-xl text-secondary mb-8">
+              Continue your transformation journey where you left off.
+            </p>
+            <Button
+              size="lg"
+              className="group"
+              onClick={() => router.push("/course/dashboard")}
+            >
+              Go to Course Dashboard
+              <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" />
+            </Button>
+          </motion.div>
+        )}
       </div>
     </div>
   );
