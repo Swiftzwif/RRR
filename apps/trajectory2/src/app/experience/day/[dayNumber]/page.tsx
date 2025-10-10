@@ -1,9 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle, Download, Lock, Play } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  CheckCircle,
+  Download,
+  Lock,
+} from "lucide-react";
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from "next/navigation";
 import { useState } from 'react';
 
 interface BookSummary {
@@ -21,11 +28,10 @@ interface Task {
 
 export default function DayPage() {
   const params = useParams();
-  const router = useRouter();
   const dayNumber = parseInt(params.dayNumber as string);
-  
+
   const [completedTasks, setCompletedTasks] = useState<number[]>([]);
-  const [hasAccess, setHasAccess] = useState(false);
+  const [hasAccess] = useState(false);
   
   // Check if day is accessible (1-7 free, 8+ requires purchase)
   const isFree = dayNumber <= 7;
@@ -92,7 +98,7 @@ export default function DayPage() {
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Overview
           </Link>
-          
+
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center font-bold text-2xl text-white shadow-lg">
               {dayNumber}
@@ -103,7 +109,7 @@ export default function DayPage() {
               </div>
             )}
           </div>
-          
+
           <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
             {dayData.title}
           </h1>
@@ -120,8 +126,12 @@ export default function DayPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-slate-600">Day Progress</span>
-            <span className="text-sm font-bold text-orange-600">{Math.round(progress)}%</span>
+            <span className="text-sm font-semibold text-slate-600">
+              Day Progress
+            </span>
+            <span className="text-sm font-bold text-orange-600">
+              {Math.round(progress)}%
+            </span>
           </div>
           <div className="w-full bg-slate-200 rounded-full h-3">
             <motion.div
@@ -142,9 +152,9 @@ export default function DayPage() {
         >
           <h2 className="text-3xl font-bold text-slate-800 mb-8 flex items-center gap-3">
             <BookOpen className="w-8 h-8 text-orange-600" />
-            Today's Book Summaries
+            Today&apos;s Book Summaries
           </h2>
-          
+
           <div className="space-y-6">
             {dayData.bookSummaries.map((book, index) => (
               <motion.div
@@ -156,21 +166,25 @@ export default function DayPage() {
               >
                 <div className="flex items-start gap-6">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold text-lg">{index + 1}</span>
+                    <span className="text-white font-bold text-lg">
+                      {index + 1}
+                    </span>
                   </div>
-                  
+
                   <div className="flex-1">
                     <h3 className="text-2xl font-bold text-slate-800 mb-2">
                       {book.title}
                     </h3>
                     <p className="text-slate-600 mb-4">by {book.author}</p>
-                    
+
                     <p className="text-slate-700 leading-relaxed mb-6">
                       {book.summary}
                     </p>
-                    
+
                     <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
-                      <h4 className="font-semibold text-slate-800 mb-3">Key Takeaways:</h4>
+                      <h4 className="font-semibold text-slate-800 mb-3">
+                        Key Takeaways:
+                      </h4>
                       <ul className="space-y-2">
                         {book.keyTakeaways.map((takeaway, i) => (
                           <li key={i} className="flex items-start gap-3">
@@ -196,9 +210,9 @@ export default function DayPage() {
         >
           <h2 className="text-3xl font-bold text-slate-800 mb-8 flex items-center gap-3">
             <CheckCircle className="w-8 h-8 text-orange-600" />
-            Today's Action Tasks
+            Today&apos;s Action Tasks
           </h2>
-          
+
           <div className="space-y-4">
             {dayData.tasks.map((task, index) => (
               <motion.div
@@ -212,24 +226,30 @@ export default function DayPage() {
                   <button
                     onClick={() => {
                       if (completedTasks.includes(index)) {
-                        setCompletedTasks(completedTasks.filter(t => t !== index));
+                        setCompletedTasks(
+                          completedTasks.filter((t) => t !== index)
+                        );
                       } else {
                         setCompletedTasks([...completedTasks, index]);
                       }
                     }}
                     className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
                       completedTasks.includes(index)
-                        ? 'bg-green-500 text-white'
-                        : 'bg-slate-200 text-slate-400 hover:bg-slate-300'
+                        ? "bg-green-500 text-white"
+                        : "bg-slate-200 text-slate-400 hover:bg-slate-300"
                     }`}
                   >
                     <CheckCircle className="w-5 h-5" />
                   </button>
-                  
+
                   <div className="flex-1">
-                    <h3 className={`text-xl font-bold mb-2 transition-all duration-300 ${
-                      completedTasks.includes(index) ? 'text-slate-400 line-through' : 'text-slate-800'
-                    }`}>
+                    <h3
+                      className={`text-xl font-bold mb-2 transition-all duration-300 ${
+                        completedTasks.includes(index)
+                          ? "text-slate-400 line-through"
+                          : "text-slate-800"
+                      }`}
+                    >
                       {task.title}
                     </h3>
                     <p className="text-slate-600 leading-relaxed">
@@ -254,16 +274,17 @@ export default function DayPage() {
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center flex-shrink-0">
                 <Download className="w-8 h-8 text-white" />
               </div>
-              
+
               <div className="flex-1">
                 <h3 className="text-2xl font-bold text-slate-800 mb-4">
                   Day {dayNumber} Worksheet
                 </h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">
-                  Download your printable worksheet to track your progress, take notes, and complete reflection exercises.
+                  Download your printable worksheet to track your progress, take
+                  notes, and complete reflection exercises.
                 </p>
                 <button
-                  onClick={() => alert('Worksheet download coming soon!')}
+                  onClick={() => alert("Worksheet download coming soon!")}
                   className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
                 >
                   <Download className="w-5 h-5 mr-2" />
@@ -282,13 +303,15 @@ export default function DayPage() {
           transition={{ duration: 0.6, delay: 0.8 }}
         >
           <Link
-            href={dayNumber > 1 ? `/experience/day/${dayNumber - 1}` : '/experience'}
+            href={
+              dayNumber > 1 ? `/experience/day/${dayNumber - 1}` : "/experience"
+            }
             className="inline-flex items-center px-6 py-3 bg-white/80 text-slate-700 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all duration-300 font-semibold shadow-md hover:shadow-lg"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
-            {dayNumber > 1 ? 'Previous Day' : 'Overview'}
+            {dayNumber > 1 ? "Previous Day" : "Overview"}
           </Link>
-          
+
           {dayNumber < 31 && (
             <Link
               href={`/experience/day/${dayNumber + 1}`}
@@ -341,7 +364,8 @@ function getDayDescription(day: number): string {
   return descriptions[day] || 'Continue your journey of transformation and growth with today\'s lessons.';
 }
 
-function getBookSummaries(day: number): BookSummary[] {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getBookSummaries(_day: number): BookSummary[] {
   // This would come from your database in production
   return [
     {
@@ -377,7 +401,8 @@ function getBookSummaries(day: number): BookSummary[] {
   ];
 }
 
-function getDailyTasks(day: number): Task[] {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getDailyTasks(_day: number): Task[] {
   return [
     {
       title: 'Morning Reflection Exercise',
@@ -391,4 +416,3 @@ function getDailyTasks(day: number): Task[] {
     },
   ];
 }
-

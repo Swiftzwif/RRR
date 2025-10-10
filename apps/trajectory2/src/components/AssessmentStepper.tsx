@@ -1,8 +1,9 @@
-'use client';
+/* eslint-disable react-hooks/exhaustive-deps */
+"use client";
 
-import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 interface Question {
   id: string;
@@ -16,28 +17,28 @@ interface AssessmentStepperProps {
   className?: string;
 }
 
-export default function AssessmentStepper({ 
-  questions, 
-  onComplete, 
-  className = '' 
+export default function AssessmentStepper({
+  questions,
+  onComplete,
+  className = "",
 }: AssessmentStepperProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [isComplete, setIsComplete] = useState(false);
+  const [, setIsComplete] = useState(false);
 
   const currentQuestion = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
   const handleAnswer = (value: number) => {
-    setAnswers(prev => ({
+    setAnswers((prev) => ({
       ...prev,
-      [currentQuestion.id]: value
+      [currentQuestion.id]: value,
     }));
   };
 
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex(prev => prev + 1);
+      setCurrentIndex((prev) => prev + 1);
     } else {
       setIsComplete(true);
       onComplete(answers);
@@ -46,33 +47,36 @@ export default function AssessmentStepper({
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
+      setCurrentIndex((prev) => prev - 1);
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key >= '1' && e.key <= '5') {
-      handleAnswer(parseInt(e.key));
-    } else if (e.key === 'ArrowLeft') {
-      handlePrevious();
-    } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
-      if (answers[currentQuestion.id]) {
-        handleNext();
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key >= "1" && e.key <= "5") {
+        handleAnswer(parseInt(e.key));
+      } else if (e.key === "ArrowLeft") {
+        handlePrevious();
+      } else if (e.key === "ArrowRight" || e.key === "Enter") {
+        if (answers[currentQuestion.id]) {
+          handleNext();
+        }
       }
-    }
-  };
+    },
+    [currentQuestion.id, answers, handleAnswer, handleNext, handlePrevious]
+  );
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, answers]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
   const scaleLabels = {
-    1: 'Never / Very Low',
-    2: 'Rarely',
-    3: 'Sometimes',
-    4: 'Often',
-    5: 'Always / Excellent',
+    1: "Never / Very Low",
+    2: "Rarely",
+    3: "Sometimes",
+    4: "Often",
+    5: "Always / Excellent",
   };
 
   return (
@@ -92,7 +96,7 @@ export default function AssessmentStepper({
             className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
           />
         </div>
       </div>
@@ -110,7 +114,7 @@ export default function AssessmentStepper({
           <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-800 mb-8 leading-relaxed">
             {currentQuestion.prompt}
           </h2>
-          
+
           <p className="text-lg text-slate-500 mb-8">
             Take a breath. Answer honestly.
           </p>
@@ -125,8 +129,8 @@ export default function AssessmentStepper({
             onClick={() => handleAnswer(value)}
             className={`w-full p-6 rounded-2xl border-2 transition-all duration-300 text-left group ${
               answers[currentQuestion.id] === value
-                ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 text-slate-800 shadow-lg'
-                : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md'
+                ? "border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 text-slate-800 shadow-lg"
+                : "border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md"
             }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -136,14 +140,18 @@ export default function AssessmentStepper({
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg ${
-                  answers[currentQuestion.id] === value
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-                    : 'bg-slate-100 text-slate-600 group-hover:bg-gradient-to-r group-hover:from-blue-500 group-hover:to-purple-600 group-hover:text-white'
-                }`}>
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg ${
+                    answers[currentQuestion.id] === value
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+                      : "bg-slate-100 text-slate-600 group-hover:bg-gradient-to-r group-hover:from-blue-500 group-hover:to-purple-600 group-hover:text-white"
+                  }`}
+                >
                   {value}
                 </div>
-                <span className="text-lg font-medium">{scaleLabels[value as keyof typeof scaleLabels]}</span>
+                <span className="text-lg font-medium">
+                  {scaleLabels[value as keyof typeof scaleLabels]}
+                </span>
               </div>
               {answers[currentQuestion.id] === value && (
                 <motion.div
@@ -166,8 +174,8 @@ export default function AssessmentStepper({
           disabled={currentIndex === 0}
           className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 ${
             currentIndex === 0
-              ? 'text-slate-400 cursor-not-allowed'
-              : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100'
+              ? "text-slate-400 cursor-not-allowed"
+              : "text-slate-600 hover:text-slate-800 hover:bg-slate-100"
           }`}
           whileHover={currentIndex > 0 ? { scale: 1.05 } : {}}
           whileTap={currentIndex > 0 ? { scale: 0.95 } : {}}
@@ -181,13 +189,15 @@ export default function AssessmentStepper({
           disabled={!answers[currentQuestion.id]}
           className={`flex items-center gap-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
             answers[currentQuestion.id]
-              ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl'
-              : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+              ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl"
+              : "bg-slate-200 text-slate-400 cursor-not-allowed"
           }`}
           whileHover={answers[currentQuestion.id] ? { scale: 1.05 } : {}}
           whileTap={answers[currentQuestion.id] ? { scale: 0.95 } : {}}
         >
-          {currentIndex === questions.length - 1 ? 'Complete Assessment' : 'Next Question'}
+          {currentIndex === questions.length - 1
+            ? "Complete Assessment"
+            : "Next Question"}
           <ChevronRight className="w-5 h-5" />
         </motion.button>
       </div>

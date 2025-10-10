@@ -3,25 +3,25 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from '@/lib/supabase';
 import { motion } from 'framer-motion';
 import {
-  ArrowRight,
-  BookOpen,
-  CheckCircle,
-  Clock,
-  Lock,
-  Users,
+    ArrowRight,
+    BookOpen,
+    CheckCircle,
+    Clock,
+    Lock,
+    Users,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 interface Module {
   title: string;
@@ -32,7 +32,7 @@ interface Module {
   progress?: number;
 }
 
-export default function CoursePage() {
+function CourseContent() {
   const [hasAccess, setHasAccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
@@ -73,36 +73,30 @@ export default function CoursePage() {
   }, [searchParams]);
 
   const handlePurchase = async () => {
-    try {
-      // Get current user if any
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    // Payment integration coming soon
+    alert(
+      "Course payment ($99.99) - Payment integration coming soon! We'll notify you when it's ready."
+    );
 
-      // Create payment link
-      const response = await fetch("/api/payments/square/create", {
+    // Optional: Capture intent if user is logged in
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user?.email) {
+      await fetch("/api/notify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          product: "course",
-          userId: user?.id,
-          email: user?.email,
+          email: user.email,
+          topic: "course",
+          metadata: {
+            intent: "purchase",
+            timestamp: new Date().toISOString(),
+          },
         }),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to create payment link");
-      }
-
-      const { url } = await response.json();
-
-      // Redirect to Square payment page
-      window.location.href = url;
-    } catch (error) {
-      console.error("Payment error:", error);
-      alert("Failed to start payment process. Please try again.");
     }
   };
 
@@ -200,7 +194,7 @@ export default function CoursePage() {
             Payment Processing
           </h1>
           <p className="text-secondary mb-6">
-            Your payment is being processed. You'll receive an email
+            Your payment is being processed. You&apos;ll receive an email
             confirmation shortly with access to the course.
           </p>
           <Button onClick={() => window.location.reload()}>Check Access</Button>
@@ -386,6 +380,28 @@ export default function CoursePage() {
             </Button>
           </motion.div>
         )}
+      </div>
+    </div>
+  );
+}
+
+export default function CoursePage() {
+  return (
+    <Suspense fallback={<CoursePageSkeleton />}>
+      <CourseContent />
+    </Suspense>
+  );
+}
+
+function CoursePageSkeleton() {
+  return (
+    <div className="min-h-screen bg-base py-12">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <div className="w-32 h-8 bg-elev-2 rounded-full mx-auto mb-6 animate-pulse" />
+          <div className="w-96 h-12 bg-elev-2 rounded-lg mx-auto mb-6 animate-pulse" />
+          <div className="w-full max-w-4xl h-6 bg-elev-2 rounded-lg mx-auto animate-pulse" />
+        </div>
       </div>
     </div>
   );

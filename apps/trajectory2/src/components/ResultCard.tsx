@@ -17,7 +17,7 @@ export default function ResultCard({
   actions, 
   className = '' 
 }: ResultCardProps) {
-  const domainLabels = getCopy('results.domains') as any;
+  const domainLabels = getCopy("results.domains") as Record<Domain, string>;
   const domainName = domainLabels[domain] || domain;
   
   const getScoreColor = (score: number) => {
