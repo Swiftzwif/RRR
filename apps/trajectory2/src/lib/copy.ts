@@ -38,7 +38,7 @@ export const COPY = {
       title: 'What You\'ll Discover',
       items: [
         {
-          title: 'Your Life Avatar',
+          title: 'Your Life Identity',
           description: 'Are you a Drifter, Balancer, or Architect? Discover your current trajectory pattern.',
         },
         {

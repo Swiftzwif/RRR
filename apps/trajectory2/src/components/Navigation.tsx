@@ -1,13 +1,43 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LogoMark } from "./LogoMark";
+import { createClient } from "@/utils/supabase/client";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    // Get initial user
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    // Create a form and submit it to sign out
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/auth/signout';
+    document.body.appendChild(form);
+    form.submit();
+  };
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -55,9 +85,34 @@ export default function Navigation() {
             >
               Resources
             </Link>
-            <Button asChild>
-              <Link href="/course">Get Access</Link>
-            </Button>
+            {!loading && (
+              <>
+                {user ? (
+                  <>
+                    <Link
+                      href="/account"
+                      className="text-secondary hover:text-gold transition-colors duration-200 flex items-center gap-2"
+                    >
+                      <User className="w-4 h-4" />
+                      Account
+                    </Link>
+                    <Button onClick={handleSignOut} variant="outline" size="sm">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button asChild variant="outline" size="sm">
+                      <Link href="/login">Sign In</Link>
+                    </Button>
+                    <Button asChild>
+                      <Link href="/course">Get Access</Link>
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
           </nav>
 
           <button
@@ -103,13 +158,43 @@ export default function Navigation() {
               >
                 Resources
               </Link>
-              <div className="px-3 pt-2">
-                <Button asChild className="w-full">
-                  <Link href="/course" onClick={() => setIsMenuOpen(false)}>
-                    Get Access
-                  </Link>
-                </Button>
-              </div>
+              {!loading && (
+                <>
+                  {user ? (
+                    <>
+                      <Link
+                        href="/account"
+                        className="block px-3 py-2 text-secondary hover:text-gold transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <User className="w-4 h-4 inline mr-2" />
+                        Account
+                      </Link>
+                      <div className="px-3 pt-2">
+                        <Button onClick={handleSignOut} variant="outline" className="w-full">
+                          <LogOut className="w-4 h-4 mr-2" />
+                          Sign Out
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="px-3 pt-2 space-y-2">
+                        <Button asChild variant="outline" className="w-full">
+                          <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                            Sign In
+                          </Link>
+                        </Button>
+                        <Button asChild className="w-full">
+                          <Link href="/course" onClick={() => setIsMenuOpen(false)}>
+                            Get Access
+                          </Link>
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </div>
         )}

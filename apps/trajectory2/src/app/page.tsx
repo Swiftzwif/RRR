@@ -16,23 +16,19 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [currentPhrase, setCurrentPhrase] = useState(0);
-  const phrases = [
-    "Command your attention",
-    "Command your energy",
-    "Command your money",
-  ];
+  const [currentWord, setCurrentWord] = useState(0);
+  const words = ["attention", "energy", "money"];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentPhrase((prev) => (prev + 1) % phrases.length);
+      setCurrentWord((prev) => (prev + 1) % words.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [phrases.length]);
+  }, [words.length]);
 
   const features = [
     {
-      title: "Your Life Avatar",
+      title: "Your Life Identity",
       description:
         "Discover if you're a Drifter, Balancer, or Architect through our comprehensive assessment",
       icon: Users,
@@ -100,21 +96,23 @@ export default function Home() {
                   Trajectory
                 </h1>
                 <h2 className="text-3xl md:text-4xl font-light text-gold mb-8 h-16 flex items-center">
+                  <span>Command your </span>
                   <motion.span
-                    key={currentPhrase}
+                    key={currentWord}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
+                    className="ml-2"
                   >
-                    {phrases[currentPhrase]}
+                    {words[currentWord]}
                   </motion.span>
                 </h2>
               </div>
 
               <div className="space-y-6 text-lg text-secondary leading-relaxed mb-8">
                 <p>
-                  Transform from good little soldier to commander of your life.
+                  Transform into the commander of your life.
                 </p>
                 <p>
                   Most men drift through life unaware of their worth—distracted
@@ -191,7 +189,7 @@ export default function Home() {
                   </Button>
 
                   <p className="text-center text-sm text-muted">
-                    Days 1-7 free • Unlock all 31 days for $99.99
+                    Days 1-7 free • Unlock all 31 days after meeting with Jean
                   </p>
                 </CardContent>
               </Card>

@@ -65,7 +65,7 @@ export default function AssessmentLandingPage() {
                 <Users className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-display font-bold text-slate-800 mb-4">
-                Your Life Avatar
+                Your Life Identity
               </h3>
               <p className="text-slate-600 leading-relaxed">
                 Are you a Drifter, Balancer, or Architect? Discover your current trajectory pattern and what it means for your future.

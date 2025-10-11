@@ -12,10 +12,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Trajectory2.0 | Transform Your Life",
-  description: "Unified webapp combining professional assessment system with beautiful animations. Transform from good little soldier to commander of your life.",
+  description: "Unified webapp combining professional assessment system with beautiful animations. Transform into the commander of your life.",
   openGraph: {
     title: "Trajectory2.0 | Transform Your Life",
-    description: "Unified webapp combining professional assessment system with beautiful animations. Transform from good little soldier to commander of your life.",
+    description: "Unified webapp combining professional assessment system with beautiful animations. Transform into the commander of your life.",
     url: "https://trajectory2.example.com",
     siteName: "Trajectory2.0",
     images: [{ url: "/og.png", width: 1200, height: 630 }],

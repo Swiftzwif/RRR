@@ -220,7 +220,7 @@ export default function ResourcesPage() {
               Ready to Start Your Transformation?
             </h2>
             <p className="text-xl text-blue-200 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Take the free assessment now and discover your path to command your trajectory.
+              Take the free assessment now and discover your path to commanding your trajectory.
             </p>
             <Link
               href="/assessment"
