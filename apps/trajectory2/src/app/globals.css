@@ -443,3 +443,185 @@ html {
   letter-spacing: 0.015em;
   line-height: 1.5;
 }
+
+/* Professional Spacing System - Ample Breathing Room */
+.section-spacing {
+  padding-top: clamp(4rem, 8vw, 8rem);
+  padding-bottom: clamp(4rem, 8vw, 8rem);
+}
+
+.section-spacing-sm {
+  padding-top: clamp(3rem, 6vw, 6rem);
+  padding-bottom: clamp(3rem, 6vw, 6rem);
+}
+
+.section-spacing-lg {
+  padding-top: clamp(5rem, 10vw, 10rem);
+  padding-bottom: clamp(5rem, 10vw, 10rem);
+}
+
+.content-spacing {
+  margin-bottom: clamp(2rem, 4vw, 4rem);
+}
+
+.content-spacing-sm {
+  margin-bottom: clamp(1rem, 2vw, 2rem);
+}
+
+.content-spacing-lg {
+  margin-bottom: clamp(3rem, 6vw, 6rem);
+}
+
+.breathing-space {
+  padding: clamp(2rem, 4vw, 4rem);
+  margin: clamp(1rem, 2vw, 2rem) 0;
+}
+
+/* Enhanced Canyon Theme - Professional & Stoic */
+.canyon-gradient {
+  background: linear-gradient(135deg, 
+    #1a1614 0%, 
+    #2a1f1a 25%, 
+    #1a1614 50%,
+    #2a1f1a 75%,
+    #1a1614 100%
+  );
+  background-size: 200% 200%;
+  animation: gradient-shift 20s ease infinite;
+}
+
+.canyon-card {
+  background: linear-gradient(135deg, 
+    rgba(26, 22, 20, 0.95) 0%, 
+    rgba(42, 31, 26, 0.95) 100%
+  );
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(200, 155, 60, 0.15);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(200, 155, 60, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.canyon-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(200, 155, 60, 0.25);
+  box-shadow: 
+    0 24px 48px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(200, 155, 60, 0.15),
+    inset 0 1px 0 rgba(200, 155, 60, 0.2);
+}
+
+/* Professional Container with Breathing Space */
+.professional-container {
+  max-width: 90rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1rem, 4vw, 4rem);
+  padding-right: clamp(1rem, 4vw, 4rem);
+}
+
+/* Elevated Content Sections */
+.elevated-section {
+  position: relative;
+  padding: clamp(3rem, 6vw, 6rem) clamp(2rem, 4vw, 4rem);
+  background: var(--bg-elev-1);
+  border-top: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.elevated-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(200, 155, 60, 0.3) 50%, 
+    transparent
+  );
+}
+
+/* Professional Grid Spacing */
+.pro-grid {
+  display: grid;
+  gap: clamp(2rem, 4vw, 4rem);
+}
+
+.pro-grid-sm {
+  display: grid;
+  gap: clamp(1rem, 2vw, 2rem);
+}
+
+.pro-grid-lg {
+  display: grid;
+  gap: clamp(3rem, 6vw, 6rem);
+}
+
+/* Refined Card Interactions */
+.refined-card {
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border-default);
+  border-radius: 1rem;
+  padding: clamp(1.5rem, 3vw, 3rem);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.refined-card:hover {
+  border-color: var(--border-gold);
+  background: var(--bg-elev-3);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Memorable Visual Hierarchy */
+.visual-hierarchy-primary {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: clamp(1.5rem, 3vw, 3rem);
+  color: var(--text-primary);
+}
+
+.visual-hierarchy-secondary {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: clamp(1rem, 2vw, 2rem);
+  color: var(--text-primary);
+}
+
+.visual-hierarchy-body {
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: clamp(1rem, 2vw, 2rem);
+}
+
+/* Smooth Page Transitions */
+.page-transition {
+  animation: fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Professional Focus States */
+*:focus-visible {
+  outline: 2px solid var(--brand-gold);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Enhanced Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
