@@ -1,0 +1,305 @@
+# Git Workflow Rules for RRR Project
+
+## Branch Strategy
+
+### Branch Naming Convention
+- `main` - Production-ready code
+- `develop` - Integration branch for features
+- `feature/<ticket-number>-<short-description>` - New features
+- `fix/<ticket-number>-<short-description>` - Bug fixes
+- `hotfix/<ticket-number>-<short-description>` - Urgent production fixes
+- `refactor/<scope>-<description>` - Code refactoring
+- `chore/<description>` - Maintenance tasks (deps, configs, etc.)
+- `docs/<description>` - Documentation updates
+
+### Branch Creation Rules
+1. **ALWAYS create a new branch** for each distinct piece of work
+2. **NEVER commit directly to main or develop**
+3. Create branches from `develop` for features/fixes
+4. Create branches from `main` only for hotfixes
+5. Keep branches small and focused on a single concern
+
+## Commit Conventions
+
+### Commit Message Format
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### Types
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, missing semicolons, etc.)
+- `refactor`: Code refactoring without changing functionality
+- `perf`: Performance improvements
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+- `build`: Build system or dependency updates
+- `ci`: CI/CD configuration changes
+
+### Scopes (for this project)
+- `assessment`: Assessment-related features
+- `course`: Course module
+- `payment`: Payment integrations
+- `auth`: Authentication
+- `email`: Email functionality
+- `ui`: UI components
+- `api`: API routes
+- `db`: Database changes
+- `config`: Configuration changes
+
+### Commit Rules
+1. **Atomic commits** - Each commit should represent one logical change
+2. **Commit early and often** - Don't wait until end of day
+3. **Write meaningful commit messages** - Future you will thank present you
+4. **No commits with failing tests or linting errors**
+
+### Examples
+```
+feat(assessment): add progress indicator to assessment stepper
+fix(payment): resolve Square API webhook validation error
+docs(api): update API documentation with new endpoints
+refactor(ui): extract common button styles to shared component
+```
+
+## Workflow Commands
+
+### Starting New Work
+```bash
+# 1. Ensure you're on develop and it's up to date
+git checkout develop
+git pull origin develop
+
+# 2. Create a new feature branch
+git checkout -b feature/TRJ-123-user-authentication
+
+# 3. Work on your feature with atomic commits
+git add -p  # Stage changes interactively
+git commit -m "feat(auth): implement JWT token generation"
+```
+
+### Daily Workflow
+```bash
+# Start of day - update your branch
+git checkout develop
+git pull origin develop
+git checkout feature/your-branch
+git merge develop  # or rebase if preferred
+
+# During work - commit frequently
+git add -p
+git commit -m "feat(scope): description"
+
+# End of work session - push your branch
+git push origin feature/your-branch
+```
+
+### Completing Work
+```bash
+# 1. Ensure all tests pass
+npm run test
+npm run lint
+
+# 2. Update from develop one final time
+git checkout develop
+git pull origin develop
+git checkout feature/your-branch
+git merge develop
+
+# 3. Push and create PR
+git push origin feature/your-branch
+# Create PR on GitHub targeting develop branch
+```
+
+## Code Review Process
+
+### Before Creating a PR
+1. Self-review your code using `git diff develop`
+2. Ensure all tests pass
+3. Update documentation if needed
+4. Remove any console.logs or debug code
+5. Squash WIP commits if needed (but keep logical separation)
+
+### PR Title Format
+```
+[TYPE] Scope: Description
+
+Examples:
+[FEAT] Assessment: Add email capture after assessment completion
+[FIX] Payment: Resolve Square webhook timeout issue
+[REFACTOR] UI: Consolidate button component variants
+```
+
+### PR Description Template
+```markdown
+## Summary
+Brief description of what this PR does
+
+## Changes
+- Bullet list of specific changes
+- Include any breaking changes
+
+## Testing
+- [ ] Unit tests pass
+- [ ] Manual testing completed
+- [ ] No console errors
+
+## Screenshots
+(if applicable)
+
+## Related Issues
+Closes #123
+```
+
+## Git History Organization
+
+### Finding Changes Quickly
+```bash
+# Find commits by author
+git log --author="YourName" --oneline
+
+# Find commits by message
+git log --grep="payment" --oneline
+
+# Find commits affecting specific file
+git log --follow -- path/to/file
+
+# Find commits in date range
+git log --since="2024-01-01" --until="2024-01-31"
+
+# See branch history visually
+git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+```
+
+### Useful Aliases (add to ~/.gitconfig)
+```
+[alias]
+    # Show concise status
+    st = status -sb
+    
+    # Show pretty log
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+    
+    # Show files changed in each commit
+    ll = log --pretty=format:'%C(yellow)%h%Cred%d %Creset%s%Cblue [%cn]' --decorate --numstat
+    
+    # Interactive rebase
+    rb = rebase -i
+    
+    # Amend last commit
+    amend = commit --amend --no-edit
+    
+    # Undo last commit (keep changes)
+    undo = reset HEAD~1 --mixed
+```
+
+## Implementation Rules for AI Assistant
+
+When working in this codebase, I will:
+
+1. **Create a new branch** for each distinct task:
+   ```bash
+   git checkout -b feature/description-of-work
+   ```
+
+2. **Make atomic commits** with proper messages:
+   ```bash
+   git add -p  # Review changes before staging
+   git commit -m "type(scope): clear description"
+   ```
+
+3. **Push regularly** to avoid losing work:
+   ```bash
+   git push origin current-branch
+   ```
+
+4. **Never commit directly to main or develop**
+
+5. **Always run tests before committing**:
+   ```bash
+   npm run lint
+   npm run test
+   npm run build
+   ```
+
+6. **Keep PRs small and focused** - If a task is too large, break it into multiple PRs
+
+7. **Update branch from develop before creating PR**
+
+## Emergency Procedures
+
+### If you accidentally commit to main/develop
+```bash
+# Create a new branch with your changes
+git checkout -b feature/emergency-fix
+
+# Reset main/develop to origin
+git checkout main
+git reset --hard origin/main
+```
+
+### If you need to undo commits
+```bash
+# Undo last commit but keep changes
+git reset --soft HEAD~1
+
+# Undo commits and discard changes
+git reset --hard HEAD~1
+```
+
+### If merge conflicts occur
+```bash
+# Update your branch
+git checkout develop
+git pull origin develop
+git checkout your-branch
+git merge develop
+
+# Resolve conflicts in editor
+# Then:
+git add .
+git commit -m "merge: resolve conflicts with develop"
+```
+
+## Project-Specific Rules
+
+### For trajectory2 app:
+- All payment-related changes require extra review
+- Database schema changes need migration files
+- UI changes need screenshot in PR
+- Email template changes need preview screenshot
+
+### Branch Lifecycle
+1. Create branch from develop
+2. Work on feature with regular commits
+3. Keep branch updated with develop (daily)
+4. Create PR when ready
+5. Address review comments
+6. Merge to develop after approval
+7. Delete branch after merge
+
+## Monitoring Branch Health
+
+Run these periodically:
+```bash
+# Show all branches
+git branch -a
+
+# Show merged branches (safe to delete)
+git branch --merged develop
+
+# Clean up deleted remote branches
+git remote prune origin
+
+# Delete local branches that are merged
+git branch --merged develop | grep -v develop | xargs -n 1 git branch -d
+```
+
+---
+
+Remember: Good git hygiene makes everyone's life easier, including future you!

@@ -64,7 +64,7 @@ export default function ExperiencePage() {
             Rethink. Redesign. Reignite.
           </h1>
           <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed mb-8">
-            A transformational journey designed to help you shift from good little soldier to commander of your life. 
+            A transformational journey designed to help you become the commander of your life. 
             Each day includes 3 curated book summaries, 2 action tasks, and printable worksheets.
           </p>
           
@@ -74,7 +74,7 @@ export default function ExperiencePage() {
               <Star className="w-6 h-6 text-green-600" />
               <span className="text-lg font-bold text-slate-800">Start Free: Days 1-7 Unlocked</span>
             </div>
-            <p className="text-slate-600">Experience the transformation. Unlock all 31 days for $99.99</p>
+            <p className="text-slate-600">Experience the transformation. Unlock all 31 days after meeting with Jean</p>
           </div>
         </motion.div>
 
@@ -194,7 +194,7 @@ export default function ExperiencePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <h2 className="text-4xl font-bold mb-6">Ready to Unlock All 31 Days?</h2>
+            <h2 className="text-4xl font-bold mb-6">Ready to Unlock All 31 Days After Meeting With Jean?</h2>
             <p className="text-xl text-orange-200 mb-8 max-w-3xl mx-auto leading-relaxed">
               Get lifetime access to the complete transformation experience. All book summaries, action tasks, and printable worksheets included.
             </p>

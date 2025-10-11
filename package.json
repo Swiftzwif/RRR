@@ -7,15 +7,11 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "cd apps/main && npm run dev",
-    "dev:trajectory2": "cd apps/trajectory2 && npm run dev",
-    "build": "cd apps/main && npm run build",
-    "build:trajectory2": "cd apps/trajectory2 && npm run build",
-    "lint": "cd apps/main && npm run lint",
-    "lint:trajectory2": "cd apps/trajectory2 && npm run lint",
-    "typecheck": "cd apps/main && npm run typecheck",
-    "typecheck:trajectory2": "cd apps/trajectory2 && npm run typecheck",
-    "install:all": "npm install && cd apps/main && npm install && cd ../trajectory2 && npm install"
+    "dev": "cd apps/trajectory2 && npm run dev",
+    "build": "cd apps/trajectory2 && npm run build",
+    "lint": "cd apps/trajectory2 && npm run lint",
+    "typecheck": "cd apps/trajectory2 && npm run typecheck",
+    "install:all": "npm install && cd apps/trajectory2 && npm install"
   },
   "devDependencies": {
     "typescript": "^5",

@@ -106,7 +106,7 @@ function CourseContent() {
       description:
         "Understand the power of killing the boy and awakening the commander within.",
       lessons: [
-        "The Good Little Soldier",
+        "The Awakening",
         "Breaking the Programming",
         "Your First Command",
       ],
