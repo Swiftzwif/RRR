@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, CheckCircle, Users, Zap, FileText, Target, Gift, Unlock, Heart } from "lucide-react";
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -119,7 +119,7 @@ export default function Home() {
                 </p>
                 <p>
                   Most men drift through life unaware of their worth—distracted
-                  by feeds, trapped in yesterday's thoughts, repeating the same
+                  by feeds, trapped in yesterday&apos;s thoughts, repeating the same
                   inputs and getting the same results.
                 </p>
                 <p className="text-primary font-semibold">
@@ -363,7 +363,7 @@ export default function Home() {
               You Can Do This Yourself
             </h2>
             <p className="text-xl text-secondary max-w-3xl mx-auto leading-relaxed">
-              Everything we offer can be done on your own. We're not hiding anything.
+              Everything we offer can be done on your own. We&apos;re not hiding anything.
               The books are available. The frameworks are out there. The wisdom is accessible.
             </p>
           </motion.div>
@@ -384,8 +384,8 @@ export default function Home() {
                         <h3 className="font-semibold text-primary mb-2">Why We Exist</h3>
                         <p className="text-secondary leading-relaxed">
                           We exist for two reasons: <strong className="text-primary">accountability</strong> and{' '}
-                          <strong className="text-primary">simplicity</strong>. We've curated, organized, and 
-                          distilled the essential wisdom so you don't have to spend years searching.
+                          <strong className="text-primary">simplicity</strong>. We&apos;ve curated, organized, and 
+                          distilled the essential wisdom so you don&apos;t have to spend years searching.
                         </p>
                       </div>
                     </div>

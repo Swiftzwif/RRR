@@ -175,7 +175,7 @@ export default function LoginPage() {
                 >
                   {mode === 'login' ? (
                     <>
-                      Don't have an account?{' '}
+                      Don&apos;t have an account?{' '}
                       <span className="text-gold font-semibold">Sign up</span>
                     </>
                   ) : (
@@ -199,7 +199,7 @@ export default function LoginPage() {
                     <div className="text-sm text-secondary">
                       <p className="font-semibold text-primary mb-1">Secure & Private</p>
                       <p>
-                        Your data is encrypted and secure. We'll send you a confirmation
+                        Your data is encrypted and secure. We&apos;ll send you a confirmation
                         email to verify your account.
                       </p>
                     </div>

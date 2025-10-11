@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { motion } from 'framer-motion'
-import { User as UserIcon, Mail, Save, LogOut } from 'lucide-react'
+import { User as UserIcon, Mail, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
