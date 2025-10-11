@@ -5,6 +5,7 @@ Quick reference for your daily git workflow.
 ## Daily Commands
 
 ### Start Your Day
+
 ```bash
 git checkout develop
 git pull origin develop
@@ -13,12 +14,14 @@ git merge develop
 ```
 
 ### Create New Feature
+
 ```bash
 git checkout develop && git pull
 git checkout -b feature/TRJ-123-descriptive-name
 ```
 
 ### Commit Your Work
+
 ```bash
 # Review changes
 git diff
@@ -31,6 +34,7 @@ git commit -m "feat(scope): what you did"
 ```
 
 ### Push Your Work
+
 ```bash
 git push origin your-branch-name
 ```
@@ -48,6 +52,7 @@ git push origin your-branch-name
 | `chore` | Build/config changes |
 
 ### Examples
+
 ```bash
 feat(assessment): add email validation
 fix(payment): prevent duplicate charges
@@ -182,6 +187,7 @@ git merge --abort
 ## Code Review
 
 ### Before Creating PR
+
 ```bash
 # Self-review changes
 git diff develop
@@ -196,6 +202,7 @@ npm run build
 ```
 
 ### PR Checklist
+
 - [ ] Branch name follows convention
 - [ ] Commits use conventional format
 - [ ] Code builds successfully
@@ -219,6 +226,7 @@ git cleanup     # delete merged branches
 ## Emergency Commands
 
 ### Committed to Wrong Branch
+
 ```bash
 git checkout correct-branch
 git cherry-pick <commit-hash>
@@ -227,6 +235,7 @@ git reset --hard HEAD~1
 ```
 
 ### Need to Change Last Commit
+
 ```bash
 # Just the message
 git commit --amend -m "new message"
@@ -237,6 +246,7 @@ git commit --amend --no-edit
 ```
 
 ### Accidentally Deleted Branch
+
 ```bash
 # Find the commit
 git reflog
