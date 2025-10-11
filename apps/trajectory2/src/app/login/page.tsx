@@ -1,14 +1,20 @@
 'use client'
 
+import { LogoMark } from "@/components/LogoMark";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { motion } from 'framer-motion'
-import { LogIn, UserPlus, ArrowRight, Shield } from 'lucide-react'
+import { ArrowRight, LogIn, Shield, UserPlus } from "lucide-react";
+import Link from "next/link";
 import { useState } from 'react'
-import { login, signup } from './actions'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { LogoMark } from '@/components/LogoMark'
-import Link from 'next/link'
+import { login, signup } from "./actions";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -223,4 +229,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

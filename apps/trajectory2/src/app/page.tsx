@@ -12,7 +12,18 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, CheckCircle, Users, Zap, FileText, Target, Gift, Unlock, Heart } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  CheckCircle,
+  FileText,
+  Gift,
+  Heart,
+  Target,
+  Unlock,
+  Users,
+  Zap,
+} from "lucide-react";
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 

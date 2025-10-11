@@ -4,10 +4,11 @@ import { motion } from 'framer-motion'
 import { AlertCircle, Home, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default function ErrorPage() {
+function ErrorContent() {
   const searchParams = useSearchParams()
   const message = searchParams.get('message') || 'Something went wrong. Please try again.'
 
@@ -49,6 +50,31 @@ export default function ErrorPage() {
         </Card>
       </motion.div>
     </div>
+  )
+}
+
+function ErrorPageSkeleton() {
+  return (
+    <div className="min-h-screen bg-base flex items-center justify-center py-12 px-4">
+      <div className="max-w-md w-full">
+        <Card className="bg-elev-2 border-red-200">
+          <CardHeader className="text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-8 h-8 text-red-600" />
+            </div>
+            <CardTitle className="text-2xl text-primary">Loading...</CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+export default function ErrorPage() {
+  return (
+    <Suspense fallback={<ErrorPageSkeleton />}>
+      <ErrorContent />
+    </Suspense>
   )
 }
 

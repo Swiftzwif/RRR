@@ -1,12 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { User } from '@supabase/supabase-js'
 import { motion } from 'framer-motion'
-import { User as UserIcon, Mail, LogOut } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { LogOut, Mail, User as UserIcon } from "lucide-react";
+import { useState } from "react";
 
 export default function AccountForm({ user }: { user: User }) {
   const [loading, setLoading] = useState(false)
@@ -121,4 +127,3 @@ export default function AccountForm({ user }: { user: User }) {
     </motion.div>
   )
 }
-
