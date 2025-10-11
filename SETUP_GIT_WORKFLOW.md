@@ -5,12 +5,14 @@ This guide will help you restructure your git tree for better organization, easi
 ## Current State
 
 Right now you have:
+
 - `master` branch (production)
 - `feature/project-restructure` branch (current work)
 
 ## Target State
 
 We want to establish:
+
 - `master` or `main` - Production-ready code
 - `develop` - Integration branch where features come together
 - Multiple feature branches - Each for a specific task
