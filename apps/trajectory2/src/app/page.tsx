@@ -10,25 +10,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, CheckCircle, Users, Zap } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, BookOpen, CheckCircle, Users, Zap, FileText, Target, Gift, Unlock, Heart } from "lucide-react";
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [currentWord, setCurrentWord] = useState(0);
-  const words = ["attention", "energy", "money"];
+  const [currentPhrase, setCurrentPhrase] = useState(0);
+  const phrases = [
+    "Command your attention",
+    "Command your energy",
+    "Command your money",
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentWord((prev) => (prev + 1) % words.length);
+      setCurrentPhrase((prev) => (prev + 1) % phrases.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [words.length]);
+  }, [phrases.length]);
 
   const features = [
     {
-      title: "Your Life Identity",
+      title: "Your Life Avatar",
       description:
         "Discover if you're a Drifter, Balancer, or Architect through our comprehensive assessment",
       icon: Users,
@@ -96,27 +101,25 @@ export default function Home() {
                   Trajectory
                 </h1>
                 <h2 className="text-3xl md:text-4xl font-light text-gold mb-8 h-16 flex items-center">
-                  <span>Command your </span>
                   <motion.span
-                    key={currentWord}
+                    key={currentPhrase}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
-                    className="ml-2"
                   >
-                    {words[currentWord]}
+                    {phrases[currentPhrase]}
                   </motion.span>
                 </h2>
               </div>
 
               <div className="space-y-6 text-lg text-secondary leading-relaxed mb-8">
                 <p>
-                  Transform into the commander of your life.
+                  Transform from good little soldier to commander of your life.
                 </p>
                 <p>
                   Most men drift through life unaware of their worth—distracted
-                  by feeds, trapped in yesterday&apos;s thoughts, repeating the same
+                  by feeds, trapped in yesterday's thoughts, repeating the same
                   inputs and getting the same results.
                 </p>
                 <p className="text-primary font-semibold">
@@ -148,49 +151,119 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <Card className="bg-elev-2 border-[var(--border-gold)] relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[var(--brand-gold)] to-transparent opacity-10 blur-3xl" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[var(--brand-gold)] to-transparent opacity-10 blur-3xl animate-pulse" />
 
-                <CardHeader className="text-center pb-4">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gold-gradient rounded-2xl flex items-center justify-center gold-glow-sm">
+                <CardHeader className="text-center pb-2">
+                  <motion.div 
+                    className="w-20 h-20 mx-auto mb-4 bg-gold-gradient rounded-2xl flex items-center justify-center gold-glow-sm"
+                    animate={{ 
+                      scale: [1, 1.05, 1],
+                      rotate: [0, 2, -2, 0]
+                    }}
+                    transition={{ 
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
                     <BookOpen className="w-10 h-10 text-black" />
-                  </div>
-                  <CardTitle className="text-2xl text-primary">
-                    Free 7-Day Experience
+                  </motion.div>
+                  <CardTitle className="text-2xl text-primary mb-2">
+                    Free Resources
                   </CardTitle>
                   <CardDescription className="text-secondary">
-                    Start your transformation journey today
+                    Everything you need to start your transformation
                   </CardDescription>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
-                      <span className="text-secondary">
+                  {/* Tabbed Preview */}
+                  <Tabs defaultValue="story" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 bg-elev-1">
+                      <TabsTrigger value="story" className="data-[state=active]:bg-gold-gradient data-[state=active]:text-black">
+                        <FileText className="w-4 h-4 mr-1" />
+                        Story
+                      </TabsTrigger>
+                      <TabsTrigger value="assessment" className="data-[state=active]:bg-gold-gradient data-[state=active]:text-black">
+                        <Target className="w-4 h-4 mr-1" />
+                        Assessment
+                      </TabsTrigger>
+                      <TabsTrigger value="resources" className="data-[state=active]:bg-gold-gradient data-[state=active]:text-black">
+                        <Gift className="w-4 h-4 mr-1" />
+                        Resources
+                      </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="story" className="mt-4 space-y-3">
+                      <div className="bg-elev-1 p-4 rounded-lg border border-[var(--border-default)]">
+                        <h4 className="font-semibold text-primary mb-2">Kill the Boy Story</h4>
+                        <p className="text-sm text-secondary mb-3">
+                          Discover the transformational moment that changed everything.
+                        </p>
+                        <Button asChild variant="outline" size="sm" className="w-full">
+                          <Link href="/resources#story">
+                            Read the Story <ArrowRight className="w-4 h-4 ml-2" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="assessment" className="mt-4 space-y-3">
+                      <div className="bg-elev-1 p-4 rounded-lg border border-[var(--border-default)]">
+                        <h4 className="font-semibold text-primary mb-2">Free Life Assessment</h4>
+                        <p className="text-sm text-secondary mb-3">
+                          Discover your Life Identity and get personalized actions in 10 minutes.
+                        </p>
+                        <Button asChild variant="outline" size="sm" className="w-full">
+                          <Link href="/assessment/landing">
+                            Take Assessment <ArrowRight className="w-4 h-4 ml-2" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="resources" className="mt-4 space-y-3">
+                      <div className="bg-elev-1 p-4 rounded-lg border border-[var(--border-default)]">
+                        <h4 className="font-semibold text-primary mb-2">Free Book List & Resources</h4>
+                        <p className="text-sm text-secondary mb-3">
+                          50+ transformational books curated for high-value men.
+                        </p>
+                        <Button asChild variant="outline" size="sm" className="w-full">
+                          <Link href="/resources">
+                            View Resources <ArrowRight className="w-4 h-4 ml-2" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+
+                  {/* 7-Day Experience */}
+                  <div className="pt-4 border-t border-[var(--border-default)]">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Unlock className="w-5 h-5 text-gold" />
+                      <h4 className="font-semibold text-primary">7-Day Experience</h4>
+                    </div>
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center gap-2 text-sm text-secondary">
+                        <CheckCircle className="w-4 h-4 text-gold flex-shrink-0" />
                         21 curated book summaries
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
-                      <span className="text-secondary">
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-secondary">
+                        <CheckCircle className="w-4 h-4 text-gold flex-shrink-0" />
                         Daily action tasks & worksheets
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
-                      <span className="text-secondary">
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-secondary">
+                        <CheckCircle className="w-4 h-4 text-gold flex-shrink-0" />
                         Personalized growth roadmap
-                      </span>
+                      </div>
                     </div>
+                    <Button asChild className="w-full" size="lg">
+                      <Link href="/experience">Start Free 7 Days</Link>
+                    </Button>
+                    <p className="text-center text-xs text-muted mt-2">
+                      Days 1-7 free • Full access after meeting with Jean
+                    </p>
                   </div>
-
-                  <Button asChild className="w-full" size="lg">
-                    <Link href="/experience">Explore 31-Day Experience</Link>
-                  </Button>
-
-                  <p className="text-center text-sm text-muted">
-                    Days 1-7 free • Unlock all 31 days after meeting with Jean
-                  </p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -269,6 +342,96 @@ export default function Home() {
                 />
               </Link>
             </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Transparency Section */}
+      <section className="py-20 bg-elev-1 relative">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <Badge variant="outline" className="border-gold text-gold mb-4">
+              ULTIMATE TRANSPARENCY
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-primary mb-6">
+              You Can Do This Yourself
+            </h2>
+            <p className="text-xl text-secondary max-w-3xl mx-auto leading-relaxed">
+              Everything we offer can be done on your own. We're not hiding anything.
+              The books are available. The frameworks are out there. The wisdom is accessible.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            <Card className="bg-elev-2 border-[var(--border-gold)]">
+              <CardContent className="p-8 md:p-12">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <Heart className="w-6 h-6 text-gold flex-shrink-0 mt-1" />
+                      <div>
+                        <h3 className="font-semibold text-primary mb-2">Why We Exist</h3>
+                        <p className="text-secondary leading-relaxed">
+                          We exist for two reasons: <strong className="text-primary">accountability</strong> and{' '}
+                          <strong className="text-primary">simplicity</strong>. We've curated, organized, and 
+                          distilled the essential wisdom so you don't have to spend years searching.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <Target className="w-6 h-6 text-gold flex-shrink-0 mt-1" />
+                      <div>
+                        <h3 className="font-semibold text-primary mb-2">What We Provide</h3>
+                        <p className="text-secondary leading-relaxed">
+                          Clear structure. Focused action. A community of men committed to growth. 
+                          Someone to meet with who will hold you accountable to your word and your transformation.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-8 border-t border-[var(--border-default)] text-center">
+                  <p className="text-lg text-primary font-semibold mb-4">
+                    All Free Resources Are Immediately Accessible
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-4">
+                    <Button asChild variant="outline">
+                      <Link href="/resources">
+                        Browse Free Resources
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                      <Link href="/assessment/landing">
+                        Take Free Assessment
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                      <Link href="/experience">
+                        Start 7-Day Experience
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </section>
