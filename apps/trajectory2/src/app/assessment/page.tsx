@@ -125,10 +125,10 @@ export default function AssessmentPage() {
             LIFE ASSESSMENT
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 bg-clip-text text-transparent mb-6">
-            {getCopy('assessment.title')}
+            {getCopy('assessment.title') as string}
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            {getCopy('assessment.subtitle')}
+            {getCopy('assessment.subtitle') as string}
           </p>
         </div>
 

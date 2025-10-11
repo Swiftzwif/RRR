@@ -49,20 +49,12 @@ export default function AvatarBadge({
     }
   };
 
-  const getAvatarGradient = (avatar: Avatar) => {
-    switch (avatar) {
-      case 'Drifter':
-        return 'from-red-500 to-red-600';
-      case 'Balancer':
-        return 'from-yellow-500 to-yellow-600';
-      case 'Architect':
-        return 'from-green-500 to-green-600';
-      default:
-        return 'from-red-500 to-red-600';
-    }
-  };
 
-  const avatarData = getCopy(`results.avatar.${avatar.toLowerCase()}`) as any;
+  const avatarData = getCopy(`results.avatar.${avatar.toLowerCase()}`) as {
+    title: string;
+    description: string;
+    traits?: string[];
+  };
 
   return (
     <motion.div
