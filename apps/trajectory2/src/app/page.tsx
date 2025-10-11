@@ -118,7 +118,7 @@ export default function Home() {
                 </p>
                 <p>
                   Most men drift through life unaware of their worth—distracted
-                  by feeds, trapped in yesterday's thoughts, repeating the same
+                  by feeds, trapped in yesterday&apos;s thoughts, repeating the same
                   inputs and getting the same results.
                 </p>
                 <p className="text-primary font-semibold">

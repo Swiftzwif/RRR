@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 export default function CoachingPage() {
   const [hasAccess, setHasAccess] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [email, setEmail] = useState('');
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -42,7 +41,11 @@ export default function CoachingPage() {
     alert('Payment integration for coaching is coming soon! Stay tuned.');
   };
 
-  const coachingData = getCopy('tbd.coaching') as any;
+  const coachingData = getCopy('tbd.coaching') as {
+    title: string;
+    description: string;
+    process?: string[];
+  };
   const processSteps = coachingData.process || [];
 
   if (loading) {
@@ -114,7 +117,7 @@ export default function CoachingPage() {
           transition={{ duration: 0.6, delay: 0.6 }}
         >
           <h2 className="text-3xl font-display font-bold text-slate-800 mb-12 text-center">
-            What You'll Get
+            What You&apos;ll Get
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center p-8 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
@@ -164,7 +167,7 @@ export default function CoachingPage() {
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-10 rounded-3xl border border-green-200/50 shadow-lg max-w-2xl mx-auto">
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-6" />
               <h3 className="text-2xl font-display font-bold text-slate-800 mb-4">
-                You're All Set!
+                You&apos;re All Set!
               </h3>
               <p className="text-slate-600 mb-6 leading-relaxed">
                 Your coaching interview has been scheduled. Check your email for details.

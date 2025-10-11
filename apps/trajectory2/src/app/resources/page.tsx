@@ -41,12 +41,12 @@ export default function ResourcesPage() {
             
             <div className="max-w-4xl mx-auto space-y-8">
               <p className="text-xl text-blue-200 leading-relaxed">
-                "When I turned 25, my mentor told me something I'll never forget:"
+                &ldquo;When I turned 25, my mentor told me something I&apos;ll never forget:&rdquo;
               </p>
               
               <div className="text-center">
-                <p className="text-4xl font-bold text-orange-400 mb-4">"Kill the boy."</p>
-                <p className="text-lg text-blue-200">It wasn't about violence. It was about transformation.</p>
+                <p className="text-4xl font-bold text-orange-400 mb-4">&ldquo;Kill the boy.&rdquo;</p>
+                <p className="text-lg text-blue-200">It wasn&apos;t about violence. It was about transformation.</p>
               </div>
               
               <p className="text-lg text-blue-200 leading-relaxed">
@@ -71,7 +71,7 @@ export default function ResourcesPage() {
                     </li>
                     <li className="text-blue-200 flex items-start gap-3">
                       <span className="text-orange-400 mt-1">•</span>
-                      <span>The boy explains himself. The man doesn't need to — his presence speaks.</span>
+                      <span>The boy explains himself. The man doesn&apos;t need to — his presence speaks.</span>
                     </li>
                     <li className="text-blue-200 flex items-start gap-3">
                       <span className="text-orange-400 mt-1">•</span>
@@ -83,7 +83,7 @@ export default function ResourcesPage() {
                     </li>
                     <li className="text-blue-200 flex items-start gap-3">
                       <span className="text-orange-400 mt-1">•</span>
-                      <span>The boy asks: "What can the world offer me?"</span>
+                      <span>The boy asks: &ldquo;What can the world offer me?&rdquo;</span>
                     </li>
                   </ul>
                 </div>
@@ -113,7 +113,7 @@ export default function ResourcesPage() {
                     </li>
                     <li className="text-blue-200 flex items-start gap-3">
                       <span className="text-green-400 mt-1">•</span>
-                      <span>The man asks: "What can I offer the world?"</span>
+                      <span>The man asks: &ldquo;What can I offer the world?&rdquo;</span>
                     </li>
                   </ul>
                 </div>
@@ -142,12 +142,12 @@ export default function ResourcesPage() {
               Free Life Assessment
             </h3>
             <p className="text-slate-600 leading-relaxed mb-6">
-              Discover what's shaping your path and how to raise your floor in 10 minutes. Get your personalized scorecard plus 1–2 micro-actions to raise your floor this week.
+              Discover what&apos;s shaping your path and how to raise your floor in 10 minutes. Get your personalized scorecard plus 1–2 micro-actions to raise your floor this week.
             </p>
             <ul className="space-y-2 mb-6">
               <li className="text-slate-600 flex items-center gap-2">
                 <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                Find out which lane you're in
+                Find out which lane you&apos;re in
               </li>
               <li className="text-slate-600 flex items-center gap-2">
                 <span className="w-2 h-2 bg-blue-500 rounded-full"></span>

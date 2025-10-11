@@ -17,7 +17,7 @@ interface Day {
 
 export default function ExperiencePage() {
   const [hasAccess, setHasAccess] = useState(false);
-  const [completedDays, setCompletedDays] = useState<number[]>([]);
+  const [completedDays] = useState<number[]>([]);
 
   // Generate 31 days - First 7 are free, rest are locked
   const days: Day[] = Array.from({ length: 31 }, (_, i) => {

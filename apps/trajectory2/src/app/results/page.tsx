@@ -99,6 +99,23 @@ export default function ResultsPage() {
           .eq("id", results.assessmentId);
       }
 
+      // Send assessment complete email with 7-day experience
+      await fetch("/api/notify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          topic: "assessment",
+          metadata: {
+            avatar: results.avatar,
+            overallScore: results.overall,
+            lowestDomains: results.lowestTwoDomains,
+          },
+        }),
+      });
+
       setShowEmailCapture(false);
     } catch (error) {
       console.error("Error saving email:", error);
@@ -108,36 +125,31 @@ export default function ResultsPage() {
   };
 
   const handlePurchase = async (product: "course" | "coaching") => {
-    try {
-      // Get current user if any
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    // Payment integration coming soon
+    const productName =
+      product === "course" ? "Trajectory Course" : "1-on-1 Coaching";
+    const price = product === "course" ? "$99.99" : "$24.99";
 
-      // Create payment link
-      const response = await fetch("/api/payments/square/create", {
+    alert(
+      `${productName} (${price}) - Payment integration coming soon! We'll notify you when it's ready.`
+    );
+
+    // Optional: Still capture intent
+    if (email) {
+      await fetch("/api/notify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          product,
-          userId: user?.id,
-          email: email || user?.email,
+          email,
+          topic: product,
+          metadata: {
+            intent: "purchase",
+            timestamp: new Date().toISOString(),
+          },
         }),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to create payment link");
-      }
-
-      const { url } = await response.json();
-
-      // Redirect to Square payment page
-      window.location.href = url;
-    } catch (error) {
-      console.error("Payment error:", error);
-      alert("Failed to start payment process. Please try again.");
     }
   };
 
@@ -163,7 +175,7 @@ export default function ResultsPage() {
             No Results Found
           </h1>
           <p className="text-slate-600 mb-8">
-            It looks like you haven't completed the assessment yet.
+            It looks like you haven&apos;t completed the assessment yet.
           </p>
           <button
             onClick={() => router.push("/assessment")}
@@ -177,7 +189,7 @@ export default function ResultsPage() {
   }
 
   const suggestedActions = getSuggestedActions(results.lowestTwoDomains);
-  const domainLabels = getCopy("results.domains") as any;
+  const domainLabels = getCopy("results.domains") as Record<Domain, string>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
@@ -235,9 +247,9 @@ export default function ResultsPage() {
             YOUR RESULTS
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 bg-clip-text text-transparent mb-6">
-            {getCopy("results.title")}
+            {getCopy("results.title") as string}
           </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">{getCopy("results.subtitle")}</p>
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">{getCopy("results.subtitle") as string}</p>
         </motion.div>
 
         {/* Avatar Section */}
@@ -258,7 +270,7 @@ export default function ResultsPage() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <h2 className="text-3xl font-display font-bold text-slate-800 mb-12 text-center">
-            {getCopy("results.domains.title")}
+            {getCopy("results.domains.title") as string}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {Object.entries(results.domainScores).map(([domain, score]) => (
@@ -280,7 +292,7 @@ export default function ResultsPage() {
           transition={{ duration: 0.6, delay: 0.6 }}
         >
           <h2 className="text-3xl font-display font-bold text-slate-800 mb-12 text-center">
-            {getCopy("results.actions.title")}
+            {getCopy("results.actions.title") as string}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <ResultCard
@@ -308,13 +320,13 @@ export default function ResultsPage() {
               <span className="text-white text-2xl">📚</span>
             </div>
             <h3 className="text-2xl font-display font-bold text-slate-800 mb-4">
-              {getCopy("results.cta.course.title")}
+              {getCopy("results.cta.course.title") as string}
             </h3>
             <p className="text-slate-600 mb-6 leading-relaxed">
-              {getCopy("results.cta.course.description")}
+              {getCopy("results.cta.course.description") as string}
             </p>
             <div className="text-4xl font-bold text-blue-600 mb-6">
-              {getCopy("results.cta.course.price")}
+              {getCopy("results.cta.course.price") as string}
             </div>
             <button
               onClick={() => handlePurchase("course")}
@@ -330,13 +342,13 @@ export default function ResultsPage() {
               <span className="text-white text-2xl">🎯</span>
             </div>
             <h3 className="text-2xl font-display font-bold text-slate-800 mb-4">
-              {getCopy("results.cta.coaching.title")}
+              {getCopy("results.cta.coaching.title") as string}
             </h3>
             <p className="text-slate-600 mb-6 leading-relaxed">
-              {getCopy("results.cta.coaching.description")}
+              {getCopy("results.cta.coaching.description") as string}
             </p>
             <div className="text-4xl font-bold text-orange-600 mb-6">
-              {getCopy("results.cta.coaching.price")}
+              {getCopy("results.cta.coaching.price") as string}
             </div>
             <button
               onClick={() => handlePurchase("coaching")}

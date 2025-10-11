@@ -9,13 +9,6 @@ import { LogoMark } from "./LogoMark";
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMenuOpen(false);
-  };
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-elev-1/95 backdrop-blur-sm border-b border-[var(--border-default)] z-50">

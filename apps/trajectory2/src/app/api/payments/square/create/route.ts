@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
     const url = new URL(request.url);
     const baseUrl = `${url.protocol}//${url.host}`;
     const successUrl = `${baseUrl}/${product}?success=1&session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `${baseUrl}/${product}`;
 
     // Create Square Payment Link
     const paymentLinkResponse = await fetch(`${SQUARE_BASE_URL}/online-checkout/payment-links`, {
@@ -93,7 +92,7 @@ export async function POST(request: NextRequest) {
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       );
     }

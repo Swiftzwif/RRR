@@ -298,13 +298,18 @@ export const COPY = {
 } as const;
 
 // Helper function to get copy with interpolation
-export function getCopy(path: string, variables?: Record<string, string | number>): string {
+export function getCopy(path: string, variables?: Record<string, string | number>): string | Record<string, unknown> {
   const keys = path.split('.');
-  let value: string | Record<string, any> = COPY;
+  let value: string | Record<string, unknown> = COPY;
   
   for (const key of keys) {
-    value = value[key];
-    if (value === undefined) {
+    if (typeof value === 'object' && value !== null) {
+      value = (value as Record<string, unknown>)[key] as string | Record<string, unknown>;
+      if (value === undefined) {
+        console.warn(`Copy path not found: ${path}`);
+        return path;
+      }
+    } else {
       console.warn(`Copy path not found: ${path}`);
       return path;
     }

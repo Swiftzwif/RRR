@@ -23,7 +23,7 @@ export default function AssessmentLandingPage() {
             Discover Your Life Trajectory
           </h1>
           <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed mb-8">
-            Take a 10-minute assessment to understand what's shaping your path and how to raise your floor. 
+            Take a 10-minute assessment to understand what&apos;s shaping your path and how to raise your floor. 
             Get personalized insights that can transform your approach to life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -52,7 +52,7 @@ export default function AssessmentLandingPage() {
         >
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-800 mb-6">
-              What You'll Discover
+              What You&apos;ll Discover
             </h2>
             <p className="text-lg text-slate-600 max-w-3xl mx-auto">
               Our assessment analyzes six core life domains to give you a complete picture of your current trajectory.
@@ -166,7 +166,7 @@ export default function AssessmentLandingPage() {
                 Why Take This Assessment?
               </h2>
               <p className="text-xl text-blue-200 max-w-3xl mx-auto leading-relaxed">
-                Most people drift through life without understanding what's actually driving their trajectory. 
+                Most people drift through life without understanding what&apos;s actually driving their trajectory. 
                 This assessment changes that.
               </p>
             </div>
@@ -179,7 +179,7 @@ export default function AssessmentLandingPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-2">Clarity on Your Current Path</h3>
-                    <p className="text-blue-200">Understand exactly where you stand across all life domains and what's driving your trajectory.</p>
+                    <p className="text-blue-200">Understand exactly where you stand across all life domains and what&apos;s driving your trajectory.</p>
                   </div>
                 </div>
                 
