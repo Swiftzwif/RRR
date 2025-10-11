@@ -1,12 +1,12 @@
 'use client'
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from 'framer-motion'
-import { AlertCircle, Home, ArrowLeft } from 'lucide-react'
+import { AlertCircle, ArrowLeft, Home } from "lucide-react";
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Suspense } from "react";
 
 function ErrorContent() {
   const searchParams = useSearchParams()
@@ -77,4 +77,3 @@ export default function ErrorPage() {
     </Suspense>
   )
 }
-
