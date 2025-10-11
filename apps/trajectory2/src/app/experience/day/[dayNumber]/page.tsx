@@ -52,7 +52,7 @@ export default function DayPage() {
             This Day is Locked
           </h1>
           <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-            Day {dayNumber} is part of the premium experience. Unlock all 31 days to continue your transformation journey.
+            Day {dayNumber} is part of the premium experience. Unlock all 31 days after meeting with Jean to continue your transformation journey.
           </p>
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-200 shadow-lg mb-8">
             <div className="text-4xl font-bold text-orange-600 mb-2">
