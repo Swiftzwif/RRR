@@ -120,7 +120,7 @@ export const COPY = {
     title: 'Your Trajectory Results',
     subtitle: 'Here\'s what your assessment reveals about your current path',
     avatar: {
-      title: 'Your Life Avatar',
+      title: 'Your Life Identity',
       drifter: {
         title: 'The Drifter',
         description: 'You\'re in exploration mode, seeking direction and clarity. This is a powerful place to start building intentional momentum.',
