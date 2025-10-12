@@ -210,21 +210,20 @@ export default function Home() {
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-8 relative z-10">
+                <CardContent className="space-y-6 relative z-10">
                   {/* AUTO-CYCLING SHOWCASE - LARGE SECTION */}
-                  <div className="relative min-h-[400px]">
-                    {/* Indicator dots */}
-                    <div className="flex justify-center gap-2 mb-6">
+                  <div className="relative">
+                    {/* Indicator dots - subtle animations */}
+                    <div className="flex justify-center gap-3 mb-6">
                       {[0, 1, 2].map((idx) => (
-                        <motion.button
+                        <button
                           key={idx}
                           onClick={() => setActiveTab(idx)}
-                          className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                          className={`rounded-full transition-all duration-500 ease-out ${
                             activeTab === idx 
-                              ? 'bg-gradient-to-r from-orange-500 to-red-500 w-8' 
-                              : 'bg-orange-500/30'
+                              ? 'w-8 h-3 bg-gradient-to-r from-orange-500 to-red-500' 
+                              : 'w-3 h-3 bg-orange-500/30 hover:bg-orange-500/50'
                           }`}
-                          whileHover={{ scale: 1.2 }}
                         />
                       ))}
                     </div>
@@ -233,11 +232,9 @@ export default function Home() {
                     {activeTab === 0 && (
                       <motion.div
                         key="story"
-                        initial={{ opacity: 0, x: 50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -50 }}
-                        transition={{ duration: 0.6 }}
-                        className="absolute inset-0"
+                        initial={{ x: 20 }}
+                        animate={{ x: 0 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
                           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
@@ -285,11 +282,9 @@ export default function Home() {
                     {activeTab === 1 && (
                       <motion.div
                         key="assessment"
-                        initial={{ opacity: 0, x: 50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -50 }}
-                        transition={{ duration: 0.6 }}
-                        className="absolute inset-0"
+                        initial={{ x: 20 }}
+                        animate={{ x: 0 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
                           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
@@ -340,11 +335,9 @@ export default function Home() {
                     {activeTab === 2 && (
                       <motion.div
                         key="resources"
-                        initial={{ opacity: 0, x: 50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -50 }}
-                        transition={{ duration: 0.6 }}
-                        className="absolute inset-0"
+                        initial={{ x: 20 }}
+                        animate={{ x: 0 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
                           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
@@ -392,60 +385,36 @@ export default function Home() {
                     )}
                   </div>
 
-                  {/* 7-DAY EXPERIENCE - GOLD COLORED CTA */}
-                  <motion.div 
-                    className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--brand-gold)]/20 via-yellow-600/20 to-orange-600/20 border-2 border-[var(--brand-gold)] backdrop-blur-sm p-6"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                  >
+                  {/* 7-DAY EXPERIENCE - COMPACT GOLD CTA */}
+                  <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[var(--brand-gold)]/20 via-yellow-600/20 to-orange-600/20 border-2 border-[var(--brand-gold)] backdrop-blur-sm p-4">
                     <div className="absolute inset-0 bg-gradient-to-r from-[var(--brand-gold)]/10 to-orange-500/10" />
                     
-                    <div className="relative space-y-5">
-                      <div className="flex items-center gap-3">
-                        <motion.div
-                          animate={{ 
-                            rotate: [0, 360],
-                            scale: [1, 1.2, 1]
-                          }}
-                          transition={{ 
-                            duration: 4,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                        >
-                          <Unlock className="w-7 h-7 text-gold" />
-                        </motion.div>
-                        <h4 className="text-2xl font-bold text-white">Start Your 7-Day Experience</h4>
+                    <div className="relative space-y-3">
+                      <div className="flex items-center justify-center gap-2">
+                        <Unlock className="w-5 h-5 text-gold" />
+                        <h4 className="text-lg font-bold text-white">Start Your 7-Day Experience</h4>
                       </div>
-                      
-                      <p className="text-orange-100 text-base leading-relaxed">
-                        Experience the full Trajectory system risk-free. Get daily book summaries, action tasks, and personalized guidance for 7 days—completely free.
-                      </p>
 
-                      <div className="grid grid-cols-1 gap-3">
+                      <div className="flex flex-wrap justify-center gap-2 text-sm">
                         {[
-                          { icon: BookOpen, text: "21 transformational book summaries" },
-                          { icon: CheckCircle, text: "Daily action tasks & printable worksheets" },
-                          { icon: Zap, text: "Your personalized growth roadmap" }
+                          { icon: BookOpen, text: "21 book summaries" },
+                          { icon: CheckCircle, text: "Daily tasks" },
+                          { icon: Zap, text: "Growth roadmap" }
                         ].map((item, idx) => (
-                          <motion.div 
+                          <div 
                             key={idx}
-                            className="flex items-center gap-3 bg-slate-900/50 rounded-lg p-3 border border-[var(--brand-gold)]/30"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 * idx }}
+                            className="flex items-center gap-1.5 bg-slate-900/50 rounded-lg px-2.5 py-1.5 border border-[var(--brand-gold)]/30"
                           >
-                            <item.icon className="w-5 h-5 text-gold flex-shrink-0" />
+                            <item.icon className="w-4 h-4 text-gold flex-shrink-0" />
                             <span className="text-orange-100 font-medium">{item.text}</span>
-                          </motion.div>
+                          </div>
                         ))}
                       </div>
 
-                      {/* SMALLER PULSATING CTA */}
+                      {/* COMPACT PULSATING CTA */}
                       <motion.div
                         animate={{ 
-                          scale: [1, 1.02, 1],
+                          scale: [1, 1.01, 1],
                         }}
                         transition={{ 
                           duration: 2,
@@ -455,42 +424,19 @@ export default function Home() {
                       >
                         <Button 
                           asChild 
-                          className="w-full h-12 text-base font-bold bg-gradient-to-r from-[var(--brand-gold)] to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black relative overflow-hidden group shadow-lg"
+                          className="w-full h-11 text-sm font-bold bg-gradient-to-r from-[var(--brand-gold)] to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black shadow-lg"
                         >
-                          <Link href="/experience" className="relative z-10">
-                            <motion.span
-                              className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-[var(--brand-gold)] to-orange-500 opacity-0 group-hover:opacity-30 blur-xl"
-                              animate={{
-                                opacity: [0.3, 0.5, 0.3],
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                            />
-                            <span className="relative z-10 flex items-center justify-center">
-                              Start Free 7 Days
-                              <motion.div
-                                animate={{ x: [0, 5, 0] }}
-                                transition={{ 
-                                  duration: 1.5,
-                                  repeat: Infinity,
-                                  ease: "easeInOut"
-                                }}
-                              >
-                                <ArrowRight className="w-5 h-5 ml-2" />
-                              </motion.div>
-                            </span>
+                          <Link href="/experience">
+                            Start Free 7 Days <ArrowRight className="w-4 h-4 ml-1.5" />
                           </Link>
                         </Button>
                       </motion.div>
 
-                      <p className="text-center text-sm text-gold font-medium">
+                      <p className="text-center text-xs text-gold font-medium">
                         Days 1-7 free • Full access after meeting with Jean
                       </p>
                     </div>
-                  </motion.div>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
