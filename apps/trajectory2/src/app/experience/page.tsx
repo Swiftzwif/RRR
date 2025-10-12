@@ -186,6 +186,58 @@ export default function ExperiencePage() {
           ))}
         </div>
 
+        {/* The Real Price of Admission */}
+        {!hasAccess && (
+          <motion.div
+            className="bg-gradient-to-br from-slate-800 via-slate-900 to-black text-white rounded-3xl p-12 shadow-2xl mb-12 border-2 border-orange-500/30"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <h2 className="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-orange-400 via-red-400 to-yellow-400 bg-clip-text text-transparent">
+              The Real Price of Admission
+            </h2>
+            <div className="max-w-4xl mx-auto space-y-6 text-lg leading-relaxed">
+              <p className="text-orange-100">
+                Most people think the price of admission is $97 or $125.<br />
+                But that&apos;s not the real cost.<br />
+                That&apos;s just the token — the transaction that gets your foot in the door.
+              </p>
+              <p className="text-orange-100">
+                The real price is internal.<br />
+                It&apos;s the <span className="text-red-400 font-semibold">fear</span> you&apos;re still holding onto — fear of failure, rejection, or truly seeing yourself.<br />
+                It&apos;s the <span className="text-orange-400 font-semibold">ego</span> that still needs to be right, to be seen, to be in control.<br />
+                And it&apos;s the <span className="text-yellow-400 font-semibold">aimlessness</span> that keeps you disconnected from your purpose.
+              </p>
+              <p className="text-orange-100">
+                Those are the real costs of entry — the energies you must sacrifice to evolve.
+              </p>
+              <p className="text-white font-bold text-xl">
+                Because transformation doesn&apos;t charge in dollars.<br />
+                It charges in identity.
+              </p>
+              <p className="text-orange-200 text-xl">
+                You pay with who you&apos;ve been, so you can become who you&apos;re meant to be.
+              </p>
+              <p className="text-orange-100 border-l-4 border-orange-500 pl-6 italic">
+                That&apos;s the admission price to Trajectory.<br />
+                And yes — it&apos;s far more valuable, and far more expensive, than money.
+              </p>
+              <div className="text-center mt-10 pt-8 border-t border-orange-500/30">
+                <p className="text-orange-300 text-lg mb-4">
+                  🔥 So when you see the number on the screen, remember — that&apos;s not the price you pay.
+                </p>
+                <p className="text-white font-bold text-xl">
+                  The real admission price is letting go of the very things that have kept you small.
+                </p>
+                <p className="text-orange-400 font-semibold text-lg mt-4">
+                  And the moment you do that… you&apos;ve finally killed the boy.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Unlock CTA */}
         {!hasAccess && (
           <motion.div

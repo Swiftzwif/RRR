@@ -112,6 +112,37 @@ export default function StoryPage() {
           </motion.section>
         </div>
 
+        {/* About Jean Paul Maldonado */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 backdrop-blur-sm rounded-3xl p-10 border-2 border-orange-200 shadow-xl"
+        >
+          <h2 className="text-3xl font-display font-bold text-slate-800 mb-8 text-center">
+            About Jean Paul Maldonado
+          </h2>
+          <div className="prose max-w-none">
+            <p className="text-slate-700 leading-relaxed mb-6 text-lg">
+              My name is Jean Paul Maldonado — I&apos;m not a guru; I&apos;m an advisor and curator of esoteric information. My inspired talent lies in researching and translating complex, unseen truths into practical, grounded concepts that help people thrive. I&apos;m especially skilled at connecting the dots between the spiritual and the strategic.
+            </p>
+            <p className="text-slate-700 leading-relaxed mb-6 text-lg">
+              My education wouldn&apos;t be half of what it is without my apprenticeship under Robinson Aquino, who has been my mentor since 2018. I credit much of my understanding to his teachings. With a background in finance, accounting, and taxation, I hold a B.S. in Finance from Providence College and a degree in Accounting from UMass Lowell. I&apos;m also an Enrolled Agent, licensed to represent taxpayers before the IRS.
+            </p>
+            <p className="text-slate-700 leading-relaxed mb-6 text-lg">
+              I founded Trajectory because where I come from, I&apos;ve seen too many people — especially young men — struggling in silence. My mission is to improve the joy-to-misery ratio in my community by helping men get the best return on investment for their time, energy, and attention. My goal is to transform the lives of 250 men by 2026, and 2,500 by 2030.
+            </p>
+            <p className="text-slate-700 leading-relaxed mb-6 text-lg">
+              Born on June 12, 2000 in Methuen, Massachusetts and raised in a proud Dominican household, I still love my rice and beans — and I love helping people flourish. I&apos;m a lifelong learner, reader, traveler, and student of life.
+            </p>
+            <p className="text-orange-700 font-bold text-xl text-center leading-relaxed">
+              My message to the world is simple:<br />
+              You have infinite worth.
+            </p>
+          </div>
+        </motion.section>
+
         {/* CTA */}
         <motion.div
           className="text-center mt-20"
