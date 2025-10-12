@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -30,6 +29,7 @@ import { useEffect, useState } from 'react';
 export default function Home() {
   const [currentWord, setCurrentWord] = useState(0);
   const words = ["attention", "energy", "money"];
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -37,6 +37,14 @@ export default function Home() {
     }, 3000);
     return () => clearInterval(interval);
   }, [words.length]);
+
+  // Auto-cycle through tabs every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveTab((prev) => (prev + 1) % 3);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const features = [
     {
@@ -190,192 +198,210 @@ export default function Home() {
                   />
                 </div>
 
-                <CardHeader className="text-center pb-4 relative z-10">
-                  <motion.div 
-                    className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-orange-500 via-red-500 to-yellow-600 rounded-3xl flex items-center justify-center shadow-2xl"
-                    animate={{ 
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 5, -5, 0],
-                      boxShadow: [
-                        "0 0 20px rgba(251, 146, 60, 0.5)",
-                        "0 0 40px rgba(251, 146, 60, 0.8)",
-                        "0 0 20px rgba(251, 146, 60, 0.5)"
-                      ]
-                    }}
-                    transition={{ 
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <BookOpen className="w-12 h-12 text-white drop-shadow-lg" />
-                  </motion.div>
-                  <CardTitle className="text-3xl font-bold text-white mb-2">
-                    Free Resources
+                <CardHeader className="text-center pb-6 relative z-10">
+                  <Badge variant="outline" className="border-gold text-gold mb-4 mx-auto">
+                    WHAT IS TRAJECTORY?
+                  </Badge>
+                  <CardTitle className="text-4xl font-bold text-white mb-3">
+                    Your Path to Commanding Life
                   </CardTitle>
-                  <CardDescription className="text-orange-200 text-base">
-                    Everything you need to start your transformation
+                  <CardDescription className="text-orange-200 text-lg max-w-2xl mx-auto leading-relaxed">
+                    A comprehensive system combining proven frameworks, expert guidance, and a brotherhood of men committed to transformation
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-6 relative z-10">
-                  {/* Tabbed Preview with Vibrant Tiles */}
-                  <Tabs defaultValue="story" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 bg-slate-900/50 backdrop-blur-sm border border-orange-500/30 p-1 rounded-xl">
-                      <TabsTrigger 
-                        value="story" 
-                        className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-                      >
-                        <FileText className="w-4 h-4 mr-1" />
-                        Story
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="assessment" 
-                        className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-                      >
-                        <Target className="w-4 h-4 mr-1" />
-                        Assessment
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="resources" 
-                        className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-                      >
-                        <Gift className="w-4 h-4 mr-1" />
-                        Resources
-                      </TabsTrigger>
-                    </TabsList>
+                <CardContent className="space-y-8 relative z-10">
+                  {/* AUTO-CYCLING SHOWCASE - LARGE SECTION */}
+                  <div className="relative min-h-[400px]">
+                    {/* Indicator dots */}
+                    <div className="flex justify-center gap-2 mb-6">
+                      {[0, 1, 2].map((idx) => (
+                        <motion.button
+                          key={idx}
+                          onClick={() => setActiveTab(idx)}
+                          className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                            activeTab === idx 
+                              ? 'bg-gradient-to-r from-orange-500 to-red-500 w-8' 
+                              : 'bg-orange-500/30'
+                          }`}
+                          whileHover={{ scale: 1.2 }}
+                        />
+                      ))}
+                    </div>
 
-                    <TabsContent value="story" className="mt-6">
-                      <motion.div 
-                        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        whileHover={{ scale: 1.02, borderColor: "rgba(251, 146, 60, 0.8)" }}
+                    {/* Story Slide */}
+                    {activeTab === 0 && (
+                      <motion.div
+                        key="story"
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{ duration: 0.6 }}
+                        className="absolute inset-0"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
-                        <div className="relative p-6 space-y-4">
-                          <div className="flex items-start gap-4">
-                            <motion.div 
-                              className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-lg"
-                              animate={{ rotate: [0, 360] }}
-                              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            >
-                              <FileText className="w-6 h-6 text-white" />
-                            </motion.div>
-                            <div className="flex-1">
-                              <h4 className="text-xl font-bold text-white mb-2">Kill the Boy Story</h4>
-                              <p className="text-orange-100 leading-relaxed">
-                                Discover the transformational moment that changed everything. The story that sparked a movement.
+                        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
+                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
+                          <div className="relative space-y-6">
+                            <div className="flex items-center gap-4">
+                              <motion.div 
+                                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl"
+                                animate={{ rotate: [0, 360] }}
+                                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                              >
+                                <FileText className="w-8 h-8 text-white" />
+                              </motion.div>
+                              <div>
+                                <h3 className="text-3xl font-bold text-white mb-1">The Story</h3>
+                                <p className="text-orange-300">Where it all began</p>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-4 text-orange-100 text-lg leading-relaxed">
+                              <p>
+                                <strong className="text-white">At 25, everything changed.</strong> My mentor looked me in the eye and said: <span className="text-orange-300 font-semibold">&quot;Kill the boy.&quot;</span>
+                              </p>
+                              <p>
+                                It wasn&apos;t about violence—it was about transformation. Killing the version of yourself that seeks approval, avoids responsibility, and drifts through life.
+                              </p>
+                              <p className="text-white font-semibold">
+                                Trajectory was born from that moment—a complete system to help men command their attention, energy, and resources.
                               </p>
                             </div>
+
+                            <Button 
+                              asChild 
+                              className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-lg h-14 shadow-xl hover:shadow-2xl transition-all duration-300"
+                            >
+                              <Link href="/resources#story">
+                                Read the Full Story <ArrowRight className="w-6 h-6 ml-2" />
+                              </Link>
+                            </Button>
                           </div>
-                          <Button 
-                            asChild 
-                            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                            size="lg"
-                          >
-                            <Link href="/resources#story">
-                              Read the Story <ArrowRight className="w-5 h-5 ml-2" />
-                            </Link>
-                          </Button>
                         </div>
                       </motion.div>
-                    </TabsContent>
+                    )}
 
-                    <TabsContent value="assessment" className="mt-6">
-                      <motion.div 
-                        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 via-cyan-500/20 to-blue-600/20 border-2 border-blue-500/50 backdrop-blur-sm"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        whileHover={{ scale: 1.02, borderColor: "rgba(59, 130, 246, 0.8)" }}
+                    {/* Assessment Slide */}
+                    {activeTab === 1 && (
+                      <motion.div
+                        key="assessment"
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{ duration: 0.6 }}
+                        className="absolute inset-0"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 animate-pulse" />
-                        <div className="relative p-6 space-y-4">
-                          <div className="flex items-start gap-4">
-                            <motion.div 
-                              className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg"
-                              animate={{ 
-                                scale: [1, 1.1, 1],
-                                rotate: [0, 180, 360]
-                              }}
-                              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                            >
-                              <Target className="w-6 h-6 text-white" />
-                            </motion.div>
-                            <div className="flex-1">
-                              <h4 className="text-xl font-bold text-white mb-2">Free Life Assessment</h4>
-                              <p className="text-blue-100 leading-relaxed">
-                                Discover your Life Identity and get personalized actions in just 10 minutes. Know where you stand.
+                        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
+                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
+                          <div className="relative space-y-6">
+                            <div className="flex items-center gap-4">
+                              <motion.div 
+                                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl"
+                                animate={{ 
+                                  scale: [1, 1.1, 1],
+                                  rotate: [0, 180, 360]
+                                }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                              >
+                                <Target className="w-8 h-8 text-white" />
+                              </motion.div>
+                              <div>
+                                <h3 className="text-3xl font-bold text-white mb-1">Life Assessment</h3>
+                                <p className="text-orange-300">Know where you stand</p>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-4 text-orange-100 text-lg leading-relaxed">
+                              <p>
+                                <strong className="text-white">Most men are blind to their actual trajectory.</strong> They think they&apos;re doing fine until reality hits.
+                              </p>
+                              <p>
+                                Our Life Assessment reveals your <span className="text-orange-300 font-semibold">Life Identity</span>—whether you&apos;re a Drifter, Balancer, or Architect. It measures 7 critical domains of life and shows you exactly where you&apos;re winning and where you&apos;re losing.
+                              </p>
+                              <p className="text-white font-semibold">
+                                In 10 minutes, you&apos;ll have more clarity than most men get in 10 years.
                               </p>
                             </div>
+
+                            <Button 
+                              asChild 
+                              className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-lg h-14 shadow-xl hover:shadow-2xl transition-all duration-300"
+                            >
+                              <Link href="/assessment/landing">
+                                Take Free Assessment <ArrowRight className="w-6 h-6 ml-2" />
+                              </Link>
+                            </Button>
                           </div>
-                          <Button 
-                            asChild 
-                            className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                            size="lg"
-                          >
-                            <Link href="/assessment/landing">
-                              Take Assessment <ArrowRight className="w-5 h-5 ml-2" />
-                            </Link>
-                          </Button>
                         </div>
                       </motion.div>
-                    </TabsContent>
+                    )}
 
-                    <TabsContent value="resources" className="mt-6">
-                      <motion.div 
-                        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-purple-600/20 border-2 border-purple-500/50 backdrop-blur-sm"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        whileHover={{ scale: 1.02, borderColor: "rgba(168, 85, 247, 0.8)" }}
+                    {/* Resources Slide */}
+                    {activeTab === 2 && (
+                      <motion.div
+                        key="resources"
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{ duration: 0.6 }}
+                        className="absolute inset-0"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 animate-pulse" />
-                        <div className="relative p-6 space-y-4">
-                          <div className="flex items-start gap-4">
-                            <motion.div 
-                              className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-lg"
-                              animate={{ 
-                                y: [0, -10, 0],
-                                rotate: [0, 10, -10, 0]
-                              }}
-                              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                            >
-                              <Gift className="w-6 h-6 text-white" />
-                            </motion.div>
-                            <div className="flex-1">
-                              <h4 className="text-xl font-bold text-white mb-2">Free Book List & Resources</h4>
-                              <p className="text-purple-100 leading-relaxed">
-                                50+ transformational books curated for high-value men. Wisdom distilled and ready.
+                        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
+                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
+                          <div className="relative space-y-6">
+                            <div className="flex items-center gap-4">
+                              <motion.div 
+                                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl"
+                                animate={{ 
+                                  y: [0, -10, 0],
+                                  rotate: [0, 10, -10, 0]
+                                }}
+                                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                              >
+                                <Gift className="w-8 h-8 text-white" />
+                              </motion.div>
+                              <div>
+                                <h3 className="text-3xl font-bold text-white mb-1">Free Resources</h3>
+                                <p className="text-orange-300">Wisdom you can access now</p>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-4 text-orange-100 text-lg leading-relaxed">
+                              <p>
+                                <strong className="text-white">You don&apos;t need to pay to get started.</strong> We believe in ultimate transparency.
+                              </p>
+                              <p>
+                                Access <span className="text-orange-300 font-semibold">50+ curated book summaries</span>, frameworks from the greatest minds, and actionable strategies—all for free. The knowledge is out there. We&apos;ve just organized it for you.
+                              </p>
+                              <p className="text-white font-semibold">
+                                Trajectory exists for accountability and simplicity. The resources are yours. The transformation is up to you.
                               </p>
                             </div>
+
+                            <Button 
+                              asChild 
+                              className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-lg h-14 shadow-xl hover:shadow-2xl transition-all duration-300"
+                            >
+                              <Link href="/resources">
+                                Browse Free Resources <ArrowRight className="w-6 h-6 ml-2" />
+                              </Link>
+                            </Button>
                           </div>
-                          <Button 
-                            asChild 
-                            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                            size="lg"
-                          >
-                            <Link href="/resources">
-                              View Resources <ArrowRight className="w-5 h-5 ml-2" />
-                            </Link>
-                          </Button>
                         </div>
                       </motion.div>
-                    </TabsContent>
-                  </Tabs>
+                    )}
+                  </div>
 
-                  {/* 7-Day Experience - PULSATING CTA */}
+                  {/* 7-DAY EXPERIENCE - GOLD COLORED CTA */}
                   <motion.div 
-                    className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-600/30 via-red-600/30 to-yellow-600/30 border-2 border-orange-500 backdrop-blur-sm p-6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
+                    className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--brand-gold)]/20 via-yellow-600/20 to-orange-600/20 border-2 border-[var(--brand-gold)] backdrop-blur-sm p-6"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[var(--brand-gold)]/10 to-orange-500/10" />
                     
-                    <div className="relative space-y-4">
+                    <div className="relative space-y-5">
                       <div className="flex items-center gap-3">
                         <motion.div
                           animate={{ 
@@ -388,32 +414,35 @@ export default function Home() {
                             ease: "easeInOut"
                           }}
                         >
-                          <Unlock className="w-7 h-7 text-orange-400" />
+                          <Unlock className="w-7 h-7 text-gold" />
                         </motion.div>
-                        <h4 className="text-2xl font-bold text-white">7-Day Experience</h4>
+                        <h4 className="text-2xl font-bold text-white">Start Your 7-Day Experience</h4>
                       </div>
                       
+                      <p className="text-orange-100 text-base leading-relaxed">
+                        Experience the full Trajectory system risk-free. Get daily book summaries, action tasks, and personalized guidance for 7 days—completely free.
+                      </p>
+
                       <div className="grid grid-cols-1 gap-3">
                         {[
-                          { icon: BookOpen, text: "21 curated book summaries" },
-                          { icon: CheckCircle, text: "Daily action tasks & worksheets" },
-                          { icon: Zap, text: "Personalized growth roadmap" }
+                          { icon: BookOpen, text: "21 transformational book summaries" },
+                          { icon: CheckCircle, text: "Daily action tasks & printable worksheets" },
+                          { icon: Zap, text: "Your personalized growth roadmap" }
                         ].map((item, idx) => (
                           <motion.div 
                             key={idx}
-                            className="flex items-center gap-3 bg-slate-900/50 rounded-lg p-3 border border-orange-500/30"
+                            className="flex items-center gap-3 bg-slate-900/50 rounded-lg p-3 border border-[var(--brand-gold)]/30"
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.1 * idx }}
-                            whileHover={{ scale: 1.05, borderColor: "rgba(251, 146, 60, 0.6)" }}
                           >
-                            <item.icon className="w-5 h-5 text-orange-400 flex-shrink-0" />
+                            <item.icon className="w-5 h-5 text-gold flex-shrink-0" />
                             <span className="text-orange-100 font-medium">{item.text}</span>
                           </motion.div>
                         ))}
                       </div>
 
-                      {/* PULSATING GLOWING CTA */}
+                      {/* SMALLER PULSATING CTA */}
                       <motion.div
                         animate={{ 
                           scale: [1, 1.02, 1],
@@ -426,14 +455,13 @@ export default function Home() {
                       >
                         <Button 
                           asChild 
-                          className="w-full h-14 text-lg font-bold bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 hover:from-orange-600 hover:via-red-600 hover:to-orange-700 text-white relative overflow-hidden group"
-                          size="lg"
+                          className="w-full h-12 text-base font-bold bg-gradient-to-r from-[var(--brand-gold)] to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black relative overflow-hidden group shadow-lg"
                         >
                           <Link href="/experience" className="relative z-10">
                             <motion.span
-                              className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 group-hover:opacity-100 blur-xl"
+                              className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-[var(--brand-gold)] to-orange-500 opacity-0 group-hover:opacity-30 blur-xl"
                               animate={{
-                                opacity: [0.5, 1, 0.5],
+                                opacity: [0.3, 0.5, 0.3],
                               }}
                               transition={{
                                 duration: 2,
@@ -451,20 +479,16 @@ export default function Home() {
                                   ease: "easeInOut"
                                 }}
                               >
-                                <ArrowRight className="w-6 h-6 ml-2" />
+                                <ArrowRight className="w-5 h-5 ml-2" />
                               </motion.div>
                             </span>
                           </Link>
                         </Button>
                       </motion.div>
 
-                      <motion.p 
-                        className="text-center text-sm text-orange-300 font-medium"
-                        animate={{ opacity: [0.7, 1, 0.7] }}
-                        transition={{ duration: 3, repeat: Infinity }}
-                      >
+                      <p className="text-center text-sm text-gold font-medium">
                         Days 1-7 free • Full access after meeting with Jean
-                      </motion.p>
+                      </p>
                     </div>
                   </motion.div>
                 </CardContent>
