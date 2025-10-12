@@ -3,6 +3,7 @@
 ## Branch Strategy
 
 ### Branch Naming Convention
+
 - `main` - Production-ready code
 - `develop` - Integration branch for features
 - `feature/<ticket-number>-<short-description>` - New features
@@ -13,6 +14,7 @@
 - `docs/<description>` - Documentation updates
 
 ### Branch Creation Rules
+
 1. **ALWAYS create a new branch** for each distinct piece of work
 2. **NEVER commit directly to main or develop**
 3. Create branches from `develop` for features/fixes
@@ -22,6 +24,7 @@
 ## Commit Conventions
 
 ### Commit Message Format
+
 ```
 <type>(<scope>): <subject>
 
@@ -31,6 +34,7 @@
 ```
 
 ### Types
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -43,6 +47,7 @@
 - `ci`: CI/CD configuration changes
 
 ### Scopes (for this project)
+
 - `assessment`: Assessment-related features
 - `course`: Course module
 - `payment`: Payment integrations
@@ -54,12 +59,14 @@
 - `config`: Configuration changes
 
 ### Commit Rules
+
 1. **Atomic commits** - Each commit should represent one logical change
 2. **Commit early and often** - Don't wait until end of day
 3. **Write meaningful commit messages** - Future you will thank present you
 4. **No commits with failing tests or linting errors**
 
 ### Examples
+
 ```
 feat(assessment): add progress indicator to assessment stepper
 fix(payment): resolve Square API webhook validation error
@@ -70,6 +77,7 @@ refactor(ui): extract common button styles to shared component
 ## Workflow Commands
 
 ### Starting New Work
+
 ```bash
 # 1. Ensure you're on develop and it's up to date
 git checkout develop
@@ -84,6 +92,7 @@ git commit -m "feat(auth): implement JWT token generation"
 ```
 
 ### Daily Workflow
+
 ```bash
 # Start of day - update your branch
 git checkout develop
@@ -100,6 +109,7 @@ git push origin feature/your-branch
 ```
 
 ### Completing Work
+
 ```bash
 # 1. Ensure all tests pass
 npm run test
@@ -119,6 +129,7 @@ git push origin feature/your-branch
 ## Code Review Process
 
 ### Before Creating a PR
+
 1. Self-review your code using `git diff develop`
 2. Ensure all tests pass
 3. Update documentation if needed
@@ -126,6 +137,7 @@ git push origin feature/your-branch
 5. Squash WIP commits if needed (but keep logical separation)
 
 ### PR Title Format
+
 ```
 [TYPE] Scope: Description
 
@@ -136,6 +148,7 @@ Examples:
 ```
 
 ### PR Description Template
+
 ```markdown
 ## Summary
 Brief description of what this PR does
@@ -159,6 +172,7 @@ Closes #123
 ## Git History Organization
 
 ### Finding Changes Quickly
+
 ```bash
 # Find commits by author
 git log --author="YourName" --oneline
@@ -177,6 +191,7 @@ git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(
 ```
 
 ### Useful Aliases (add to ~/.gitconfig)
+
 ```
 [alias]
     # Show concise status
@@ -203,17 +218,20 @@ git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(
 When working in this codebase, I will:
 
 1. **Create a new branch** for each distinct task:
+
    ```bash
    git checkout -b feature/description-of-work
    ```
 
 2. **Make atomic commits** with proper messages:
+
    ```bash
    git add -p  # Review changes before staging
    git commit -m "type(scope): clear description"
    ```
 
 3. **Push regularly** to avoid losing work:
+
    ```bash
    git push origin current-branch
    ```
@@ -221,6 +239,7 @@ When working in this codebase, I will:
 4. **Never commit directly to main or develop**
 
 5. **Always run tests before committing**:
+
    ```bash
    npm run lint
    npm run test
@@ -234,6 +253,7 @@ When working in this codebase, I will:
 ## Emergency Procedures
 
 ### If you accidentally commit to main/develop
+
 ```bash
 # Create a new branch with your changes
 git checkout -b feature/emergency-fix
@@ -244,6 +264,7 @@ git reset --hard origin/main
 ```
 
 ### If you need to undo commits
+
 ```bash
 # Undo last commit but keep changes
 git reset --soft HEAD~1
@@ -253,6 +274,7 @@ git reset --hard HEAD~1
 ```
 
 ### If merge conflicts occur
+
 ```bash
 # Update your branch
 git checkout develop
@@ -268,13 +290,15 @@ git commit -m "merge: resolve conflicts with develop"
 
 ## Project-Specific Rules
 
-### For trajectory2 app:
+### For trajectory2 app
+
 - All payment-related changes require extra review
 - Database schema changes need migration files
 - UI changes need screenshot in PR
 - Email template changes need preview screenshot
 
 ### Branch Lifecycle
+
 1. Create branch from develop
 2. Work on feature with regular commits
 3. Keep branch updated with develop (daily)
@@ -286,6 +310,7 @@ git commit -m "merge: resolve conflicts with develop"
 ## Monitoring Branch Health
 
 Run these periodically:
+
 ```bash
 # Show all branches
 git branch -a
@@ -307,6 +332,7 @@ git branch --merged develop | grep -v develop | xargs -n 1 git branch -d
 ### Creating PRs Like a Pro
 
 #### Pre-PR Checklist (Non-Negotiable)
+
 ```bash
 # 1. Self-review every line of code
 git diff develop --name-status  # See what you changed
@@ -330,6 +356,7 @@ git log develop..HEAD --oneline # Verify commits going into PR
 #### Writing PR Descriptions That Matter
 
 A good PR description answers these questions:
+
 1. **What** changed? (Summary)
 2. **Why** did it change? (Context/motivation)
 3. **How** does it work? (Technical approach)
@@ -337,6 +364,7 @@ A good PR description answers these questions:
 5. **What** are the risks? (Deployment concerns)
 
 **Example PR Description:**
+
 ```markdown
 ## Summary
 Add Supabase authentication system with email/password and OAuth support
@@ -378,11 +406,13 @@ Closes #45, Closes #67
 Format: `[TYPE] Scope: Imperative mood description (max 72 chars)`
 
 **Good Examples:**
+
 - `[FEAT] Auth: Implement Supabase authentication system`
 - `[FIX] Payment: Prevent duplicate Square webhook processing`
 - `[REFACTOR] UI: Extract shared button components to design system`
 
 **Bad Examples:**
+
 - ❌ `Updated stuff` (Too vague)
 - ❌ `[FEAT] Added authentication` (Wrong mood, no scope)
 - ❌ `Fix` (No context whatsoever)
@@ -390,6 +420,7 @@ Format: `[TYPE] Scope: Imperative mood description (max 72 chars)`
 ### Code Review as a Reviewer
 
 #### Your Responsibilities
+
 1. **Understand the context** - Read the full PR description
 2. **Run the code locally** - Don't just read, test it
 3. **Be constructive** - Suggest solutions, not just problems
@@ -397,6 +428,7 @@ Format: `[TYPE] Scope: Imperative mood description (max 72 chars)`
 5. **Approve only if you'd deploy it** - Your approval means you trust it
 
 #### Review Checklist
+
 ```markdown
 **Architecture & Design**
 - [ ] Does this fit the overall system design?
@@ -434,20 +466,25 @@ Format: `[TYPE] Scope: Imperative mood description (max 72 chars)`
 #### Comment Guidelines
 
 **Good Comments:**
+
 ```markdown
 🎯 **Suggestion:** Consider extracting this logic into a custom hook for reusability
 ```
+
 ```
 📚 **Question:** Why did we choose POST over GET here? GET seems more RESTful for this read operation.
 ```
+
 ```
 ⚠️ **Concern:** This query could be slow with large datasets. Consider adding pagination.
 ```
+
 ```
 💡 **Nitpick:** Variable name `data` is too generic. `assessmentResults` would be clearer.
 ```
 
 **Bad Comments:**
+
 - ❌ "This is wrong" (No explanation)
 - ❌ "Just use X instead" (No reasoning)
 - ❌ "I don't like this" (Personal preference without technical merit)
@@ -455,6 +492,7 @@ Format: `[TYPE] Scope: Imperative mood description (max 72 chars)`
 ### Code Review as an Author
 
 #### Responding to Reviews
+
 1. **Never take it personally** - It's about the code, not you
 2. **Thank reviewers** - They're helping you improve
 3. **Explain your reasoning** - But be open to changing your mind
@@ -462,11 +500,13 @@ Format: `[TYPE] Scope: Imperative mood description (max 72 chars)`
 5. **Ask for re-review** - After making changes
 
 #### When to Push Back
+
 - Reviewer suggests approach that conflicts with project architecture
 - Suggestion is out of scope for this PR
 - Comment is purely stylistic preference without technical merit
 
 **How to push back professionally:**
+
 ```markdown
 Thanks for the suggestion! I considered this approach but went with the current 
 implementation because:
@@ -482,26 +522,31 @@ Happy to discuss further if you have concerns!
 ## Merge Strategies (When & Why)
 
 ### 1. Merge Commit (Default - Recommended)
+
 ```bash
 git checkout develop
 git merge --no-ff feature/new-feature
 ```
 
 **When to use:**
+
 - Most pull requests (default)
 - Want complete history preservation
 - Multiple commits tell a story
 
 **Pros:**
+
 - Preserves complete branch history
 - Easy to revert entire feature
 - Shows who worked on what and when
 
 **Cons:**
+
 - Can create "merge bubbles" in history
 - Graph gets complex with many branches
 
 ### 2. Squash and Merge
+
 ```bash
 git checkout develop
 git merge --squash feature/new-feature
@@ -509,22 +554,26 @@ git commit -m "feat(scope): consolidated feature description"
 ```
 
 **When to use:**
+
 - Branch has many WIP/fixup commits
 - Want clean linear history
 - Feature is logically one change
 - Experimental work with messy history
 
 **Pros:**
+
 - Clean linear history
 - One commit per feature
 - Easy to cherry-pick later
 
 **Cons:**
+
 - Loses development history
 - Can't revert individual commits
 - Blame shows squash commit, not original author
 
 ### 3. Rebase and Merge
+
 ```bash
 git checkout feature/new-feature
 git rebase develop
@@ -533,31 +582,37 @@ git merge feature/new-feature  # Will be fast-forward
 ```
 
 **When to use:**
+
 - Want linear history without merge commits
 - Commits are already clean and atomic
 - Small, focused changes
 
 **Pros:**
+
 - Cleanest linear history
 - Each commit stands alone
 - No merge commits
 
 **Cons:**
+
 - Rewrites history (never do this on shared branches)
 - Loses context of when feature was integrated
 - Can be confusing for beginners
 
 ### 4. Fast-Forward Only
+
 ```bash
 git merge --ff-only feature/new-feature
 ```
 
 **When to use:**
+
 - Branch is already rebased on develop
 - Want to enforce linear history
 - Branch is only 1-2 commits ahead
 
 **Decision Tree:**
+
 ```
 Has many WIP commits? 
     Yes → Squash and Merge
@@ -579,11 +634,13 @@ Is it a feature with good commit history?
 ### Understanding Conflicts
 
 Conflicts happen when:
+
 1. Same line changed in both branches
 2. File moved/renamed in one branch, modified in another
 3. File deleted in one branch, modified in another
 
 ### Strategy #1: Merge Conflicts (Recommended for most cases)
+
 ```bash
 # Update your branch
 git checkout feature/your-branch
@@ -606,6 +663,7 @@ Resolved conflicts:
 ```
 
 ### Strategy #2: Rebase Conflicts (For clean history)
+
 ```bash
 git fetch origin
 git rebase origin/develop
@@ -622,6 +680,7 @@ git push --force-with-lease origin your-branch
 ### Conflict Resolution Tools
 
 **Command Line:**
+
 ```bash
 # See conflicted files
 git status
@@ -642,6 +701,7 @@ git mergetool
 ### Complex Conflict Patterns
 
 **Pattern 1: Package.json conflicts**
+
 ```bash
 # Always take both dependencies, resolve manually
 git checkout --ours package.json
@@ -652,6 +712,7 @@ git add package.json package-lock.json
 ```
 
 **Pattern 2: Database migration conflicts**
+
 ```bash
 # Never auto-resolve migration conflicts
 # Check both migrations, create new one that combines them
@@ -659,6 +720,7 @@ git add package.json package-lock.json
 ```
 
 **Pattern 3: Large refactor conflicts**
+
 ```bash
 # If conflicts are extensive (>10 files):
 # 1. Consider rebasing from scratch
@@ -699,6 +761,7 @@ git push origin --delete feature/your-branch
 ### If Something Breaks After Merge
 
 #### Option 1: Quick Fix (Small issue)
+
 ```bash
 git checkout develop
 git checkout -b hotfix/post-merge-fix
@@ -709,6 +772,7 @@ git push origin hotfix/post-merge-fix
 ```
 
 #### Option 2: Revert (Bigger issue)
+
 ```bash
 # Revert the entire merge
 git revert -m 1 <merge-commit-hash>
@@ -794,6 +858,7 @@ git push origin develop
 ### Auto-Merge Criteria (Use with Caution)
 
 Safe to auto-merge if:
+
 - All CI checks pass
 - Required approvals met (minimum 1-2)
 - No merge conflicts
@@ -801,6 +866,7 @@ Safe to auto-merge if:
 - Changes are low-risk (docs, tests, minor UI)
 
 **Never** auto-merge:
+
 - Database migrations
 - Authentication/authorization changes
 - Payment processing logic
@@ -894,6 +960,7 @@ git push origin --delete release/v1.2.0
 ### Regular Maintenance Tasks
 
 **Weekly:**
+
 ```bash
 # Clean up merged branches
 git fetch --prune
@@ -904,6 +971,7 @@ git fetch --all --prune
 ```
 
 **Monthly:**
+
 ```bash
 # Clean up unreachable objects
 git gc --aggressive --prune=now
@@ -928,6 +996,7 @@ git config index.threads true
 ## Troubleshooting Common Merge Issues
 
 ### "I merged the wrong branch!"
+
 ```bash
 # Undo the merge (if not pushed yet)
 git reset --hard HEAD~1
@@ -938,6 +1007,7 @@ git push origin develop
 ```
 
 ### "My PR has 100 commits and is a mess"
+
 ```bash
 # Squash everything into one commit
 git checkout feature/messy-branch
@@ -947,6 +1017,7 @@ git push --force-with-lease origin feature/messy-branch
 ```
 
 ### "I need to update PR but it has conflicts"
+
 ```bash
 # Backup your work first
 git checkout feature/your-branch
@@ -962,6 +1033,7 @@ git reset --hard backup/your-branch-YYYYMMDD
 ```
 
 ### "Merge created duplicate commits"
+
 ```bash
 # You probably merged and rebased - don't do both!
 # Fix: use rerere (reuse recorded resolution)
