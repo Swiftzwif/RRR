@@ -159,15 +159,48 @@ export default function Home() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <Card className="bg-elev-2 border-[var(--border-gold)] relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[var(--brand-gold)] to-transparent opacity-10 blur-3xl animate-pulse" />
-
-                <CardHeader className="text-center pb-2">
+              <Card className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-2 border-[var(--brand-gold)] relative overflow-hidden shadow-2xl">
+                {/* Animated background effects */}
+                <div className="absolute inset-0 opacity-20">
                   <motion.div 
-                    className="w-20 h-20 mx-auto mb-4 bg-gold-gradient rounded-2xl flex items-center justify-center gold-glow-sm"
+                    className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 rounded-full blur-3xl"
                     animate={{ 
-                      scale: [1, 1.05, 1],
-                      rotate: [0, 2, -2, 0]
+                      scale: [1, 1.2, 1],
+                      x: [0, 20, 0],
+                      y: [0, -20, 0]
+                    }}
+                    transition={{ 
+                      duration: 8,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                  <motion.div 
+                    className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-yellow-500 via-orange-500 to-red-500 rounded-full blur-3xl"
+                    animate={{ 
+                      scale: [1.2, 1, 1.2],
+                      x: [0, -20, 0],
+                      y: [0, 20, 0]
+                    }}
+                    transition={{ 
+                      duration: 10,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                </div>
+
+                <CardHeader className="text-center pb-4 relative z-10">
+                  <motion.div 
+                    className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-orange-500 via-red-500 to-yellow-600 rounded-3xl flex items-center justify-center shadow-2xl"
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0],
+                      boxShadow: [
+                        "0 0 20px rgba(251, 146, 60, 0.5)",
+                        "0 0 40px rgba(251, 146, 60, 0.8)",
+                        "0 0 20px rgba(251, 146, 60, 0.5)"
+                      ]
                     }}
                     transition={{ 
                       duration: 3,
@@ -175,104 +208,265 @@ export default function Home() {
                       ease: "easeInOut"
                     }}
                   >
-                    <BookOpen className="w-10 h-10 text-black" />
+                    <BookOpen className="w-12 h-12 text-white drop-shadow-lg" />
                   </motion.div>
-                  <CardTitle className="text-2xl text-primary mb-2">
+                  <CardTitle className="text-3xl font-bold text-white mb-2">
                     Free Resources
                   </CardTitle>
-                  <CardDescription className="text-secondary">
+                  <CardDescription className="text-orange-200 text-base">
                     Everything you need to start your transformation
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-4">
-                  {/* Tabbed Preview */}
+                <CardContent className="space-y-6 relative z-10">
+                  {/* Tabbed Preview with Vibrant Tiles */}
                   <Tabs defaultValue="story" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 bg-elev-1">
-                      <TabsTrigger value="story" className="data-[state=active]:bg-gold-gradient data-[state=active]:text-black">
+                    <TabsList className="grid w-full grid-cols-3 bg-slate-900/50 backdrop-blur-sm border border-orange-500/30 p-1 rounded-xl">
+                      <TabsTrigger 
+                        value="story" 
+                        className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                      >
                         <FileText className="w-4 h-4 mr-1" />
                         Story
                       </TabsTrigger>
-                      <TabsTrigger value="assessment" className="data-[state=active]:bg-gold-gradient data-[state=active]:text-black">
+                      <TabsTrigger 
+                        value="assessment" 
+                        className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                      >
                         <Target className="w-4 h-4 mr-1" />
                         Assessment
                       </TabsTrigger>
-                      <TabsTrigger value="resources" className="data-[state=active]:bg-gold-gradient data-[state=active]:text-black">
+                      <TabsTrigger 
+                        value="resources" 
+                        className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                      >
                         <Gift className="w-4 h-4 mr-1" />
                         Resources
                       </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="story" className="mt-4 space-y-3">
-                      <div className="bg-elev-1 p-4 rounded-lg border border-[var(--border-default)]">
-                        <h4 className="font-semibold text-primary mb-2">Kill the Boy Story</h4>
-                        <p className="text-sm text-secondary mb-3">
-                          Discover the transformational moment that changed everything.
-                        </p>
-                        <Button asChild variant="outline" size="sm" className="w-full">
-                          <Link href="/resources#story">
-                            Read the Story <ArrowRight className="w-4 h-4 ml-2" />
-                          </Link>
-                        </Button>
-                      </div>
+                    <TabsContent value="story" className="mt-6">
+                      <motion.div 
+                        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        whileHover={{ scale: 1.02, borderColor: "rgba(251, 146, 60, 0.8)" }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
+                        <div className="relative p-6 space-y-4">
+                          <div className="flex items-start gap-4">
+                            <motion.div 
+                              className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-lg"
+                              animate={{ rotate: [0, 360] }}
+                              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                            >
+                              <FileText className="w-6 h-6 text-white" />
+                            </motion.div>
+                            <div className="flex-1">
+                              <h4 className="text-xl font-bold text-white mb-2">Kill the Boy Story</h4>
+                              <p className="text-orange-100 leading-relaxed">
+                                Discover the transformational moment that changed everything. The story that sparked a movement.
+                              </p>
+                            </div>
+                          </div>
+                          <Button 
+                            asChild 
+                            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                            size="lg"
+                          >
+                            <Link href="/resources#story">
+                              Read the Story <ArrowRight className="w-5 h-5 ml-2" />
+                            </Link>
+                          </Button>
+                        </div>
+                      </motion.div>
                     </TabsContent>
 
-                    <TabsContent value="assessment" className="mt-4 space-y-3">
-                      <div className="bg-elev-1 p-4 rounded-lg border border-[var(--border-default)]">
-                        <h4 className="font-semibold text-primary mb-2">Free Life Assessment</h4>
-                        <p className="text-sm text-secondary mb-3">
-                          Discover your Life Identity and get personalized actions in 10 minutes.
-                        </p>
-                        <Button asChild variant="outline" size="sm" className="w-full">
-                          <Link href="/assessment/landing">
-                            Take Assessment <ArrowRight className="w-4 h-4 ml-2" />
-                          </Link>
-                        </Button>
-                      </div>
+                    <TabsContent value="assessment" className="mt-6">
+                      <motion.div 
+                        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 via-cyan-500/20 to-blue-600/20 border-2 border-blue-500/50 backdrop-blur-sm"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        whileHover={{ scale: 1.02, borderColor: "rgba(59, 130, 246, 0.8)" }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 animate-pulse" />
+                        <div className="relative p-6 space-y-4">
+                          <div className="flex items-start gap-4">
+                            <motion.div 
+                              className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg"
+                              animate={{ 
+                                scale: [1, 1.1, 1],
+                                rotate: [0, 180, 360]
+                              }}
+                              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                            >
+                              <Target className="w-6 h-6 text-white" />
+                            </motion.div>
+                            <div className="flex-1">
+                              <h4 className="text-xl font-bold text-white mb-2">Free Life Assessment</h4>
+                              <p className="text-blue-100 leading-relaxed">
+                                Discover your Life Identity and get personalized actions in just 10 minutes. Know where you stand.
+                              </p>
+                            </div>
+                          </div>
+                          <Button 
+                            asChild 
+                            className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                            size="lg"
+                          >
+                            <Link href="/assessment/landing">
+                              Take Assessment <ArrowRight className="w-5 h-5 ml-2" />
+                            </Link>
+                          </Button>
+                        </div>
+                      </motion.div>
                     </TabsContent>
 
-                    <TabsContent value="resources" className="mt-4 space-y-3">
-                      <div className="bg-elev-1 p-4 rounded-lg border border-[var(--border-default)]">
-                        <h4 className="font-semibold text-primary mb-2">Free Book List & Resources</h4>
-                        <p className="text-sm text-secondary mb-3">
-                          50+ transformational books curated for high-value men.
-                        </p>
-                        <Button asChild variant="outline" size="sm" className="w-full">
-                          <Link href="/resources">
-                            View Resources <ArrowRight className="w-4 h-4 ml-2" />
-                          </Link>
-                        </Button>
-                      </div>
+                    <TabsContent value="resources" className="mt-6">
+                      <motion.div 
+                        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-purple-600/20 border-2 border-purple-500/50 backdrop-blur-sm"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        whileHover={{ scale: 1.02, borderColor: "rgba(168, 85, 247, 0.8)" }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 animate-pulse" />
+                        <div className="relative p-6 space-y-4">
+                          <div className="flex items-start gap-4">
+                            <motion.div 
+                              className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-lg"
+                              animate={{ 
+                                y: [0, -10, 0],
+                                rotate: [0, 10, -10, 0]
+                              }}
+                              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                            >
+                              <Gift className="w-6 h-6 text-white" />
+                            </motion.div>
+                            <div className="flex-1">
+                              <h4 className="text-xl font-bold text-white mb-2">Free Book List & Resources</h4>
+                              <p className="text-purple-100 leading-relaxed">
+                                50+ transformational books curated for high-value men. Wisdom distilled and ready.
+                              </p>
+                            </div>
+                          </div>
+                          <Button 
+                            asChild 
+                            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                            size="lg"
+                          >
+                            <Link href="/resources">
+                              View Resources <ArrowRight className="w-5 h-5 ml-2" />
+                            </Link>
+                          </Button>
+                        </div>
+                      </motion.div>
                     </TabsContent>
                   </Tabs>
 
-                  {/* 7-Day Experience */}
-                  <div className="pt-4 border-t border-[var(--border-default)]">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Unlock className="w-5 h-5 text-gold" />
-                      <h4 className="font-semibold text-primary">7-Day Experience</h4>
+                  {/* 7-Day Experience - PULSATING CTA */}
+                  <motion.div 
+                    className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-600/30 via-red-600/30 to-yellow-600/30 border-2 border-orange-500 backdrop-blur-sm p-6"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20" />
+                    
+                    <div className="relative space-y-4">
+                      <div className="flex items-center gap-3">
+                        <motion.div
+                          animate={{ 
+                            rotate: [0, 360],
+                            scale: [1, 1.2, 1]
+                          }}
+                          transition={{ 
+                            duration: 4,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <Unlock className="w-7 h-7 text-orange-400" />
+                        </motion.div>
+                        <h4 className="text-2xl font-bold text-white">7-Day Experience</h4>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 gap-3">
+                        {[
+                          { icon: BookOpen, text: "21 curated book summaries" },
+                          { icon: CheckCircle, text: "Daily action tasks & worksheets" },
+                          { icon: Zap, text: "Personalized growth roadmap" }
+                        ].map((item, idx) => (
+                          <motion.div 
+                            key={idx}
+                            className="flex items-center gap-3 bg-slate-900/50 rounded-lg p-3 border border-orange-500/30"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 * idx }}
+                            whileHover={{ scale: 1.05, borderColor: "rgba(251, 146, 60, 0.6)" }}
+                          >
+                            <item.icon className="w-5 h-5 text-orange-400 flex-shrink-0" />
+                            <span className="text-orange-100 font-medium">{item.text}</span>
+                          </motion.div>
+                        ))}
+                      </div>
+
+                      {/* PULSATING GLOWING CTA */}
+                      <motion.div
+                        animate={{ 
+                          scale: [1, 1.02, 1],
+                        }}
+                        transition={{ 
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        <Button 
+                          asChild 
+                          className="w-full h-14 text-lg font-bold bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 hover:from-orange-600 hover:via-red-600 hover:to-orange-700 text-white relative overflow-hidden group"
+                          size="lg"
+                        >
+                          <Link href="/experience" className="relative z-10">
+                            <motion.span
+                              className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 group-hover:opacity-100 blur-xl"
+                              animate={{
+                                opacity: [0.5, 1, 0.5],
+                              }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            />
+                            <span className="relative z-10 flex items-center justify-center">
+                              Start Free 7 Days
+                              <motion.div
+                                animate={{ x: [0, 5, 0] }}
+                                transition={{ 
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              >
+                                <ArrowRight className="w-6 h-6 ml-2" />
+                              </motion.div>
+                            </span>
+                          </Link>
+                        </Button>
+                      </motion.div>
+
+                      <motion.p 
+                        className="text-center text-sm text-orange-300 font-medium"
+                        animate={{ opacity: [0.7, 1, 0.7] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      >
+                        Days 1-7 free • Full access after meeting with Jean
+                      </motion.p>
                     </div>
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center gap-2 text-sm text-secondary">
-                        <CheckCircle className="w-4 h-4 text-gold flex-shrink-0" />
-                        21 curated book summaries
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-secondary">
-                        <CheckCircle className="w-4 h-4 text-gold flex-shrink-0" />
-                        Daily action tasks & worksheets
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-secondary">
-                        <CheckCircle className="w-4 h-4 text-gold flex-shrink-0" />
-                        Personalized growth roadmap
-                      </div>
-                    </div>
-                    <Button asChild className="w-full" size="lg">
-                      <Link href="/experience">Start Free 7 Days</Link>
-                    </Button>
-                    <p className="text-center text-xs text-muted mt-2">
-                      Days 1-7 free • Full access after meeting with Jean
-                    </p>
-                  </div>
+                  </motion.div>
                 </CardContent>
               </Card>
             </motion.div>
