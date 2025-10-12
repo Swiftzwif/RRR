@@ -4,7 +4,20 @@ Quick reference for your daily git workflow.
 
 ## Daily Commands
 
-### Start Your Day
+
+
+
+
+
+
+
+
+
+
+
+
+### Start Your Day.
+
 
 ```bash
 git checkout develop

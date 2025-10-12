@@ -1,12 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogOut } from "lucide-react";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { LogoMark } from "./LogoMark";
 import { createClient } from "@/utils/supabase/client";
-import type { User as SupabaseUser, AuthChangeEvent, Session } from "@supabase/supabase-js";
+import type {
+  AuthChangeEvent,
+  Session,
+  User as SupabaseUser,
+} from "@supabase/supabase-js";
+import { LogOut, Menu, User, X } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { LogoMark } from "./LogoMark";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

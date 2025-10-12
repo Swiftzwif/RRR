@@ -55,15 +55,15 @@ export default function DayPage() {
             Day {dayNumber} is part of the premium experience. Unlock all 31 days after meeting with Jean to continue your transformation journey.
           </p>
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-200 shadow-lg mb-8">
-            <div className="text-4xl font-bold text-orange-600 mb-2">
-              $99.99
+            <div className="text-2xl font-bold text-orange-600 mb-2">
+              Full Access After Meeting With Jean
             </div>
-            <p className="text-slate-600 mb-6">Get lifetime access to all 31 days</p>
+            <p className="text-slate-600 mb-6">Get lifetime access to all 31 days by scheduling a meeting</p>
             <button
-              onClick={() => alert('Payment integration coming soon!')}
+              onClick={() => alert('Contact Jean to schedule your meeting and unlock full access!')}
               className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
             >
-              Unlock Full Experience
+              Contact Jean for Access
             </button>
           </div>
           <Link

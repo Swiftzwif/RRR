@@ -194,21 +194,21 @@ export default function ExperiencePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <h2 className="text-4xl font-bold mb-6">Ready to Unlock All 31 Days After Meeting With Jean?</h2>
+            <h2 className="text-4xl font-bold mb-6">Ready to Unlock All 31 Days?</h2>
             <p className="text-xl text-orange-200 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Get lifetime access to the complete transformation experience. All book summaries, action tasks, and printable worksheets included.
+              Get lifetime access to the complete transformation experience after meeting with Jean. All book summaries, action tasks, and printable worksheets included.
             </p>
-            <div className="text-5xl font-bold text-orange-400 mb-8">
-              <span className="line-through text-orange-300">$199.99</span> → $99.99
+            <div className="text-3xl font-bold text-orange-400 mb-8">
+              Full access after meeting with Jean
             </div>
             <p className="text-lg text-orange-200 mb-8">
-              50% OFF - Limited to first 250 people
+              Schedule your meeting to unlock the complete experience
             </p>
             <button
-              onClick={() => alert('Payment integration coming soon!')}
+              onClick={() => alert('Contact Jean to schedule your meeting and unlock full access!')}
               className="inline-flex items-center px-12 py-6 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl hover:from-orange-600 hover:to-red-600 hover:scale-105 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl text-xl"
             >
-              Unlock Full Experience
+              Contact Jean for Access
               <ArrowRight className="ml-3 w-6 h-6" />
             </button>
           </motion.div>

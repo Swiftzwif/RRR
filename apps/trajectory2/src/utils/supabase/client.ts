@@ -29,4 +29,3 @@ export function createClient(): SupabaseClient {
   clientInstance = createBrowserClient(supabaseUrl, supabaseAnonKey)
   return clientInstance
 }
-
