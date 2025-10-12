@@ -29,7 +29,7 @@ import { useEffect, useState } from 'react';
 export default function Home() {
   const [currentWord, setCurrentWord] = useState(0);
   const words = ["attention", "energy", "money"];
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState("story");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -40,8 +40,12 @@ export default function Home() {
 
   // Auto-cycle through tabs every 4 seconds
   useEffect(() => {
+    const tabs = ["story", "assessment", "resources"];
     const interval = setInterval(() => {
-      setActiveTab((prev) => (prev + 1) % 3);
+      setActiveTab((prev) => {
+        const currentIndex = tabs.indexOf(prev);
+        return tabs[(currentIndex + 1) % tabs.length];
+      });
     }, 4000);
     return () => clearInterval(interval);
   }, []);
@@ -215,12 +219,12 @@ export default function Home() {
                   <div className="relative">
                     {/* Indicator dots - subtle animations */}
                     <div className="flex justify-center gap-3 mb-6">
-                      {[0, 1, 2].map((idx) => (
+                      {["story", "assessment", "resources"].map((tab) => (
                         <button
-                          key={idx}
-                          onClick={() => setActiveTab(idx)}
+                          key={tab}
+                          onClick={() => setActiveTab(tab)}
                           className={`rounded-full transition-all duration-500 ease-out ${
-                            activeTab === idx 
+                            activeTab === tab 
                               ? 'w-8 h-3 bg-gradient-to-r from-orange-500 to-red-500' 
                               : 'w-3 h-3 bg-orange-500/30 hover:bg-orange-500/50'
                           }`}
@@ -229,7 +233,7 @@ export default function Home() {
                     </div>
 
                     {/* Story Slide */}
-                    {activeTab === 0 && (
+                    {activeTab === "story" && (
                       <motion.div
                         key="story"
                         initial={{ x: 20 }}
@@ -279,7 +283,7 @@ export default function Home() {
                     )}
 
                     {/* Assessment Slide */}
-                    {activeTab === 1 && (
+                    {activeTab === "assessment" && (
                       <motion.div
                         key="assessment"
                         initial={{ x: 20 }}
@@ -332,7 +336,7 @@ export default function Home() {
                     )}
 
                     {/* Resources Slide */}
-                    {activeTab === 2 && (
+                    {activeTab === "resources" && (
                       <motion.div
                         key="resources"
                         initial={{ x: 20 }}
