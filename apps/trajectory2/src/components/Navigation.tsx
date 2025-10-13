@@ -67,7 +67,7 @@ export default function Navigation() {
               Story
             </Link>
             <Link
-              href="/assessment"
+              href="/assessment/landing"
               className="text-secondary hover:text-gold transition-colors duration-200"
             >
               Assessment
@@ -137,7 +137,7 @@ export default function Navigation() {
                 Story
               </Link>
               <Link
-                href="/assessment"
+                href="/assessment/landing"
                 className="block px-3 py-2 text-secondary hover:text-gold transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >

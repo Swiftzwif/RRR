@@ -227,7 +227,7 @@ export default function KillTheBoyPage() {
               transformation journey.
             </p>
             <Link
-              href="/assessment"
+              href="/assessment/landing"
               className="inline-flex items-center px-10 py-5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl hover:from-orange-600 hover:to-red-600 hover:scale-105 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl text-lg"
             >
               Start Your Assessment
