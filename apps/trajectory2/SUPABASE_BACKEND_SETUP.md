@@ -832,4 +832,3 @@ Your app is ready to handle:
 - ✅ Email notifications
 
 **Now go build something amazing! 🚀**
-

@@ -589,4 +589,3 @@ Start with [BACKEND_QUICK_START.md](./BACKEND_QUICK_START.md) for the fastest se
 
 _Last updated: January 2025_
 _Trajectory2 - Rethink. Redesign. Reignite._
-

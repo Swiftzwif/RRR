@@ -406,4 +406,3 @@ See [SUPABASE_BACKEND_SETUP.md#troubleshooting](./SUPABASE_BACKEND_SETUP.md#trou
 _Your backend is ready. Now go build your vision._
 
 **Trajectory2 - Rethink. Redesign. Reignite.**
-
