@@ -1,10 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
+import { Database } from "./supabase-types";
 
-// Client-side Supabase client
+// Client-side Supabase client with TypeScript types
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://nxtmcorzlosubfvxumpt.supabase.co';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54dG1jb3J6bG9zdWJmdnh1bXB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjQ4MTUsImV4cCI6MjA5MTA0MDgxNX0.8Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q';
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
 // Server-side Supabase client with service role
 export function getSupabaseServiceRole() {
