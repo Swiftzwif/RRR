@@ -1072,3 +1072,1089 @@ Remember: Good git hygiene makes everyone's life easier, including future you!
 > "Conflicts are inevitable. How you handle them defines you as an engineer."
 
 > "Small PRs get reviewed faster, merged sooner, and cause fewer problems."
+
+---
+
+# Browser Automation & UI Testing Protocol (Veteran's Standard)
+
+## The Non-Negotiable UI Testing Mandate
+
+> "If you didn't see it in a real browser, you don't know if it works."
+
+### Core Principle
+
+**EVERY UI change, style modification, or user interaction update MUST be validated in an actual browser using automation tools BEFORE and AFTER making changes.**
+
+This is not optional. This is not a suggestion. This is how professionals ship UI code.
+
+---
+
+## When Browser Automation is MANDATORY
+
+### Always Required For:
+
+- ✅ **UI Component Changes** - Any React/Next.js component modification
+- ✅ **CSS/Styling Updates** - Tailwind classes, global styles, theme changes
+- ✅ **Form Implementation** - Inputs, validation, submission flows
+- ✅ **Navigation/Routing** - Links, redirects, route protection
+- ✅ **Interactive Elements** - Buttons, modals, dropdowns, tabs, accordions
+- ✅ **Layout Changes** - Grid, flexbox, positioning, responsive design
+- ✅ **Animation/Transitions** - Any visual motion or state changes
+- ✅ **Data Display** - Tables, cards, lists, charts
+- ✅ **Authentication Flows** - Login, signup, logout, protected routes
+- ✅ **Payment Flows** - Checkout, payment forms, confirmation pages
+- ✅ **Assessment/Course Pages** - All trajectory2 main features
+- ✅ **Error States** - 404, 500, error boundaries, validation errors
+- ✅ **Loading States** - Skeletons, spinners, suspense boundaries
+
+### When to Use Browser Tools:
+
+1. **Before touching code** - Understand current state
+2. **During development** - Iterate and verify
+3. **After changes** - Validate everything works
+4. **Before committing** - Final verification
+5. **Before creating PR** - Evidence gathering
+6. **After pulling changes** - Ensure no regressions
+
+---
+
+## The Veteran's UI Development Workflow
+
+### Phase 1: Pre-Development Reconnaissance (MANDATORY)
+
+```bash
+# Step 1: Identify what you're about to change
+# Check recent history of the file
+git log --oneline -15 -- src/components/YourComponent.tsx
+git log --oneline -15 -- src/app/your-page/page.tsx
+
+# Step 2: See what changed in last few commits
+git diff HEAD~5 -- src/components/YourComponent.tsx
+
+# Step 3: Check for related changes in the same scope
+git log --oneline --since="7 days ago" --grep="ui\|component\|style"
+
+# Step 4: Ensure dev server is running
+# Check if it's already running on expected port (3003 for trajectory2)
+lsof -i :3003 || npm run dev
+```
+
+#### Browser Reconnaissance Checklist:
+
+**BEFORE touching any code, execute this exact sequence:**
+
+1. **Navigate to the page you're about to modify**
+   ```
+   Use: browser_navigate to http://localhost:3003/your-route
+   ```
+
+2. **Take accessibility snapshot**
+   ```
+   Use: browser_snapshot
+   Document current structure and element references
+   ```
+
+3. **Check console for existing errors**
+   ```
+   Use: browser_console_messages
+   Document any existing errors (not your fault, but note them)
+   ```
+
+4. **Take screenshot of current state**
+   ```
+   Use: browser_take_screenshot
+   Save as: before-change-{component-name}-{timestamp}.png
+   ```
+
+5. **Test current functionality**
+   - Click all interactive elements
+   - Fill out forms if present
+   - Test navigation flows
+   - Document any existing bugs
+
+6. **Check responsive behavior**
+   ```
+   Use: browser_resize for desktop (1920x1080), tablet (768x1024), mobile (375x667)
+   Take screenshot at each size
+   ```
+
+7. **Inspect network requests**
+   ```
+   Use: browser_network_requests
+   Note any failing API calls or slow requests
+   ```
+
+**ONLY AFTER completing reconnaissance can you start coding.**
+
+---
+
+### Phase 2: Development with Continuous Validation
+
+**Rule**: Test in browser every 10-15 minutes during active development.
+
+#### Hot Reload Verification:
+
+After each significant change:
+
+```bash
+# Let Next.js hot reload (wait 2-3 seconds)
+# Then in browser automation:
+
+1. Take new snapshot - browser_snapshot
+2. Check console - browser_console_messages  
+3. Test the specific feature you just changed
+4. Verify no regressions in related features
+```
+
+#### Common Issues to Check:
+
+**Styling Issues:**
+- Layout breaks at different viewport sizes
+- Overlapping elements
+- Cut-off text or images
+- Incorrect spacing (check against design system)
+- Wrong colors (verify against theme)
+- Hover states not working
+- Focus states missing (accessibility issue)
+
+**Functional Issues:**
+- Click handlers not firing
+- Form submissions failing silently
+- Navigation not working
+- Data not displaying
+- Loading states stuck
+- Error boundaries not catching errors
+
+**Console Errors to Hunt:**
+- React hydration mismatches
+- Missing key props in lists
+- Unhandled promise rejections
+- 404s for assets/API calls
+- Type errors in browser console
+- Warning about deprecated APIs
+
+---
+
+### Phase 3: Post-Development Validation (MANDATORY)
+
+**Before committing, you MUST complete this entire checklist:**
+
+#### Comprehensive Testing Checklist:
+
+```markdown
+**Visual Verification**
+- [ ] Navigate to page: browser_navigate
+- [ ] Take final screenshot: browser_take_screenshot (fullPage: true)
+- [ ] Compare before/after screenshots side-by-side
+- [ ] Verify design matches design system (spacing, colors, typography)
+- [ ] Check all text is readable (contrast, size, line-height)
+- [ ] Verify images load correctly (no broken images)
+- [ ] Check icons render properly
+
+**Functional Verification**
+- [ ] Take snapshot: browser_snapshot
+- [ ] Test all interactive elements (buttons, links, forms)
+- [ ] Test form validation if applicable
+- [ ] Test navigation flows (can user get to this page and back?)
+- [ ] Test data loading (if page fetches data)
+- [ ] Test error states (force errors if possible)
+- [ ] Test loading states (throttle network if needed)
+
+**Console Verification**
+- [ ] Check console: browser_console_messages
+- [ ] Zero errors (fix all errors)
+- [ ] Zero warnings related to your changes
+- [ ] Document any pre-existing warnings (not your fault, but note them)
+
+**Responsive Verification**
+- [ ] Desktop: browser_resize(1920, 1080) + screenshot
+- [ ] Laptop: browser_resize(1366, 768) + screenshot  
+- [ ] Tablet: browser_resize(768, 1024) + screenshot
+- [ ] Mobile: browser_resize(375, 667) + screenshot
+- [ ] All layouts look correct at each size
+- [ ] No horizontal scrolling on mobile
+- [ ] Touch targets are large enough on mobile (44x44px minimum)
+
+**Accessibility Verification**
+- [ ] Take snapshot and verify semantic HTML structure
+- [ ] Buttons have accessible labels
+- [ ] Images have alt text
+- [ ] Forms have proper labels
+- [ ] Interactive elements are keyboard accessible (test tab navigation)
+- [ ] Focus indicators are visible
+
+**Network Verification**
+- [ ] Check network: browser_network_requests
+- [ ] All API calls succeed (200/201/204 status codes)
+- [ ] No failed requests (unless expected error handling)
+- [ ] No excessively slow requests (>3s warning threshold)
+- [ ] No unnecessary duplicate requests
+
+**Edge Case Testing**
+- [ ] Test with no data (empty states)
+- [ ] Test with maximum data (long text, many items)
+- [ ] Test with special characters in inputs
+- [ ] Test with invalid inputs (if forms)
+- [ ] Test with slow network (if data loading)
+- [ ] Test rapid clicking (debounce/throttle working?)
+
+**User Flow Testing** (Critical Paths)
+- [ ] Can user complete the primary task on this page?
+- [ ] Can user navigate to this page from home?
+- [ ] Can user navigate away from this page?
+- [ ] Does authentication work correctly? (if protected route)
+- [ ] Does page state persist correctly? (if applicable)
+```
+
+**If ANY item fails, fix it before committing.**
+
+---
+
+## Browser Automation Tool Reference
+
+### Essential Commands
+
+#### Navigation
+```typescript
+// Navigate to a page
+browser_navigate({ url: "http://localhost:3003/assessment" })
+
+// Go back
+browser_navigate_back()
+
+// Manage tabs
+browser_tabs({ action: "list" })
+browser_tabs({ action: "new" })
+browser_tabs({ action: "select", index: 0 })
+browser_tabs({ action: "close" })
+```
+
+#### Inspection
+```typescript
+// Take accessibility snapshot (USE THIS OFTEN)
+browser_snapshot()
+// Returns: Page structure with element refs for interaction
+
+// Take screenshot
+browser_take_screenshot({ 
+  fullPage: true,
+  filename: "page-state-{timestamp}.png"
+})
+
+// Screenshot specific element (after getting ref from snapshot)
+browser_take_screenshot({
+  element: "Login button",
+  ref: "ref-from-snapshot",
+  filename: "login-button.png"
+})
+
+// Check console messages
+browser_console_messages()
+// Returns: All console.log, console.error, console.warn messages
+
+// Check network requests
+browser_network_requests()
+// Returns: All HTTP requests with status codes, timing, payloads
+```
+
+#### Interaction
+```typescript
+// Click element (get ref from snapshot first)
+browser_click({
+  element: "Submit button",
+  ref: "element-ref-from-snapshot"
+})
+
+// Type into input
+browser_type({
+  element: "Email input",
+  ref: "input-ref-from-snapshot",
+  text: "test@example.com",
+  submit: false  // Set true to press Enter after
+})
+
+// Fill entire form at once
+browser_fill_form({
+  fields: [
+    { name: "Email", type: "textbox", ref: "email-ref", value: "test@example.com" },
+    { name: "Password", type: "textbox", ref: "pass-ref", value: "SecurePass123!" },
+    { name: "Remember me", type: "checkbox", ref: "remember-ref", value: "true" }
+  ]
+})
+
+// Select dropdown option
+browser_select_option({
+  element: "Country selector",
+  ref: "select-ref",
+  values: ["United States"]
+})
+
+// Hover over element
+browser_hover({
+  element: "Tooltip trigger",
+  ref: "hover-ref"
+})
+
+// Drag and drop
+browser_drag({
+  startElement: "Draggable item",
+  startRef: "drag-ref",
+  endElement: "Drop zone",
+  endRef: "drop-ref"
+})
+
+// Press keyboard key
+browser_press_key({ key: "Enter" })
+browser_press_key({ key: "Escape" })
+browser_press_key({ key: "Tab" })
+```
+
+#### Validation
+```typescript
+// Wait for text to appear
+browser_wait_for({ text: "Success!" })
+
+// Wait for text to disappear
+browser_wait_for({ textGone: "Loading..." })
+
+// Wait for specific time
+browser_wait_for({ time: 2 })  // 2 seconds
+
+// Resize viewport
+browser_resize({ width: 375, height: 667 })
+
+// Handle dialogs (alerts, confirms, prompts)
+browser_handle_dialog({ 
+  accept: true,
+  promptText: "Optional text for prompt dialogs"
+})
+
+// Execute JavaScript
+browser_evaluate({
+  function: "() => { return document.title; }"
+})
+
+// Execute JavaScript on specific element
+browser_evaluate({
+  element: "Button",
+  ref: "button-ref",
+  function: "(element) => { return element.disabled; }"
+})
+```
+
+---
+
+## Standard Testing Patterns for trajectory2
+
+### Pattern 1: Testing Assessment Flow
+
+```typescript
+// 1. Navigate to assessment landing
+browser_navigate({ url: "http://localhost:3003/assessment/landing" })
+
+// 2. Snapshot current state
+browser_snapshot()
+
+// 3. Click start assessment
+browser_click({ element: "Start Assessment Button", ref: "start-button-ref" })
+
+// 4. Wait for page load
+browser_wait_for({ text: "Question 1" })
+
+// 5. Snapshot question page
+browser_snapshot()
+
+// 6. Take screenshot
+browser_take_screenshot({ fullPage: true, filename: "assessment-question-1.png" })
+
+// 7. Answer question
+browser_click({ element: "Option A", ref: "option-a-ref" })
+
+// 8. Click next
+browser_click({ element: "Next Button", ref: "next-ref" })
+
+// 9. Verify progress updated
+browser_snapshot()
+
+// 10. Check console for errors
+browser_console_messages()
+```
+
+### Pattern 2: Testing Form Submission
+
+```typescript
+// 1. Navigate to login
+browser_navigate({ url: "http://localhost:3003/login" })
+
+// 2. Snapshot
+browser_snapshot()
+
+// 3. Fill form
+browser_fill_form({
+  fields: [
+    { name: "Email", type: "textbox", ref: "email-ref", value: "test@example.com" },
+    { name: "Password", type: "textbox", ref: "password-ref", value: "TestPass123!" }
+  ]
+})
+
+// 4. Submit
+browser_click({ element: "Login button", ref: "submit-ref" })
+
+// 5. Wait for navigation
+browser_wait_for({ textGone: "Sign in" })
+
+// 6. Verify redirect
+// browser_snapshot should show new page
+
+// 7. Check network
+browser_network_requests()
+// Verify login API call succeeded
+```
+
+### Pattern 3: Testing Responsive Layout
+
+```typescript
+// Test at all breakpoints
+const breakpoints = [
+  { name: "mobile", width: 375, height: 667 },
+  { name: "tablet", width: 768, height: 1024 },
+  { name: "laptop", width: 1366, height: 768 },
+  { name: "desktop", width: 1920, height: 1080 }
+];
+
+// For each breakpoint:
+// 1. Resize
+browser_resize({ width: 375, height: 667 })
+
+// 2. Snapshot (check layout structure)
+browser_snapshot()
+
+// 3. Screenshot
+browser_take_screenshot({ 
+  fullPage: true,
+  filename: "page-mobile.png"
+})
+
+// 4. Test interactions still work
+browser_click({ element: "Menu button", ref: "menu-ref" })
+
+// 5. Verify no layout breaks
+browser_console_messages()
+```
+
+### Pattern 4: Testing Protected Routes
+
+```typescript
+// 1. Navigate to protected page without auth
+browser_navigate({ url: "http://localhost:3003/course" })
+
+// 2. Wait for redirect
+browser_wait_for({ text: "Sign in" })
+
+// 3. Verify redirect to login
+browser_snapshot()
+// Should show login page, not course page
+
+// 4. Login
+browser_fill_form({
+  fields: [
+    { name: "Email", type: "textbox", ref: "email-ref", value: "user@example.com" },
+    { name: "Password", type: "textbox", ref: "pass-ref", value: "ValidPass123!" }
+  ]
+})
+browser_click({ element: "Login", ref: "submit-ref" })
+
+// 5. Navigate to protected page again
+browser_navigate({ url: "http://localhost:3003/course" })
+
+// 6. Verify access granted
+browser_wait_for({ text: "Course Content" })
+browser_snapshot()
+```
+
+### Pattern 5: Testing Error States
+
+```typescript
+// 1. Navigate to page
+browser_navigate({ url: "http://localhost:3003/login" })
+
+// 2. Submit invalid data
+browser_fill_form({
+  fields: [
+    { name: "Email", type: "textbox", ref: "email-ref", value: "invalid-email" },
+    { name: "Password", type: "textbox", ref: "pass-ref", value: "123" }
+  ]
+})
+browser_click({ element: "Submit", ref: "submit-ref" })
+
+// 3. Wait for error message
+browser_wait_for({ text: "Invalid email" })
+
+// 4. Take screenshot of error state
+browser_take_screenshot({ filename: "login-error-state.png" })
+
+// 5. Verify error styling applied
+browser_snapshot()
+// Should show error messages, red borders, etc.
+
+// 6. Fix errors and resubmit
+browser_fill_form({
+  fields: [
+    { name: "Email", type: "textbox", ref: "email-ref", value: "valid@example.com" },
+    { name: "Password", type: "textbox", ref: "pass-ref", value: "ValidPass123!" }
+  ]
+})
+browser_click({ element: "Submit", ref: "submit-ref" })
+
+// 7. Verify errors cleared
+browser_wait_for({ textGone: "Invalid email" })
+```
+
+---
+
+## PR Requirements for UI Changes
+
+### Screenshots Required in PR Description
+
+For **EVERY** UI change PR, you must include:
+
+1. **Before Screenshots**
+   - Desktop view (1920x1080)
+   - Mobile view (375x667)
+   - Any intermediate breakpoints where layout changes
+
+2. **After Screenshots**  
+   - Same views as "before"
+   - Show the change is intentional and looks correct
+
+3. **Interaction Screenshots** (if applicable)
+   - Hover states
+   - Focus states
+   - Error states
+   - Loading states
+   - Success states
+
+4. **Console Screenshot**
+   - Show console with zero errors
+   - Document any warnings (explain why they're acceptable)
+
+### Video Recording (Optional but Recommended)
+
+For complex interactions:
+- Record screen showing the user flow
+- Demonstrate the feature works end-to-end
+- Show responsive behavior by resizing window
+
+### Browser Testing Evidence
+
+Include in PR description:
+
+```markdown
+## Browser Testing Completed
+
+- [x] Tested in browser automation (localhost:3003)
+- [x] All console errors resolved (see screenshot)
+- [x] Responsive layout verified (mobile, tablet, desktop)
+- [x] Accessibility snapshot reviewed (semantic HTML correct)
+- [x] User flow tested end-to-end (see video/screenshots)
+- [x] Network requests verified (all successful)
+- [x] Edge cases tested (empty state, error state, loading state)
+
+### Testing Evidence
+
+**Before:**
+![Before Desktop](./screenshots/before-desktop.png)
+![Before Mobile](./screenshots/before-mobile.png)
+
+**After:**
+![After Desktop](./screenshots/after-desktop.png)
+![After Mobile](./screenshots/after-mobile.png)
+
+**Console (Zero Errors):**
+![Console Clean](./screenshots/console-clean.png)
+
+**Network Requests:**
+![Network Success](./screenshots/network-success.png)
+```
+
+---
+
+## Integration with Git Workflow
+
+### Pre-Commit Checklist (UI Changes)
+
+```bash
+# 1. Run linter
+npm run lint
+
+# 2. Run type check
+npm run typecheck
+
+# 3. Run tests (if you have them)
+npm run test
+
+# 4. BROWSER VALIDATION (THE IMPORTANT PART)
+# - Navigate to affected pages
+# - Take snapshots
+# - Check console (zero errors)
+# - Take screenshots
+# - Test responsive layouts
+# - Verify user flows work
+
+# 5. Review git diff
+git diff
+
+# 6. Stage changes
+git add -p
+
+# 7. Commit with evidence
+git commit -m "feat(ui): improve assessment stepper layout
+
+- Fixed responsive layout on mobile
+- Improved spacing per design system
+- Verified in browser automation (zero console errors)
+- Tested on mobile (375px), tablet (768px), desktop (1920px)
+- Screenshots attached in PR"
+```
+
+### Branch Testing Before PR
+
+Before creating PR with UI changes:
+
+```bash
+# 1. Merge latest develop
+git checkout develop
+git pull origin develop
+git checkout your-branch
+git merge develop
+
+# 2. Rebuild if needed
+npm run build
+
+# 3. Restart dev server
+npm run dev
+
+# 4. FULL BROWSER REGRESSION TEST
+# Test ALL pages affected by your changes:
+# - Navigate to each page
+# - Take snapshot
+# - Check console
+# - Screenshot desktop + mobile
+# - Test user flows
+# - Verify no regressions
+
+# 5. Create PR with all evidence
+git push origin your-branch
+# Include screenshots and testing checklist in PR description
+```
+
+---
+
+## Common UI Issues and How to Catch Them
+
+### Issue 1: Hydration Mismatches
+
+**Symptom:** React warning about mismatched text content
+
+**How to catch:**
+```typescript
+// 1. Navigate to page
+browser_navigate({ url: "http://localhost:3003/page" })
+
+// 2. Check console IMMEDIATELY
+browser_console_messages()
+
+// Look for: "Warning: Text content did not match..."
+```
+
+**How to fix:**
+- Check for Date.now() or Math.random() in render
+- Check for browser-only APIs (window, localStorage) without guards
+- Use `useEffect` for client-only rendering
+
+### Issue 2: Missing Key Props
+
+**Symptom:** React warning about keys in lists
+
+**How to catch:**
+```typescript
+browser_console_messages()
+// Look for: "Warning: Each child in a list should have a unique "key" prop"
+```
+
+**How to fix:**
+- Add unique `key` prop to all `.map()` items
+- Use stable IDs, not array indices
+
+### Issue 3: Inaccessible Forms
+
+**Symptom:** Can't tab through form, screen reader issues
+
+**How to catch:**
+```typescript
+// 1. Take snapshot
+browser_snapshot()
+
+// 2. Verify structure shows:
+// - <label> elements with htmlFor
+// - <input> elements with id matching label
+// - Proper ARIA attributes
+```
+
+**How to fix:**
+- Add labels to all inputs
+- Add aria-label for icon buttons
+- Ensure focusable elements are keyboard accessible
+
+### Issue 4: Responsive Layout Breaks
+
+**Symptom:** Content overflows, overlaps, or looks broken on mobile
+
+**How to catch:**
+```typescript
+// Test at all breakpoints
+browser_resize({ width: 375, height: 667 })
+browser_take_screenshot({ fullPage: true })
+
+// Look for:
+// - Horizontal scrolling
+// - Text cut off
+// - Overlapping elements
+// - Tiny click targets (<44px)
+```
+
+**How to fix:**
+- Use responsive Tailwind classes (sm:, md:, lg:)
+- Test at 375px width (iPhone SE)
+- Use `overflow-x-hidden` carefully
+- Ensure touch targets are 44x44px minimum
+
+### Issue 5: Failed API Calls
+
+**Symptom:** Data doesn't load, infinite loading state
+
+**How to catch:**
+```typescript
+// 1. Navigate to page
+browser_navigate({ url: "http://localhost:3003/page" })
+
+// 2. Wait for load
+browser_wait_for({ time: 3 })
+
+// 3. Check network
+browser_network_requests()
+
+// Look for:
+// - 404 errors (wrong endpoint)
+// - 401/403 errors (auth issues)
+// - 500 errors (server errors)
+// - CORS errors
+```
+
+**How to fix:**
+- Check endpoint URL is correct
+- Verify authentication headers
+- Check server is running
+- Verify CORS configuration
+
+### Issue 6: Z-Index Battles
+
+**Symptom:** Modals behind content, tooltips not showing
+
+**How to catch:**
+```typescript
+// 1. Open modal/tooltip
+browser_click({ element: "Open Modal", ref: "modal-trigger-ref" })
+
+// 2. Take screenshot
+browser_take_screenshot({ filename: "modal-z-index.png" })
+
+// 3. Visual inspection:
+// - Is modal visible?
+// - Is backdrop behind content?
+// - Is content on top of backdrop?
+```
+
+**How to fix:**
+- Use Tailwind's z-index scale (z-10, z-20, z-30, z-40, z-50)
+- Modal backdrops: z-40
+- Modal content: z-50
+- Document z-index usage in design system
+
+---
+
+## The Ultimate Pre-Commit UI Checklist
+
+Print this out. Check every box. Every time.
+
+```markdown
+## Pre-Commit UI Validation (THE LAW)
+
+### Code Quality
+- [ ] Ran `npm run lint` (zero errors)
+- [ ] Ran `npm run typecheck` (zero errors)
+- [ ] Ran `npm run build` (successful)
+- [ ] Removed all console.log statements
+- [ ] Removed all debug code
+- [ ] Removed all commented-out code
+
+### Browser Automation Testing
+- [ ] Dev server running on correct port
+- [ ] Navigated to all affected pages
+- [ ] Took accessibility snapshots of all pages
+- [ ] Verified semantic HTML structure
+- [ ] Checked console (ZERO errors, noted any warnings)
+- [ ] Took screenshots (before and after)
+
+### Responsive Testing
+- [ ] Tested mobile (375x667) - screenshot taken
+- [ ] Tested tablet (768x1024) - screenshot taken  
+- [ ] Tested desktop (1920x1080) - screenshot taken
+- [ ] No horizontal scrolling on any size
+- [ ] All text readable at all sizes
+- [ ] All click targets >44px on mobile
+
+### Functional Testing
+- [ ] Clicked all buttons (they work)
+- [ ] Filled all forms (validation works)
+- [ ] Tested all navigation (links work)
+- [ ] Tested loading states (if applicable)
+- [ ] Tested error states (if applicable)
+- [ ] Tested empty states (if applicable)
+
+### Accessibility Testing
+- [ ] All buttons have labels
+- [ ] All images have alt text
+- [ ] All forms have labels
+- [ ] Color contrast is sufficient
+- [ ] Keyboard navigation works
+- [ ] Focus indicators visible
+
+### Network Testing
+- [ ] Checked network requests
+- [ ] All API calls return 2xx status
+- [ ] No failed requests (unless intentional)
+- [ ] No slow requests (>3s)
+
+### Git Hygiene
+- [ ] Reviewed git diff line-by-line
+- [ ] Only committing intended changes
+- [ ] Commit message is descriptive
+- [ ] Changes match commit message
+
+### Evidence Gathered for PR
+- [ ] Before screenshots saved
+- [ ] After screenshots saved
+- [ ] Console screenshot saved (clean)
+- [ ] Network screenshot saved (if relevant)
+- [ ] Testing checklist ready for PR description
+```
+
+**If ANY box is unchecked, DO NOT COMMIT.**
+
+---
+
+## Special Rules for trajectory2 App
+
+### Assessment Pages
+- **MUST** test entire flow start-to-finish
+- **MUST** verify progress indicator updates
+- **MUST** test both mobile and desktop layouts
+- **MUST** verify results page displays correctly
+- **MUST** check email capture works
+
+### Course Pages  
+- **MUST** verify authentication gates work
+- **MUST** test navigation between lessons
+- **MUST** verify content displays correctly
+- **MUST** test video embeds (if applicable)
+- **MUST** verify progress tracking
+
+### Payment Pages
+- **MUST** test form validation thoroughly
+- **MUST** verify Square integration works
+- **MUST** test error states (declined card, etc.)
+- **MUST** verify confirmation page displays
+- **MUST** check webhook handling (use network tab)
+
+### Story/Landing Pages
+- **MUST** verify hero section looks professional
+- **MUST** test all CTA buttons work
+- **MUST** verify responsive design (critical for conversions)
+- **MUST** test smooth scrolling (if applicable)
+- **MUST** verify images load and look sharp
+
+---
+
+## Automation Script Examples
+
+### Quick Test Script (Copy-Paste Ready)
+
+For rapid iteration, use this pattern:
+
+```typescript
+// RAPID TEST PATTERN
+// 1. Navigate
+browser_navigate({ url: "http://localhost:3003/your-page" })
+
+// 2. Snapshot + Console + Screenshot
+browser_snapshot()
+browser_console_messages()
+browser_take_screenshot({ fullPage: true })
+
+// 3. Test interaction
+browser_click({ element: "Your Button", ref: "button-ref-from-snapshot" })
+
+// 4. Verify
+browser_snapshot()
+browser_console_messages()
+```
+
+### Full Page Audit Script
+
+```typescript
+// FULL AUDIT PATTERN
+const breakpoints = [
+  { w: 375, h: 667, name: "mobile" },
+  { w: 768, h: 1024, name: "tablet" },
+  { w: 1920, h: 1080, name: "desktop" }
+];
+
+// For each breakpoint:
+// 1. Resize
+browser_resize({ width: 375, height: 667 })
+
+// 2. Navigate
+browser_navigate({ url: "http://localhost:3003/page" })
+
+// 3. Snapshot
+browser_snapshot()
+
+// 4. Console
+browser_console_messages()
+
+// 5. Screenshot
+browser_take_screenshot({ 
+  fullPage: true,
+  filename: `page-mobile.png`
+})
+
+// 6. Network
+browser_network_requests()
+
+// Repeat for each breakpoint
+```
+
+---
+
+## The Golden Rules of UI Testing (MEMORIZE THESE)
+
+1. **Never commit UI changes without browser testing** - NEVER.
+
+2. **Never trust "it works on my machine"** - Test at multiple viewport sizes.
+
+3. **Never ignore console warnings** - They become errors in production.
+
+4. **Never skip accessibility checks** - Lawsuits are expensive.
+
+5. **Never assume hot reload worked** - Hard refresh and verify.
+
+6. **Never commit with failing network requests** - Fix or handle the error.
+
+7. **Never push layout breaks on mobile** - Mobile-first or mobile-same.
+
+8. **Never skip screenshot evidence in PRs** - Pictures or it didn't happen.
+
+9. **Never merge without checking recent changes** - Use `git log` before coding.
+
+10. **Never ship what you haven't clicked** - If you didn't test it, it's broken.
+
+---
+
+## AI Assistant Implementation Protocol
+
+### For Every UI Task, I Will:
+
+1. **FIRST** - Check git history of files I'm about to modify
+   ```bash
+   git log --oneline -10 -- path/to/file
+   git diff HEAD~5 -- path/to/file
+   ```
+
+2. **SECOND** - Launch browser automation and inspect current state
+   - Navigate to page
+   - Take snapshot
+   - Check console
+   - Take screenshot
+   - Document current behavior
+
+3. **THIRD** - Make code changes
+
+4. **FOURTH** - Validate changes in browser
+   - Navigate to page again (or hard refresh)
+   - Take new snapshot
+   - Check console for new errors
+   - Take new screenshot
+   - Test functionality
+   - Test responsive layout
+
+5. **FIFTH** - Compare before/after
+   - Side-by-side screenshot comparison
+   - Console errors (before vs after)
+   - Network requests (before vs after)
+
+6. **SIXTH** - Document findings
+   - What changed
+   - What was tested
+   - What screenshots were taken
+   - Any issues found and fixed
+
+7. **SEVENTH** - Prepare PR evidence
+   - Gather all screenshots
+   - Document testing checklist
+   - Note any edge cases tested
+   - Highlight any known limitations
+
+### For Every Code Review, I Will:
+
+1. Check the PR description for testing evidence
+2. Verify screenshots show before/after
+3. Check that console is clean in screenshots
+4. Verify responsive testing was done
+5. Look for obvious accessibility issues
+6. Check that network requests are handled
+7. Verify error states are tested
+
+---
+
+## Veteran's Wisdom on UI Testing
+
+> "The browser never lies. Your assumptions do."
+
+> "A screenshot is worth a thousand words. A video is worth a thousand screenshots."
+
+> "Console errors in development become user complaints in production."
+
+> "If you didn't test it on mobile, you didn't test it."
+
+> "Accessibility isn't optional. It's professional responsibility."
+
+> "The best UI test is the one that catches bugs before users do."
+
+> "Inspect recent changes first. Context prevents mistakes."
+
+> "Browser automation isn't overhead. It's insurance."
+
+> "If you can't demonstrate it working, it doesn't work."
+
+> "Test like your reputation depends on it. It does."
+
+---
+
+## Remember
+
+Every pixel matters. Every interaction matters. Every console error matters.
+
+Test thoroughly. Document completely. Ship confidently.
+
+That's the veteran's way.
