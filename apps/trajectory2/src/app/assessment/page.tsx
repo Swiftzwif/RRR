@@ -85,10 +85,17 @@ export default function AssessmentPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-          <p className="text-slate-600 text-lg">Loading assessment...</p>
+      <div className="min-h-screen flex items-center justify-center bg-base relative overflow-hidden">
+        {/* Luxury Background Orbs */}
+        <div className="luxury-orb-container">
+          <div className="luxury-orb luxury-orb-1" />
+          <div className="luxury-orb luxury-orb-2" />
+          <div className="luxury-orb luxury-orb-3" />
+        </div>
+
+        <div className="text-center relative z-10">
+          <div className="w-20 h-20 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <p className="text-secondary text-lg">Loading assessment...</p>
         </div>
       </div>
     );
@@ -96,18 +103,25 @@ export default function AssessmentPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <div className="text-center max-w-md mx-auto px-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-white text-2xl">⚠️</span>
+      <div className="min-h-screen flex items-center justify-center bg-base relative overflow-hidden">
+        {/* Luxury Background Orbs */}
+        <div className="luxury-orb-container">
+          <div className="luxury-orb luxury-orb-1" />
+          <div className="luxury-orb luxury-orb-2" />
+          <div className="luxury-orb luxury-orb-3" />
+        </div>
+
+        <div className="text-center max-w-md mx-auto px-6 relative z-10">
+          <div className="w-20 h-20 bg-gradient-to-br from-[#FF6B35] to-[#F7931E] rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
+            <span className="text-white text-3xl">⚠️</span>
           </div>
-          <h1 className="text-3xl font-display font-bold text-slate-800 mb-4">
+          <h1 className="text-3xl font-display font-bold text-primary mb-4">
             Error Loading Assessment
           </h1>
-          <p className="text-slate-600 mb-8">{error}</p>
+          <p className="text-secondary mb-8">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 hover:scale-105 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
+            className="inline-flex items-center px-8 py-4 luxury-button rounded-xl shadow-xl"
           >
             Try Again
           </button>
@@ -117,25 +131,31 @@ export default function AssessmentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
-      <div className="max-w-4xl mx-auto px-6">
+    <div className="min-h-screen bg-base py-12 relative overflow-hidden">
+      {/* Luxury Background Orbs */}
+      <div className="luxury-orb-container">
+        <div className="luxury-orb luxury-orb-1" />
+        <div className="luxury-orb luxury-orb-2" />
+        <div className="luxury-orb luxury-orb-3" />
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 relative z-10">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-sm font-semibold mb-6 shadow-lg">
+          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#FF6B35] to-[#F7931E] text-white rounded-full text-sm font-semibold mb-6 shadow-lg">
             <span className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
             LIFE ASSESSMENT
           </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 bg-clip-text text-transparent mb-6">
-            {getCopy('assessment.title') as string}
+          <h1 className="text-4xl md:text-5xl font-display font-bold text-primary mb-6">
+            <span className="bg-gradient-to-r from-[#FF6B35] via-[#F7931E] to-[#C89B3C] bg-clip-text text-transparent">
+              {getCopy("assessment.title") as string}
+            </span>
           </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            {getCopy('assessment.subtitle') as string}
+          <p className="text-xl text-secondary max-w-3xl mx-auto leading-relaxed">
+            {getCopy("assessment.subtitle") as string}
           </p>
         </div>
 
-        <AssessmentStepper
-          questions={questions}
-          onComplete={handleComplete}
-        />
+        <AssessmentStepper questions={questions} onComplete={handleComplete} />
       </div>
     </div>
   );

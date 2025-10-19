@@ -10,10 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion";
 import { ArrowRight, LogIn, Shield, UserPlus } from "lucide-react";
 import Link from "next/link";
-import { useState } from 'react'
+import { useState } from "react";
 import { login, signup } from "./actions";
 
 export default function LoginPage() {
@@ -36,23 +36,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      {/* Background Elements */}
-      <div className="absolute inset-0 opacity-10">
-        <svg
-          className="absolute top-0 right-0 w-full h-full"
-          viewBox="0 0 1440 800"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 400 Q 720 100, 1440 300"
-            stroke="var(--brand-gold)"
-            strokeWidth="2"
-            fill="none"
-            opacity="0.3"
-          />
-        </svg>
+    <div className="min-h-screen bg-base flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Luxury Background Orbs */}
+      <div className="luxury-orb-container">
+        <div className="luxury-orb luxury-orb-1" />
+        <div className="luxury-orb luxury-orb-2" />
+        <div className="luxury-orb luxury-orb-3" />
       </div>
 
       <div className="max-w-md w-full space-y-8 relative z-10">
@@ -63,37 +52,45 @@ export default function LoginPage() {
         >
           {/* Logo & Header */}
           <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-3 mb-6 group"
+            >
               <LogoMark className="h-12 w-12 group-hover:scale-110 transition-transform" />
-              <span className="text-2xl font-bold text-primary">Trajectory</span>
+              <span className="text-2xl font-bold text-primary">
+                Trajectory
+              </span>
             </Link>
             <h2 className="text-3xl font-bold text-primary mb-2">
-              {mode === 'login' ? 'Welcome Back' : 'Join the Community'}
+              {mode === "login" ? "Welcome Back" : "Join the Community"}
             </h2>
             <p className="text-secondary">
-              {mode === 'login'
-                ? 'Continue your transformation journey'
-                : 'Start commanding your trajectory today'}
+              {mode === "login"
+                ? "Continue your transformation journey"
+                : "Start commanding your trajectory today"}
             </p>
           </div>
 
           {/* Auth Card */}
-          <Card className="bg-elev-2 border-[var(--border-default)]">
+          <Card className="luxury-card border-[var(--border-gold)] shadow-2xl">
             <CardHeader>
               <CardTitle className="text-2xl text-primary">
-                {mode === 'login' ? 'Sign In' : 'Create Account'}
+                {mode === "login" ? "Sign In" : "Create Account"}
               </CardTitle>
               <CardDescription className="text-secondary">
-                {mode === 'login'
-                  ? 'Access your premium content and continue where you left off'
-                  : 'Get access to exclusive content and join our community'}
+                {mode === "login"
+                  ? "Access your premium content and continue where you left off"
+                  : "Get access to exclusive content and join our community"}
               </CardDescription>
             </CardHeader>
 
             <CardContent>
               <form action={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-primary">
+                  <label
+                    htmlFor="email"
+                    className="text-sm font-medium text-primary"
+                  >
                     Email Address
                   </label>
                   <Input
@@ -108,19 +105,24 @@ export default function LoginPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="password" className="text-sm font-medium text-primary">
+                  <label
+                    htmlFor="password"
+                    className="text-sm font-medium text-primary"
+                  >
                     Password
                   </label>
                   <Input
                     id="password"
                     name="password"
                     type="password"
-                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                    autoComplete={
+                      mode === "login" ? "current-password" : "new-password"
+                    }
                     required
                     placeholder="••••••••"
                     className="bg-elev-1"
                   />
-                  {mode === 'signup' && (
+                  {mode === "signup" && (
                     <p className="text-xs text-muted">
                       Must be at least 8 characters long
                     </p>
@@ -129,7 +131,7 @@ export default function LoginPage() {
 
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full luxury-button h-14 text-lg"
                   size="lg"
                   disabled={isLoading}
                 >
@@ -155,7 +157,7 @@ export default function LoginPage() {
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
-                      {mode === 'login' ? (
+                      {mode === "login" ? (
                         <>
                           <LogIn className="w-5 h-5" />
                           Sign In
@@ -176,17 +178,17 @@ export default function LoginPage() {
               <div className="mt-6 text-center">
                 <button
                   type="button"
-                  onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+                  onClick={() => setMode(mode === "login" ? "signup" : "login")}
                   className="text-sm text-secondary hover:text-primary transition-colors"
                 >
-                  {mode === 'login' ? (
+                  {mode === "login" ? (
                     <>
-                      Don&apos;t have an account?{' '}
+                      Don&apos;t have an account?{" "}
                       <span className="text-gold font-semibold">Sign up</span>
                     </>
                   ) : (
                     <>
-                      Already have an account?{' '}
+                      Already have an account?{" "}
                       <span className="text-gold font-semibold">Sign in</span>
                     </>
                   )}
@@ -194,19 +196,21 @@ export default function LoginPage() {
               </div>
 
               {/* Security Note */}
-              {mode === 'signup' && (
+              {mode === "signup" && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-6 p-4 bg-elev-1 rounded-lg border border-[var(--border-default)]"
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="mt-6 p-4 luxury-glass-gold rounded-lg shadow-lg"
                 >
                   <div className="flex items-start gap-3">
                     <Shield className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
                     <div className="text-sm text-secondary">
-                      <p className="font-semibold text-primary mb-1">Secure & Private</p>
+                      <p className="font-semibold text-primary mb-1">
+                        Secure & Private
+                      </p>
                       <p>
-                        Your data is encrypted and secure. We&apos;ll send you a confirmation
-                        email to verify your account.
+                        Your data is encrypted and secure. We&apos;ll send you a
+                        confirmation email to verify your account.
                       </p>
                     </div>
                   </div>
@@ -227,5 +231,5 @@ export default function LoginPage() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }
