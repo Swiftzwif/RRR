@@ -92,7 +92,11 @@ export default function StoryPage() {
                   THE AWAKENING
                 </Badge>
                 <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
-                  "Kill the Boy"
+<<<<<<< Updated upstream
+                  &ldquo;Kill the Boy&rdquo;
+=======
+                  &quot;Kill the Boy&quot;
+>>>>>>> Stashed changes
                 </h2>
                 <p className="text-xl text-orange-100 max-w-3xl mx-auto leading-relaxed">
                   When I turned 25, my mentor told me something I&apos;ll never
@@ -103,7 +107,11 @@ export default function StoryPage() {
               <div className="max-w-5xl mx-auto space-y-8 mb-12">
                 <div className="text-center">
                   <p className="text-3xl md:text-4xl font-bold text-gold mb-4 leading-tight">
-                    "Kill the boy."
+<<<<<<< Updated upstream
+                    &ldquo;Kill the boy.&rdquo;
+=======
+                    &quot;Kill the boy.&quot;
+>>>>>>> Stashed changes
                   </p>
                   <p className="text-lg text-orange-200">
                     It wasn&apos;t about violence. It was about transformation.

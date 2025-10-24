@@ -81,13 +81,27 @@ export async function updateUserProfile(
  * Update user's last login timestamp
  */
 export async function updateLastLogin(userId: string): Promise<void> {
+  // First get current login count
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("login_count")
+    .eq("id", userId)
+    .single();
+
+  // Then update with incremented count
   await supabase
-    .from('user_profiles')
+    .from("user_profiles")
     .update({
       last_login_at: new Date().toISOString(),
-      login_count: supabase.sql`login_count + 1`,
-    } as any)
+<<<<<<< Updated upstream
+      login_count: supabase.sql`login_count + 1` as unknown as number,
+    })
     .eq('id', userId);
+=======
+      login_count: (profile?.login_count ?? 0) + 1,
+    })
+    .eq("id", userId);
+>>>>>>> Stashed changes
 }
 
 // ============================================
@@ -152,7 +166,20 @@ export async function upgradeToPremium(
     return { success: false, message: error.message };
   }
 
-  return data as any;
+<<<<<<< Updated upstream
+  return data as { success: boolean; subscription_id?: string; message: string };
+=======
+  const subscriptionId =
+    typeof data === "object" && data !== null && "subscription_id" in data
+      ? (data as { subscription_id: string }).subscription_id
+      : undefined;
+
+  return {
+    success: true,
+    subscription_id: subscriptionId,
+    message: "Successfully upgraded to premium",
+  };
+>>>>>>> Stashed changes
 }
 
 /**
@@ -173,7 +200,11 @@ export async function cancelSubscription(
     return { success: false, message: error.message };
   }
 
-  return data as any;
+<<<<<<< Updated upstream
+  return data as { success: boolean; message: string };
+=======
+  return { success: true, message: "Subscription cancelled successfully" };
+>>>>>>> Stashed changes
 }
 
 /**
@@ -307,14 +338,14 @@ export async function getUserFeatureUsage(userId: string) {
 export async function logActivity(
   userId: string,
   activityType: string,
-  activityData?: Record<string, any>,
+  activityData?: Record<string, unknown>,
   ipAddress?: string,
   userAgent?: string
 ): Promise<void> {
-  await supabase.from('user_activity_log').insert({
+  await supabase.from("user_activity_log").insert({
     user_id: userId,
     activity_type: activityType,
-    activity_data: activityData,
+    activity_data: activityData as never,
     ip_address: ipAddress,
     user_agent: userAgent,
   });

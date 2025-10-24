@@ -54,12 +54,21 @@ export default function ResultsPage() {
             .limit(1)
             .single();
 
-          if (assessment) {
+          if (assessment && assessment.domain_scores && assessment.avatar) {
+            const domainScores = assessment.domain_scores as Record<
+              Domain,
+              number
+            >;
+            const avatar = assessment.avatar as
+              | "Drifter"
+              | "Balancer"
+              | "Architect";
+
             setResults({
-              domainScores: assessment.domain_scores,
+              domainScores,
               overall: assessment.score,
-              avatar: assessment.avatar,
-              lowestTwoDomains: getLowestTwoDomains(assessment.domain_scores),
+              avatar,
+              lowestTwoDomains: getLowestTwoDomains(domainScores),
               assessmentId: assessment.id,
             });
           } else {
