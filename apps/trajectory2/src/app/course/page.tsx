@@ -73,30 +73,38 @@ function CourseContent() {
   }, [searchParams]);
 
   const handlePurchase = async () => {
-    // Payment integration coming soon
-    alert(
-      "Course payment ($99.99) - Payment integration coming soon! We'll notify you when it's ready."
-    );
+    try {
+      // Get current user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    // Optional: Capture intent if user is logged in
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user?.email) {
-      await fetch("/api/notify", {
+      // Create payment link
+      const response = await fetch("/api/payments/square/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: user.email,
-          topic: "course",
-          metadata: {
-            intent: "purchase",
-            timestamp: new Date().toISOString(),
-          },
+          product: "course",
+          userId: user?.id,
+          email: user?.email,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to create payment link");
+      }
+
+      const { url } = await response.json();
+
+      // Redirect to Square payment page
+      window.location.href = url;
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert(
+        "There was an error creating the payment. Please try again or contact support."
+      );
     }
   };
 

@@ -37,8 +37,39 @@ export default function CoachingPage() {
   }, []);
 
   const handlePurchase = async () => {
-    // Payment integration coming soon
-    alert('Payment integration for coaching is coming soon! Stay tuned.');
+    try {
+      // Get current user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      // Create payment link
+      const response = await fetch("/api/payments/square/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          product: "coaching",
+          userId: user?.id,
+          email: user?.email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create payment link");
+      }
+
+      const { url } = await response.json();
+
+      // Redirect to Square payment page
+      window.location.href = url;
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert(
+        "There was an error creating the payment. Please try again or contact support."
+      );
+    }
   };
 
   const coachingData = getCopy('tbd.coaching') as {
