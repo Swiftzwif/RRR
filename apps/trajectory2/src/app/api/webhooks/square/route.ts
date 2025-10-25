@@ -95,7 +95,8 @@ export async function POST(request: NextRequest) {
       // Store purchase in Supabase
       const supabase = getSupabaseServiceRole();
       if (supabase && product) {
-        const { error } = await supabase
+        // Store purchase record
+        const { error: purchaseError } = await supabase
           .from('purchases')
           .upsert({
             user_id: userId,
@@ -108,9 +109,39 @@ export async function POST(request: NextRequest) {
             onConflict: 'square_payment_id',
           });
 
-        if (error) {
-          console.error('Error storing purchase:', error);
+        if (purchaseError) {
+          console.error('Error storing purchase:', purchaseError);
           // Don't fail the webhook - Square will retry
+        } else {
+          console.log('Purchase stored successfully:', paymentId);
+        }
+
+        // Grant user access to the product
+        if (userId && product) {
+          try {
+            // Update user metadata to grant access
+            const metadataKey = product === 'course' ? 'has_course_access' : 'has_coaching_access';
+            
+            const { error: updateError } = await supabase.auth.admin.updateUserById(
+              userId,
+              {
+                user_metadata: {
+                  [metadataKey]: true,
+                  [`${product}_purchase_date`]: new Date().toISOString(),
+                  [`${product}_payment_id`]: paymentId,
+                }
+              }
+            );
+
+            if (updateError) {
+              console.error('Error granting access:', updateError);
+            } else {
+              console.log(`Access granted to user ${userId} for ${product}`);
+            }
+          } catch (accessError) {
+            console.error('Error in access grant:', accessError);
+            // Don't fail webhook - purchase is stored, can grant access manually if needed
+          }
         }
       }
     }
