@@ -1,3 +1,4 @@
+import { sendPurchaseConfirmationEmail } from '@/lib/email';
 import { getSupabaseServiceRole } from '@/lib/supabase';
 import { createHmac } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
@@ -141,6 +142,35 @@ export async function POST(request: NextRequest) {
           } catch (accessError) {
             console.error('Error in access grant:', accessError);
             // Don't fail webhook - purchase is stored, can grant access manually if needed
+          }
+        }
+
+        // Send purchase confirmation email
+        if (email && product) {
+          try {
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+            const productNames = {
+              course: 'Trajectory Course - Rethink. Redesign. Reignite.',
+              coaching: 'Trajectory Coaching Interview',
+            };
+
+            await sendPurchaseConfirmationEmail({
+              to: email,
+              productName: productNames[product],
+              productType: product,
+              amount: (amountCents / 100).toFixed(2),
+              accessUrl: `${baseUrl}/${product}`,
+              purchaseDate: new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }),
+            });
+
+            console.log(`Confirmation email sent to ${email} for ${product}`);
+          } catch (emailError) {
+            console.error('Error sending confirmation email:', emailError);
+            // Don't fail webhook - purchase and access are more important
           }
         }
       }

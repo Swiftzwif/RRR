@@ -1,5 +1,6 @@
 import { AssessmentCompleteEmail } from '@/emails/assessment-complete';
 import { DailyExperienceEmail } from '@/emails/daily-experience';
+import PurchaseConfirmationEmail from '@/emails/purchase-confirmation';
 import { Resend } from 'resend';
 
 let resend: Resend | null = null;
@@ -133,4 +134,38 @@ export async function scheduleDailyEmails(email: string, userName?: string) {
   `);
 
   return { success: true };
+}
+
+export interface PurchaseConfirmationEmailData {
+  to: string;
+  userName?: string;
+  productName: string;
+  productType: 'course' | 'coaching';
+  amount: string;
+  accessUrl: string;
+  purchaseDate: string;
+}
+
+export async function sendPurchaseConfirmationEmail(data: PurchaseConfirmationEmailData) {
+  try {
+    const resendClient = getResendClient();
+    if (!resendClient) {
+      console.warn('Email service not configured');
+      return { success: false, error: 'Email service not configured' };
+    }
+    
+    const { to, ...emailProps } = data;
+    
+    const result = await resendClient.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: `Your Purchase is Confirmed - ${emailProps.productName}`,
+      react: PurchaseConfirmationEmail(emailProps),
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Failed to send purchase confirmation email:', error);
+    return { success: false, error };
+  }
 }
