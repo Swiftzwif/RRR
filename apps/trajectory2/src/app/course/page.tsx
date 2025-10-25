@@ -188,6 +188,71 @@ function CourseContent() {
   }
 
   if (purchaseSuccess && !hasAccess) {
+    // Poll for purchase completion
+    useEffect(() => {
+      let pollCount = 0;
+      const maxPolls = 15; // Poll for 30 seconds (15 * 2s)
+
+      const checkPurchaseComplete = async () => {
+        try {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+
+          if (user) {
+            // Check if webhook has processed and granted access
+            const { data: userData } = await supabase.auth.getUser();
+            const hasAccessNow =
+              userData?.user?.user_metadata?.has_course_access === true;
+
+            if (hasAccessNow) {
+              // Access granted! Reload to show course content
+              window.location.reload();
+              return true;
+            }
+
+            // Also check purchases table as fallback
+            const { data: purchase } = await supabase
+              .from("purchases")
+              .select("*")
+              .eq("user_id", user.id)
+              .eq("product", "course")
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .single();
+
+            if (purchase) {
+              // Purchase exists but access not granted yet
+              // Give webhook a bit more time or reload
+              window.location.reload();
+              return true;
+            }
+          }
+
+          return false;
+        } catch (error) {
+          console.error("Error checking purchase:", error);
+          return false;
+        }
+      };
+
+      const interval = setInterval(async () => {
+        pollCount++;
+
+        const completed = await checkPurchaseComplete();
+
+        if (completed || pollCount >= maxPolls) {
+          clearInterval(interval);
+          if (!completed && pollCount >= maxPolls) {
+            // Timeout - show message to contact support
+            console.log("Purchase verification timeout");
+          }
+        }
+      }, 2000); // Check every 2 seconds
+
+      return () => clearInterval(interval);
+    }, []);
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-base">
         <motion.div
@@ -196,16 +261,18 @@ function CourseContent() {
           animate={{ opacity: 1, scale: 1 }}
         >
           <div className="w-20 h-20 bg-gold-gradient rounded-full flex items-center justify-center mx-auto mb-6 gold-glow">
-            <CheckCircle className="w-10 h-10 text-black" />
+            <div className="w-10 h-10 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
           </div>
           <h1 className="text-3xl font-bold text-primary mb-4">
-            Payment Processing
+            Processing Payment...
           </h1>
           <p className="text-secondary mb-6">
-            Your payment is being processed. You&apos;ll receive an email
-            confirmation shortly with access to the course.
+            Please wait while we confirm your purchase and grant access.
+            This usually takes just a few seconds.
           </p>
-          <Button onClick={() => window.location.reload()}>Check Access</Button>
+          <p className="text-sm text-muted">
+            Don&apos;t close this page - you&apos;ll be redirected automatically.
+          </p>
         </motion.div>
       </div>
     );
