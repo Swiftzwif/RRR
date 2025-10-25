@@ -93,15 +93,9 @@ export async function updateLastLogin(userId: string): Promise<void> {
     .from("user_profiles")
     .update({
       last_login_at: new Date().toISOString(),
-<<<<<<< Updated upstream
-      login_count: supabase.sql`login_count + 1` as unknown as number,
-    })
-    .eq('id', userId);
-=======
       login_count: (profile?.login_count ?? 0) + 1,
     })
     .eq("id", userId);
->>>>>>> Stashed changes
 }
 
 // ============================================
@@ -166,9 +160,6 @@ export async function upgradeToPremium(
     return { success: false, message: error.message };
   }
 
-<<<<<<< Updated upstream
-  return data as { success: boolean; subscription_id?: string; message: string };
-=======
   const subscriptionId =
     typeof data === "object" && data !== null && "subscription_id" in data
       ? (data as { subscription_id: string }).subscription_id
@@ -179,7 +170,6 @@ export async function upgradeToPremium(
     subscription_id: subscriptionId,
     message: "Successfully upgraded to premium",
   };
->>>>>>> Stashed changes
 }
 
 /**
@@ -200,11 +190,7 @@ export async function cancelSubscription(
     return { success: false, message: error.message };
   }
 
-<<<<<<< Updated upstream
-  return data as { success: boolean; message: string };
-=======
   return { success: true, message: "Subscription cancelled successfully" };
->>>>>>> Stashed changes
 }
 
 /**
