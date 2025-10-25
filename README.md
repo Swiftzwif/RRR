@@ -199,4 +199,3 @@ For questions or issues:
 ---
 
 *Last updated: October 2025*
-
