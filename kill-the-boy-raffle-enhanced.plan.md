@@ -1,4 +1,6 @@
-# Kill The Boy Grand Opening Raffle - Implementation Guide
+# Kill The Boy Grand Opening Raffle - Claude Autonomous Implementation Guide
+
+> **Claude Context**: This is your complete guide for implementing the Kill The Boy Raffle feature. Every section references specific skills from `.claude/skills/` that you should apply. Work autonomously with 99% certainty, deliver Apple-grade quality by default, and ensure every element serves the transformation mission.
 
 ## Mission Context
 
@@ -13,8 +15,16 @@ This isn't just a raffle - it's a transformation catalyst. Every element must fe
 
 ## Implementation Phases (Autonomous Execution)
 
+> **Claude**: Execute each phase in order. For each phase, you'll create atomic commits following `atomic-git-workflow.md`. Start with `git checkout -b feat/raffle-grand-opening` from the `develop` branch.
+
 ### Phase 1: Database Architecture
-**Skills**: `supabase-query-helper.md`, `future-features-prep.md`
+**Skills**: `supabase-query-helper.md`, `future-features-prep.md`  
+**Location**: Create new migration file in `apps/trajectory2/supabase/migrations/`  
+**Claude Actions**: 
+1. Create migration file with timestamp prefix
+2. Add all SQL below
+3. Test locally with `supabase db push`
+4. Commit: `git add -p && git commit -m "feat: add raffle database schema"`
 
 Create transformation-ready schema:
 
@@ -115,7 +125,15 @@ CREATE INDEX idx_purchases_raffle ON purchases(raffle_id) WHERE raffle_id IS NOT
 ```
 
 ### Phase 2: Homepage Transformation Trigger
-**Skills**: `apple-grade-ui.md`, `life-transforming-ux.md`, `performance-optimization.md`
+**Skills**: `apple-grade-ui.md`, `life-transforming-ux.md`, `performance-optimization.md`  
+**Location**: `apps/trajectory2/src/components/RaffleButton.tsx`  
+**Claude Actions**:
+1. Create new component file
+2. Import into homepage (`app/page.tsx`)
+3. Position in hero section (absolute positioning)
+4. Apply apple-grade spacing and animations
+5. Test responsiveness at all breakpoints
+6. Commit: `git add -p && git commit -m "feat: create raffle button w/ live count"`
 
 ```tsx
 // components/RaffleButton.tsx
@@ -272,7 +290,19 @@ export default function RaffleButton() {
 ```
 
 ### Phase 3: Transformation Landing Page
-**Skills**: `life-transforming-ux.md`, `assessment-optimization.md`, `apple-grade-ui.md`
+**Skills**: `life-transforming-ux.md`, `assessment-optimization.md`, `apple-grade-ui.md`  
+**Location**: `apps/trajectory2/src/app/raffle/page.tsx` and components  
+**Claude Actions**:
+1. Create new route folder `app/raffle/`
+2. Build page.tsx with metadata for SEO
+3. Create sub-components in `components/raffle/`:
+   - RaffleHero.tsx (commitment moment)
+   - PrizeShowcase.tsx (transformation tools)
+   - LiveWarriorFeed.tsx (social proof)
+   - TransformationCommitment.tsx (capture intent)
+   - RaffleCountdown.tsx (urgency)
+4. Apply life-transforming UX patterns from skill
+5. Commit: `git add -p && git commit -m "feat: implement raffle landing page"`
 
 ```tsx
 // app/raffle/page.tsx
@@ -311,7 +341,16 @@ export default function RafflePage() {
 ```
 
 ### Phase 4: Payment Integration Excellence
-**Skills**: `payment-edge-cases.md`, `api-route-builder.md`, `integration-patterns.md`
+**Skills**: `payment-edge-cases.md`, `api-route-builder.md`, `integration-patterns.md`  
+**Location**: `apps/trajectory2/src/app/api/payments/raffle-entry/route.ts`  
+**Claude Actions**:
+1. Create new API route folder
+2. Implement POST handler with Zod validation
+3. Apply payment edge case patterns (idempotency, retry logic)
+4. Handle guest checkout flow
+5. Test with Square sandbox
+6. Error messages must inspire (not deflate)
+7. Commit: `git add -p && git commit -m "feat: wire raffle payment flow"`
 
 ```typescript
 // app/api/payments/raffle-entry/route.ts
@@ -403,7 +442,15 @@ export async function POST(request: NextRequest) {
 ```
 
 ### Phase 5: Webhook Excellence
-**Skills**: `payment-edge-cases.md`, `email-automation.md`
+**Skills**: `payment-edge-cases.md`, `email-automation.md`  
+**Location**: Update existing `apps/trajectory2/src/app/api/payments/square/webhook/route.ts`  
+**Claude Actions**:
+1. Add raffle entry creation logic after successful payment
+2. Check for raffle metadata in payment note
+3. Create warrior entry with transformation goal
+4. Send confirmation email using React Email template
+5. Handle edge cases (duplicate entries, missing data)
+6. Commit: `git add -p && git commit -m "feat: add raffle entry webhook"`
 
 Extend Square webhook to create raffle entry:
 
@@ -443,7 +490,18 @@ if (payment.note?.includes('raffle_id')) {
 ```
 
 ### Phase 6: Admin Dashboard
-**Skills**: `apple-grade-ui.md`, `analytics-tracking.md`
+**Skills**: `apple-grade-ui.md`, `analytics-tracking.md`  
+**Location**: `apps/trajectory2/src/app/admin/raffle/page.tsx`  
+**Claude Actions**:
+1. Create protected admin route with auth check
+2. Build dashboard with:
+   - Warriors table with search/filter
+   - Transformation goals display
+   - Winner selection algorithm (crypto.randomBytes)
+   - Export to CSV functionality
+3. Apply Apple-grade data visualization
+4. Add real-time updates for new entries
+5. Commit: `git add -p && git commit -m "feat: build admin raffle dashboard"`
 
 ```typescript
 // app/admin/raffle/page.tsx
@@ -545,3 +603,106 @@ Track what matters:
 This isn't just a raffle. It's the moment thousands of men decide to kill the boy. Every pixel, every word, every interaction should feel like the beginning of their transformation.
 
 **The standard is transformation. The method is excellence. The time is now.**
+
+---
+
+## Claude Implementation Order (Step-by-Step)
+
+> **Claude**: Follow this exact order. Each step builds on the previous. Work autonomously but ask if genuinely unclear (99% certainty rule).
+
+### Day 1: Foundation
+1. **Create branch**: `git checkout develop && git pull && git checkout -b feat/raffle-grand-opening`
+2. **Database setup** (Phase 1)
+   - Create migration file
+   - Run locally to test
+   - Commit with atomic message
+3. **Homepage button** (Phase 2) 
+   - Create component
+   - Import to homepage
+   - Test all breakpoints
+   - Commit
+
+### Day 2: Core Experience  
+4. **Landing page** (Phase 3)
+   - Create route and components
+   - Apply transformation UX patterns
+   - Polish with Apple-grade quality
+   - Commit each component separately
+5. **Payment flow** (Phase 4)
+   - API route with validation
+   - Guest checkout support
+   - Test with Square sandbox
+   - Commit
+
+### Day 3: Excellence & Polish
+6. **Webhook integration** (Phase 5)
+   - Update existing webhook
+   - Add raffle entry creation
+   - Send confirmation emails
+   - Commit
+7. **Admin dashboard** (Phase 6)
+   - Protected route
+   - Winner selection
+   - Export functionality
+   - Commit
+
+### Day 4: Testing & Launch
+8. **Full flow testing**
+   - Test as new user
+   - Test duplicate prevention
+   - Test mobile experience
+   - Test email delivery
+9. **Performance optimization**
+   - Check bundle size
+   - Optimize images
+   - Test live counter performance
+10. **Create PR with evidence**
+    - Screenshots of all states
+    - Mobile/desktop comparisons
+    - Testing checklist completed
+
+## Critical Implementation Notes for Claude
+
+### When Building Components
+- **Always** check existing components first (don't recreate Button, Card, etc.)
+- **Always** use design system colors (sky, sunset, canyon)
+- **Always** add loading and error states
+- **Always** test on mobile first
+
+### When Writing Copy
+- **Never** use corporate speak
+- **Always** write like Jean (direct, transformational, no BS)
+- **Always** focus on the transformation, not the discount
+- Examples:
+  - ❌ "Sign up for our raffle"
+  - ✅ "Begin your transformation"
+  - ❌ "Invalid email address"
+  - ✅ "Real email = real transformation"
+
+### When Handling Payments
+- **Always** use idempotency keys
+- **Always** validate amounts server-side
+- **Always** handle webhook retries
+- **Never** trust client-side data
+
+### When Tracking Analytics
+- Track: journey_started, raffle_entered, transformation_committed
+- Include: source, transformation_goal, warrior_count
+- Use: trackingHelpers from existing code
+
+### Quality Checklist Before Each Commit
+- [ ] Zero console errors
+- [ ] Mobile responsive (375px minimum)
+- [ ] Loading states smooth
+- [ ] Error messages inspire
+- [ ] Follows existing patterns
+- [ ] Atomic commit message
+
+## If You Get Stuck
+
+1. **First**: Check existing code for patterns
+2. **Second**: Reference the specific skill for that area
+3. **Third**: Make a decision with 99% certainty
+4. **Last resort**: Ask with specific options
+
+Remember: You're building a transformation catalyst, not just a raffle. Every decision should reflect that mission.
