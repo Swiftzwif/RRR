@@ -8,29 +8,29 @@ import { Badge } from '@/components/ui/badge';
 const prizes = [
   {
     type: 'grand',
-    icon: DollarSign,
-    title: '$500 Cash Prize',
-    description: 'Invest in your transformation journey',
+    icon: Zap,
+    title: '3 Inner Mastery Sessions',
+    description: 'Premium transformation coaching (Coming Soon)',
     quantity: 1,
-    value: '$500',
+    value: '$2,000+ value',
     color: 'from-yellow-400 to-yellow-600',
   },
   {
     type: 'premium',
-    icon: BookOpen,
-    title: 'A Happy Pocket Full of Money',
-    description: 'Mind-expanding book by David Cameron Gikandi',
-    quantity: 10,
-    value: '$20 each',
+    icon: Gift,
+    title: 'Trajectory Gear Package',
+    description: 'Exclusive merchandise and transformation tools',
+    quantity: 3,
+    value: '$500 value',
     color: 'from-sky-400 to-sky-600',
   },
   {
     type: 'exclusive',
-    icon: Zap,
-    title: 'Inner Mastery Sessions',
-    description: 'Exclusive transformation accelerator sessions',
+    icon: Trophy,
+    title: '1-on-1 Strategy Session',
+    description: 'Personal breakthrough session with a coach',
     quantity: 5,
-    value: '$200 each',
+    value: '$300 each',
     color: 'from-purple-400 to-purple-600',
   },
 ];
@@ -43,9 +43,8 @@ export default function PrizeShowcase() {
         <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
         >
           <div className="inline-flex items-center gap-2 mb-4">
             <Trophy className="w-6 h-6 text-sunset" />
@@ -67,9 +66,8 @@ export default function PrizeShowcase() {
             <motion.div
               key={prize.title}
               initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
             >
               <Card className="relative h-full border-2 hover:border-sunset/50 transition-all duration-300 hover:shadow-2xl group">
                 {/* Prize type badge */}
@@ -125,9 +123,8 @@ export default function PrizeShowcase() {
         <motion.div
           className="bg-gradient-to-r from-sky-50 to-sunset/10 rounded-2xl p-8 text-center"
           initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
         >
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">
             <div>
@@ -158,9 +155,8 @@ export default function PrizeShowcase() {
         <motion.p
           className="text-center text-sm text-sky-600 mt-8"
           initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          viewport={{ once: true }}
         >
           Winners selected randomly via cryptographic algorithm. Drawing happens 24 hours after raffle ends.
         </motion.p>

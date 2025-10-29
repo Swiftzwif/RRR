@@ -1,7 +1,7 @@
 "use client";
 
 import { LogoMark } from "@/components/LogoMark";
-import RaffleButton from "@/components/RaffleButton";
+import RaffleHeroSection from "@/components/RaffleHeroSection";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -120,6 +120,10 @@ export default function Home() {
                 <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight text-primary">
                   Trajectory
                 </h1>
+
+                {/* Grand Opening Raffle */}
+                <RaffleHeroSection />
+
                 <h2 className="text-3xl md:text-4xl font-light text-gold mb-8 h-16 flex items-center">
                   <span>Command your </span>
                   <motion.span
@@ -645,9 +649,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
-      {/* Raffle Button - Grand Opening */}
-      <RaffleButton />
     </div>
   );
 }

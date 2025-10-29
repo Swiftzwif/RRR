@@ -75,7 +75,7 @@ function CourseContent() {
   const handlePurchase = async () => {
     // Payment integration coming soon
     alert(
-      "Course payment ($99.99) - Payment integration coming soon! We'll notify you when it's ready."
+      "Course payment ($97) - Payment integration coming soon! We'll notify you when it's ready."
     );
 
     // Optional: Capture intent if user is logged in
@@ -333,7 +333,7 @@ function CourseContent() {
               Get lifetime access to all modules, future updates, and our
               private community of high-performers.
             </p>
-            <div className="text-5xl font-bold text-gold mb-2">$99.99</div>
+            <div className="text-5xl font-bold text-gold mb-2">$97</div>
             <p className="text-secondary mb-8">
               One-time payment • Lifetime access
             </p>

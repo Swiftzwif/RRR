@@ -4,8 +4,57 @@ import { motion } from 'framer-motion';
 import { Zap, TrendingUp, Clock, Users } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/utils/supabase/client';
+
+interface RaffleConfig {
+  id: string;
+  entry_price: number;
+  regular_price: number;
+  savings_amount: number;
+}
 
 export default function RaffleHero() {
+  const [raffleConfig, setRaffleConfig] = useState<RaffleConfig | null>(null);
+  const [warriorCount, setWarriorCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRaffleData = async () => {
+      const supabase = createClient();
+
+      // Get active raffle configuration
+      const { data: raffle } = await supabase
+        .from('raffle_config')
+        .select('id, entry_price, regular_price, savings_amount')
+        .eq('status', 'active')
+        .single();
+
+      if (raffle) {
+        setRaffleConfig(raffle);
+
+        // Get warrior count
+        const { count } = await supabase
+          .from('raffle_entries')
+          .select('*', { count: 'exact', head: true })
+          .eq('raffle_id', raffle.id)
+          .eq('payment_status', 'completed');
+
+        setWarriorCount(count || 0);
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchRaffleData();
+  }, []);
+
+  const displayPrice = raffleConfig ? (raffleConfig.entry_price / 100) : 97;
+  const regularPrice = raffleConfig ? (raffleConfig.regular_price / 100) : 149;
+  const savings = raffleConfig ? (raffleConfig.savings_amount / 100) : 52;
+  const discountPercentage = raffleConfig
+    ? Math.round((raffleConfig.savings_amount / raffleConfig.regular_price) * 100)
+    : 35;
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center px-4 pt-24 pb-16 overflow-hidden">
       {/* Background effects */}
@@ -80,9 +129,9 @@ export default function RaffleHero() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          Transform your life trajectory with 35% OFF the full course
+          Get the Trajectory Digital Course at {discountPercentage}% OFF
           <br />
-          <span className="font-bold text-sunset">+ Enter to win life-changing prizes</span>
+          <span className="font-bold text-sunset">+ Enter to win transformation prizes</span>
         </motion.p>
 
         {/* Value props */}
@@ -93,10 +142,10 @@ export default function RaffleHero() {
           transition={{ delay: 0.5 }}
         >
           <div className="flex items-center gap-3">
-            <div className="text-4xl font-black text-sunset">$97</div>
+            <div className="text-4xl font-black text-sunset">${displayPrice}</div>
             <div className="text-left">
-              <div className="text-sm line-through text-sky-600">$149</div>
-              <div className="text-sm font-bold text-sky-800">Save $52</div>
+              <div className="text-sm line-through text-sky-600">${regularPrice}</div>
+              <div className="text-sm font-bold text-sky-800">Save ${savings}</div>
             </div>
           </div>
 
@@ -139,7 +188,10 @@ export default function RaffleHero() {
           </Button>
 
           <p className="text-sm text-sky-600">
-            Join <span className="font-bold">137 warriors</span> who&apos;ve already committed
+            {warriorCount > 0
+              ? <>Join <span className="font-bold">{warriorCount} warriors</span> who&apos;ve already committed</>
+              : <>Be the <span className="font-bold">first warrior</span> to commit to transformation</>
+            }
           </p>
         </motion.div>
 

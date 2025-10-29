@@ -118,27 +118,27 @@ export default function RaffleButton() {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed bottom-8 right-8 z-50 md:fixed lg:fixed"
-        initial={{ opacity: 0, scale: 0.8, y: 100 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.8, y: 100 }}
+        className="fixed top-16 left-0 right-0 z-40 px-4 md:px-8 lg:px-12"
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -50 }}
         transition={{
           type: "spring",
           stiffness: 200,
           damping: 20
         }}
       >
-        <Link href="/raffle" className="block">
+        <Link href="/raffle" className="block max-w-7xl mx-auto">
           <motion.div
             className="relative group"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             {/* Animated glow effect */}
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-sunset via-red-500 to-sunset rounded-2xl blur-xl opacity-70 group-hover:opacity-90"
+              className="absolute inset-0 bg-gradient-to-r from-sunset via-red-500 to-sunset rounded-xl blur-xl opacity-50 group-hover:opacity-70"
               animate={{
-                scale: [1, 1.1, 1],
+                opacity: [0.5, 0.7, 0.5],
               }}
               transition={{
                 duration: 2,
@@ -147,51 +147,53 @@ export default function RaffleButton() {
               }}
             />
 
-            {/* Main button container */}
-            <div className="relative bg-gradient-to-r from-sunset to-sunset-dark text-white px-6 py-5 rounded-2xl shadow-2xl backdrop-blur-sm">
-              {/* Header with icon and title */}
-              <div className="flex items-center gap-3 mb-3">
-                <Zap className="w-6 h-6 text-yellow-200" />
-                <span className="text-sm font-bold uppercase tracking-wider text-yellow-200">
-                  Grand Opening Raffle
-                </span>
-              </div>
-
-              {/* Main offer */}
-              <div className="space-y-2">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-black">{discountPercentage}%</span>
-                  <span className="text-xl font-bold">OFF</span>
-                </div>
-                <p className="text-sm font-medium text-white/90">
-                  Transform Your Life + Win Prizes
-                </p>
-                <div className="flex items-center gap-2 text-xs text-yellow-200">
-                  <span className="font-bold">${(raffleConfig.entry_price / 100).toFixed(0)}</span>
-                  <span className="line-through opacity-75">${(raffleConfig.regular_price / 100).toFixed(0)}</span>
-                  <span className="text-white">• Save ${(raffleConfig.savings_amount / 100).toFixed(0)}</span>
-                </div>
-              </div>
-
-              {/* Live stats */}
-              <div className="mt-4 pt-3 border-t border-white/20">
-                <div className="flex items-center justify-between text-sm">
+            {/* Main button container - horizontal layout */}
+            <div className="relative bg-gradient-to-r from-sunset to-sunset-dark text-white px-6 py-3 rounded-xl shadow-2xl backdrop-blur-sm">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                {/* Left section - Badge and offer */}
+                <div className="flex items-center gap-4">
+                  {/* Badge */}
                   <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    <span className="font-bold">{warriorCount}</span>
-                    <span className="text-white/80">Warriors In</span>
+                    <Zap className="w-5 h-5 text-yellow-200" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-yellow-200">
+                      Grand Opening
+                    </span>
                   </div>
-                  <span className="text-yellow-200 font-medium">
-                    {timeLeft}
+
+                  {/* Discount */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-black">{discountPercentage}% OFF</span>
+                    <span className="text-sm font-medium">Digital Course</span>
+                  </div>
+                </div>
+
+                {/* Center section - Pricing */}
+                <div className="flex items-center gap-3 text-sm">
+                  <span className="font-bold text-xl">${(raffleConfig.entry_price / 100).toFixed(0)}</span>
+                  <span className="line-through opacity-75">${(raffleConfig.regular_price / 100).toFixed(0)}</span>
+                  <span className="bg-yellow-400/20 px-2 py-1 rounded-md text-yellow-200 font-bold">
+                    Save ${(raffleConfig.savings_amount / 100).toFixed(0)}
                   </span>
                 </div>
-              </div>
 
-              {/* Call to action */}
-              <div className="mt-3 text-center">
-                <span className="text-xs font-bold uppercase tracking-wider text-yellow-200">
-                  Begin Your Transformation →
-                </span>
+                {/* Right section - Live stats and CTA */}
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      <span className="font-bold">{warriorCount}</span>
+                      <span className="text-white/80 hidden lg:inline">Warriors</span>
+                    </div>
+                    <div className="text-yellow-200 font-medium">
+                      {timeLeft}
+                    </div>
+                  </div>
+
+                  <div className="hidden md:flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-yellow-200">
+                    <span>Enter Now</span>
+                    <span>→</span>
+                  </div>
+                </div>
               </div>
 
               {/* Live pulse indicator */}
