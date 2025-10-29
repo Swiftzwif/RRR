@@ -1,6 +1,7 @@
 "use client";
 
 import { LogoMark } from "@/components/LogoMark";
+import RaffleButton from "@/components/RaffleButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -644,6 +645,9 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Raffle Button - Grand Opening */}
+      <RaffleButton />
     </div>
   );
 }
