@@ -15,14 +15,14 @@ export default function KillTheBoyLoader({ isLoading, onComplete }: KillTheBoyLo
   useEffect(() => {
     if (!isLoading) return;
 
-    // Start animation sequence
+    // Start animation sequence with extended timing
     const textTimer = setTimeout(() => setShowText(true), 100);
     const splitTimer = setTimeout(() => {
       setStartSplit(true);
       if (onComplete) {
-        setTimeout(onComplete, 600);
+        setTimeout(onComplete, 800); // Extended from 600ms to 800ms
       }
-    }, 1200);
+    }, 2000); // Extended from 1200ms to 2000ms for longer visibility
 
     return () => {
       clearTimeout(textTimer);
@@ -40,16 +40,16 @@ export default function KillTheBoyLoader({ isLoading, onComplete }: KillTheBoyLo
             initial={{ x: 0 }}
             animate={{ x: startSplit ? "-100%" : 0 }}
             exit={{ x: "-100%" }}
-            transition={{ duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
+            transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }} // Extended from 0.6s to 0.8s
           >
-            <div className="pr-0 translate-x-1/2">
+            <div className="pr-8"> {/* Removed translate-x-1/2, added padding */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: showText ? 1 : 0 }}
                 transition={{ duration: 0.5 }}
                 className="text-right"
               >
-                <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-white tracking-wider">
+                <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gold tracking-wider drop-shadow-2xl">
                   KILL THE
                 </h1>
               </motion.div>
@@ -62,16 +62,16 @@ export default function KillTheBoyLoader({ isLoading, onComplete }: KillTheBoyLo
             initial={{ x: 0 }}
             animate={{ x: startSplit ? "100%" : 0 }}
             exit={{ x: "100%" }}
-            transition={{ duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
+            transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }} // Extended from 0.6s to 0.8s
           >
-            <div className="pl-0 -translate-x-1/2">
+            <div className="pl-8"> {/* Removed -translate-x-1/2, added padding */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: showText ? 1 : 0 }}
                 transition={{ duration: 0.5 }}
                 className="text-left"
               >
-                <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-white tracking-wider">
+                <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gold tracking-wider drop-shadow-2xl">
                   BOY
                 </h1>
               </motion.div>

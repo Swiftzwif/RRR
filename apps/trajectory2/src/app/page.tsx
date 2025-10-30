@@ -77,7 +77,7 @@ export default function Home() {
     const minimumTimer = setTimeout(() => {
       minimumTimeElapsed = true;
       checkAllReady();
-    }, 1800);
+    }, 2800); // Extended to match new animation timing
 
     return () => {
       clearTimeout(minimumTimer);
