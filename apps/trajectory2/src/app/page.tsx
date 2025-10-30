@@ -226,7 +226,7 @@ export default function Home() {
                         transition={{ duration: 0.3, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
-                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10" />
                           <div className="relative space-y-6">
                             <div className="flex items-center gap-4">
                               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl">
@@ -272,7 +272,7 @@ export default function Home() {
                         transition={{ duration: 0.3, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
-                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10" />
                           <div className="relative space-y-6">
                             <div className="flex items-center gap-4">
                               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl">
@@ -318,7 +318,7 @@ export default function Home() {
                         transition={{ duration: 0.3, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
-                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10" />
                           <div className="relative space-y-6">
                             <div className="flex items-center gap-4">
                               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl">
