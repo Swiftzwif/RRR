@@ -1,5 +1,6 @@
 "use client";
 
+import KillTheBoyLoader from "@/components/KillTheBoyLoader";
 import { LogoMark } from "@/components/LogoMark";
 import RaffleHeroSection from "@/components/RaffleHeroSection";
 import { Badge } from "@/components/ui/badge";
@@ -31,9 +32,70 @@ export default function Home() {
   const [currentWord, setCurrentWord] = useState(0);
   const words = ["attention", "energy", "money"];
   const [activeTab, setActiveTab] = useState("story");
+  const [isLoading, setIsLoading] = useState(true);
+  const [showContent, setShowContent] = useState(false);
+
+  // Loading detection - only show on first visit
+  useEffect(() => {
+    // Check if we've already shown the loader this session
+    const hasShownLoader = sessionStorage.getItem("hasShownKillTheBoyLoader");
+
+    if (hasShownLoader === "true") {
+      setIsLoading(false);
+      setShowContent(true);
+      return;
+    }
+
+    // Track when everything is ready
+    let fontsLoaded = false;
+    let domReady = false;
+    let minimumTimeElapsed = false;
+
+    const checkAllReady = () => {
+      if (fontsLoaded && domReady && minimumTimeElapsed) {
+        // Mark that we've shown the loader
+        sessionStorage.setItem("hasShownKillTheBoyLoader", "true");
+      }
+    };
+
+    // Check font loading
+    if (document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        fontsLoaded = true;
+        checkAllReady();
+      });
+    } else {
+      fontsLoaded = true;
+      checkAllReady();
+    }
+
+    // DOM is ready since we're in useEffect
+    domReady = true;
+    checkAllReady();
+
+    // Minimum display time for the animation to complete
+    const minimumTimer = setTimeout(() => {
+      minimumTimeElapsed = true;
+      checkAllReady();
+    }, 1800);
+
+    return () => {
+      clearTimeout(minimumTimer);
+    };
+  }, []);
+
+  // Handle loader completion
+  const handleLoaderComplete = () => {
+    setIsLoading(false);
+    setTimeout(() => {
+      setShowContent(true);
+    }, 100);
+  };
 
   // Combine and slow down animations for subtlety
   useEffect(() => {
+    if (!showContent) return;
+
     const tabs = ["story", "assessment", "resources"];
 
     // Word cycling - slower and more subtle (6s)
@@ -53,7 +115,7 @@ export default function Home() {
       clearInterval(wordInterval);
       clearInterval(tabInterval);
     };
-  }, [words.length]);
+  }, [words.length, showContent]);
 
   const features = [
     {
@@ -77,9 +139,15 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-base text-white pt-20">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
+    <>
+      {/* Loading Screen */}
+      <KillTheBoyLoader isLoading={isLoading} onComplete={handleLoaderComplete} />
+
+      {/* Main Content */}
+      {showContent && (
+        <div className="min-h-screen bg-base text-white pt-20">
+          {/* Hero Section */}
+          <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Gold arc background element */}
         <div className="absolute inset-0 opacity-10">
           <svg
@@ -601,5 +669,7 @@ export default function Home() {
         </div>
       </section>
     </div>
+      )}
+    </>
   );
 }
