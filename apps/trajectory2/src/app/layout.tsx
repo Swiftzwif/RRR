@@ -38,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="antialiased font-body bg-gradient-to-br from-sky-50 via-white to-sky-50 text-sky-800">
+      <body className="antialiased font-body">
         <Navigation />
         <main className="min-h-screen">{children}</main>
         <Footer />
