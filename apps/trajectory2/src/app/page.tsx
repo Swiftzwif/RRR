@@ -32,24 +32,28 @@ export default function Home() {
   const words = ["attention", "energy", "money"];
   const [activeTab, setActiveTab] = useState("story");
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentWord((prev) => (prev + 1) % words.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [words.length]);
-
-  // Auto-cycle through tabs every 4 seconds
+  // Combine and slow down animations for subtlety
   useEffect(() => {
     const tabs = ["story", "assessment", "resources"];
-    const interval = setInterval(() => {
+
+    // Word cycling - slower and more subtle (6s)
+    const wordInterval = setInterval(() => {
+      setCurrentWord((prev) => (prev + 1) % words.length);
+    }, 6000);
+
+    // Tab cycling - slower to reduce distraction (8s)
+    const tabInterval = setInterval(() => {
       setActiveTab((prev) => {
         const currentIndex = tabs.indexOf(prev);
         return tabs[(currentIndex + 1) % tabs.length];
       });
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+    }, 8000);
+
+    return () => {
+      clearInterval(wordInterval);
+      clearInterval(tabInterval);
+    };
+  }, [words.length]);
 
   const features = [
     {
@@ -217,9 +221,9 @@ export default function Home() {
                     {activeTab === "story" && (
                       <motion.div
                         key="story"
-                        initial={{ x: 20 }}
-                        animate={{ x: 0 }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
                           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
@@ -263,9 +267,9 @@ export default function Home() {
                     {activeTab === "assessment" && (
                       <motion.div
                         key="assessment"
-                        initial={{ x: 20 }}
-                        animate={{ x: 0 }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
                           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
@@ -309,9 +313,9 @@ export default function Home() {
                     {activeTab === "resources" && (
                       <motion.div
                         key="resources"
-                        initial={{ x: 20 }}
-                        animate={{ x: 0 }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
                           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
