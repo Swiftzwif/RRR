@@ -41,6 +41,17 @@ export interface DailyExperienceEmailData {
   experienceUrl: string;
 }
 
+export interface RaffleConfirmationEmailData {
+  to: string;
+  userName: string;
+  productName: string;
+  amount: string;
+  entryNumber: number;
+  warriorCount: number;
+  transformationGoal: string;
+  accessUrl: string;
+}
+
 export async function sendAssessmentCompleteEmail(data: AssessmentEmailData) {
   try {
     const resendClient = getResendClient();
@@ -86,6 +97,58 @@ export async function sendDailyExperienceEmail(data: DailyExperienceEmailData) {
   } catch (error) {
     console.error('Failed to send daily experience email:', error);
     return { success: false, error };
+  }
+}
+
+export async function sendRaffleConfirmationEmail(data: RaffleConfirmationEmailData) {
+  try {
+    const resendClient = getResendClient();
+    if (!resendClient) {
+      console.warn('Email service not configured');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    // For now, create a simple text email (you can create a proper React Email template later)
+    const emailContent = `
+      Hi ${data.userName},
+
+      Your transformation begins now!
+
+      🎉 PURCHASE CONFIRMED
+      Product: ${data.productName}
+      Amount: $${data.amount}
+
+      🎯 YOUR RAFFLE ENTRY
+      Entry Number: #${data.entryNumber}
+      Total Warriors: ${data.warriorCount}
+      Your Goal: "${data.transformationGoal}"
+
+      🚀 WHAT'S NEXT
+      1. Access your course immediately: ${data.accessUrl}
+      2. You're automatically entered to win $2,500+ in prizes
+      3. Winners announced 24 hours after raffle ends
+
+      Welcome to the movement. Your journey from drift to dominion starts today.
+
+      Kill the boy,
+      The Trajectory Team
+    `;
+
+    const result = await resendClient.emails.send({
+      from: FROM_EMAIL,
+      to: data.to,
+      subject: `🎯 Entry #${data.entryNumber} Confirmed - Your Transformation Begins`,
+      text: emailContent,
+      html: emailContent.replace(/\n/g, '<br>'),
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error sending raffle confirmation email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    };
   }
 }
 
