@@ -9,6 +9,7 @@ import type {
 } from "@supabase/supabase-js";
 import { LogOut, Menu, User, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LogoMark } from "./LogoMark";
 
@@ -16,6 +17,10 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+
+  // Determine if we're on a dark page (home) or light page (others)
+  const isDarkPage = pathname === "/";
 
   useEffect(() => {
     const supabase = createClient();
@@ -47,13 +52,21 @@ export default function Navigation() {
 
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-elev-1/95 backdrop-blur-sm border-b border-[var(--border-default)] z-50">
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
+      isDarkPage
+        ? "bg-elev-1 border-b border-[var(--border-default)]"
+        : "bg-white/95 border-b border-gray-200"
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-3 group">
               <LogoMark className="h-10 w-10" showGlow={false} />
-              <h1 className="text-2xl font-bold text-primary group-hover:text-gold transition-colors duration-300">
+              <h1 className={`text-2xl font-bold transition-colors duration-300 ${
+                isDarkPage
+                  ? "text-primary group-hover:text-gold"
+                  : "text-gray-900 group-hover:text-brand-gold"
+              }`}>
                 Trajectory
               </h1>
             </Link>
@@ -62,25 +75,41 @@ export default function Navigation() {
           <nav className="hidden md:flex items-center space-x-6">
             <Link
               href="/story"
-              className="text-secondary hover:text-gold transition-colors duration-200"
+              className={`transition-colors duration-200 ${
+                isDarkPage
+                  ? "text-secondary hover:text-gold"
+                  : "text-gray-600 hover:text-brand-gold"
+              }`}
             >
               Story
             </Link>
             <Link
               href="/assessment"
-              className="text-secondary hover:text-gold transition-colors duration-200"
+              className={`transition-colors duration-200 ${
+                isDarkPage
+                  ? "text-secondary hover:text-gold"
+                  : "text-gray-600 hover:text-brand-gold"
+              }`}
             >
               Assessment
             </Link>
             <Link
               href="/experience"
-              className="text-secondary hover:text-gold transition-colors duration-200"
+              className={`transition-colors duration-200 ${
+                isDarkPage
+                  ? "text-secondary hover:text-gold"
+                  : "text-gray-600 hover:text-brand-gold"
+              }`}
             >
               31-Day Experience
             </Link>
             <Link
               href="/resources"
-              className="text-secondary hover:text-gold transition-colors duration-200"
+              className={`transition-colors duration-200 ${
+                isDarkPage
+                  ? "text-secondary hover:text-gold"
+                  : "text-gray-600 hover:text-brand-gold"
+              }`}
             >
               Resources
             </Link>
@@ -90,7 +119,11 @@ export default function Navigation() {
                   <>
                     <Link
                       href="/account"
-                      className="text-secondary hover:text-gold transition-colors duration-200 flex items-center gap-2"
+                      className={`transition-colors duration-200 flex items-center gap-2 ${
+                        isDarkPage
+                          ? "text-secondary hover:text-gold"
+                          : "text-gray-600 hover:text-brand-gold"
+                      }`}
                     >
                       <User className="w-4 h-4" />
                       Account
@@ -119,40 +152,60 @@ export default function Navigation() {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
-              <X size={24} className="text-secondary" />
+              <X size={24} className={isDarkPage ? "text-secondary" : "text-gray-600"} />
             ) : (
-              <Menu size={24} className="text-secondary" />
+              <Menu size={24} className={isDarkPage ? "text-secondary" : "text-gray-600"} />
             )}
           </button>
         </div>
 
         {isMenuOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-elev-2 border-t border-[var(--border-default)]">
+            <div className={`px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t ${
+              isDarkPage
+                ? "bg-elev-2 border-[var(--border-default)]"
+                : "bg-white border-gray-200"
+            }`}>
               <Link
                 href="/story"
-                className="block px-3 py-2 text-secondary hover:text-gold transition-colors"
+                className={`block px-3 py-2 transition-colors ${
+                  isDarkPage
+                    ? "text-secondary hover:text-gold"
+                    : "text-gray-600 hover:text-brand-gold"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Story
               </Link>
               <Link
                 href="/assessment"
-                className="block px-3 py-2 text-secondary hover:text-gold transition-colors"
+                className={`block px-3 py-2 transition-colors ${
+                  isDarkPage
+                    ? "text-secondary hover:text-gold"
+                    : "text-gray-600 hover:text-brand-gold"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Assessment
               </Link>
               <Link
                 href="/experience"
-                className="block px-3 py-2 text-secondary hover:text-gold transition-colors"
+                className={`block px-3 py-2 transition-colors ${
+                  isDarkPage
+                    ? "text-secondary hover:text-gold"
+                    : "text-gray-600 hover:text-brand-gold"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 31-Day Experience
               </Link>
               <Link
                 href="/resources"
-                className="block px-3 py-2 text-secondary hover:text-gold transition-colors"
+                className={`block px-3 py-2 transition-colors ${
+                  isDarkPage
+                    ? "text-secondary hover:text-gold"
+                    : "text-gray-600 hover:text-brand-gold"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Resources
@@ -163,7 +216,11 @@ export default function Navigation() {
                     <>
                       <Link
                         href="/account"
-                        className="block px-3 py-2 text-secondary hover:text-gold transition-colors"
+                        className={`block px-3 py-2 transition-colors ${
+                          isDarkPage
+                            ? "text-secondary hover:text-gold"
+                            : "text-gray-600 hover:text-brand-gold"
+                        }`}
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <User className="w-4 h-4 inline mr-2" />
