@@ -145,7 +145,12 @@ export default function Home() {
 
       {/* Main Content */}
       {showContent && (
-        <div className="min-h-screen bg-base text-white pt-20">
+        <motion.div
+          className="min-h-screen bg-base text-white pt-20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           {/* Hero Section */}
           <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Gold arc background element */}
@@ -668,7 +673,7 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-    </div>
+    </motion.div>
       )}
     </>
   );
