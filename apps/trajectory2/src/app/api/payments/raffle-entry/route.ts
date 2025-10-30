@@ -178,7 +178,8 @@ export async function POST(request: NextRequest) {
     // Handle validation errors
     if (error instanceof z.ZodError) {
       const fieldErrors = error.issues.reduce((acc, issue) => {
-        acc[issue.path[0]] = issue.message;
+        const key = String(issue.path[0]);
+        acc[key] = issue.message;
         return acc;
       }, {} as Record<string, string>);
 
