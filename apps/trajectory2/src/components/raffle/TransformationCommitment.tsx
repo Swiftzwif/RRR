@@ -229,7 +229,7 @@ export default function TransformationCommitment() {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full bg-gradient-to-r from-sunset to-sunset-dark hover:from-sunset-dark hover:to-sunset text-white py-6 text-lg font-bold shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-200"
+                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-500 text-white py-6 text-lg font-bold shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-200"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -270,7 +270,7 @@ export default function TransformationCommitment() {
         >
           Every transformation starts with a single decision.
           <br />
-          <span className="font-bold text-sunset text-lg">This is yours.</span>
+          <span className="font-bold text-orange-500 text-lg">This is yours.</span>
         </motion.p>
       </div>
     </section>

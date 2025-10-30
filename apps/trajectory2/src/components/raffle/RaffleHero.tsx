@@ -98,7 +98,7 @@ export default function RaffleHero() {
       >
         {/* Badge */}
         <motion.div
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sunset to-sunset-dark text-white rounded-full text-sm font-bold mb-8"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full text-sm font-bold mb-8"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
@@ -117,7 +117,7 @@ export default function RaffleHero() {
         >
           Kill The Boy.
           <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-sunset to-sunset-dark">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">
             Win The War.
           </span>
         </motion.h1>
@@ -131,7 +131,7 @@ export default function RaffleHero() {
         >
           Get the Trajectory Digital Course at {discountPercentage}% OFF
           <br />
-          <span className="font-bold text-sunset">+ Enter to win transformation prizes</span>
+          <span className="font-bold text-orange-500">+ Enter to win transformation prizes</span>
         </motion.p>
 
         {/* Value props */}
@@ -142,7 +142,7 @@ export default function RaffleHero() {
           transition={{ delay: 0.5 }}
         >
           <div className="flex items-center gap-3">
-            <div className="text-4xl font-black text-sunset">${displayPrice}</div>
+            <div className="text-4xl font-black text-orange-500">${displayPrice}</div>
             <div className="text-left">
               <div className="text-sm line-through text-slate-500">${regularPrice}</div>
               <div className="text-sm font-bold text-slate-900">Save ${savings}</div>
@@ -152,7 +152,7 @@ export default function RaffleHero() {
           <div className="hidden md:block w-px h-12 bg-gray-300" />
 
           <div className="flex items-center gap-3">
-            <Clock className="w-8 h-8 text-sunset" />
+            <Clock className="w-8 h-8 text-orange-500" />
             <div className="text-left">
               <div className="text-sm font-bold text-slate-900">Limited Time</div>
               <div className="text-sm text-slate-600">7 Days Only</div>
@@ -162,7 +162,7 @@ export default function RaffleHero() {
           <div className="hidden md:block w-px h-12 bg-gray-300" />
 
           <div className="flex items-center gap-3">
-            <TrendingUp className="w-8 h-8 text-sunset" />
+            <TrendingUp className="w-8 h-8 text-orange-500" />
             <div className="text-left">
               <div className="text-sm font-bold text-slate-900">16 Prizes</div>
               <div className="text-sm text-slate-600">Worth $2,500+</div>
@@ -180,7 +180,7 @@ export default function RaffleHero() {
           <Button
             asChild
             size="lg"
-            className="bg-gradient-to-r from-sunset to-sunset-dark hover:from-sunset-dark hover:to-sunset text-white px-12 py-7 text-lg font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-200"
+            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-500 text-white px-12 py-7 text-lg font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-200"
           >
             <a href="#commitment">
               Begin Your Transformation Now

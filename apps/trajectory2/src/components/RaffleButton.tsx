@@ -136,7 +136,7 @@ export default function RaffleButton() {
           >
             {/* Animated glow effect */}
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-sunset via-red-500 to-sunset rounded-xl blur-xl opacity-50 group-hover:opacity-70"
+              className="absolute inset-0 bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 rounded-xl blur-xl opacity-50 group-hover:opacity-70"
               animate={{
                 opacity: [0.5, 0.7, 0.5],
               }}
@@ -148,7 +148,7 @@ export default function RaffleButton() {
             />
 
             {/* Main button container - horizontal layout */}
-            <div className="relative bg-gradient-to-r from-sunset to-sunset-dark text-white px-6 py-3 rounded-xl shadow-2xl backdrop-blur-sm">
+            <div className="relative bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-xl shadow-2xl backdrop-blur-sm">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 {/* Left section - Badge and offer */}
                 <div className="flex items-center gap-4">

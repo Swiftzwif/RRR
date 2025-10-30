@@ -130,7 +130,7 @@ export default function RaffleHeroSection() {
       {/* Main raffle container with gradient background */}
       <Link href="/raffle" className="block">
         <motion.div
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-sunset via-red-500 to-sunset p-6 shadow-2xl"
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 p-6 shadow-2xl"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}

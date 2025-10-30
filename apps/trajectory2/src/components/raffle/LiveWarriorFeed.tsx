@@ -144,7 +144,7 @@ export default function LiveWarriorFeed() {
           <div className="flex items-center justify-center gap-4 text-sky-600">
             <div className="flex items-center gap-2">
               <User className="w-5 h-5" />
-              <span className="text-2xl font-bold text-sunset">{displayCount}</span>
+              <span className="text-2xl font-bold text-orange-500">{displayCount}</span>
               <span>{isUsingExamples ? 'Example Transformations' : 'Warriors Committed'}</span>
             </div>
             <div className="hidden md:block w-px h-8 bg-sky-200" />
@@ -158,7 +158,7 @@ export default function LiveWarriorFeed() {
         {/* Latest entry highlight */}
         {displayLatest && (
           <motion.div
-            className="mb-8 p-6 bg-gradient-to-r from-sunset/10 to-sky-100 rounded-2xl border-2 border-sunset/30"
+            className="mb-8 p-6 bg-gradient-to-r from-orange-500/10 to-sky-100 rounded-2xl border-2 border-orange-500/30"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
@@ -176,11 +176,11 @@ export default function LiveWarriorFeed() {
                   {maskEmail(displayLatest.email)} joined {getTimeAgo(displayLatest.created_at)}
                 </p>
                 <p className="text-sky-900 font-bold">
-                  <Target className="w-4 h-4 inline mr-2 text-sunset" />
+                  <Target className="w-4 h-4 inline mr-2 text-orange-500" />
                   Goal: "{displayLatest.transformation_goal}"
                 </p>
               </div>
-              <Badge className="bg-sunset text-white">
+              <Badge className="bg-orange-500 text-white">
                 Entry #{displayLatest.entry_number}
               </Badge>
             </div>
@@ -193,7 +193,7 @@ export default function LiveWarriorFeed() {
             {displayWarriors.slice(1).map((warrior, index) => (
               <motion.div
                 key={warrior.id}
-                className="p-4 bg-white rounded-xl border border-sky-200 hover:border-sunset/50 transition-colors"
+                className="p-4 bg-white rounded-xl border border-sky-200 hover:border-orange-500/50 transition-colors"
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 50 }}
@@ -236,7 +236,7 @@ export default function LiveWarriorFeed() {
           <p className="text-sky-600">
             Every warrior who commits inspires another to begin.
             <br />
-            <span className="font-bold text-sunset">Will you be next?</span>
+            <span className="font-bold text-orange-500">Will you be next?</span>
           </p>
         </motion.div>
       </div>
