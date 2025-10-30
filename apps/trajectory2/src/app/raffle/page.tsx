@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function RafflePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero that creates the moment of decision */}
       <RaffleHero />
 

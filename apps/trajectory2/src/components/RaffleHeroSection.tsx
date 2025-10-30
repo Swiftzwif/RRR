@@ -122,6 +122,7 @@ export default function RaffleHeroSection() {
   return (
     <motion.div
       className="relative mb-8"
+      data-raffle-hero-section
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
@@ -170,7 +171,7 @@ export default function RaffleHeroSection() {
 
                 <div className="flex items-center gap-2 text-white/90">
                   <Clock className="w-4 h-4" />
-                  <span className="text-sm font-semibold">{timeLeft} left</span>
+                  <span className="text-sm font-semibold" data-countdown-timer>{timeLeft} left</span>
                 </div>
               </div>
 

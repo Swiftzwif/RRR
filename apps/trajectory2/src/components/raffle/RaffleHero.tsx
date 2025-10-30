@@ -60,11 +60,11 @@ export default function RaffleHero() {
       {/* Background effects */}
       <div className="absolute inset-0">
         {/* Animated gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-100 via-white to-sunset/10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-white to-sunset/10" />
 
         {/* Floating orbs for depth */}
         <motion.div
-          className="absolute top-20 left-10 w-72 h-72 bg-sky-300/20 rounded-full blur-3xl"
+          className="absolute top-20 left-10 w-72 h-72 bg-slate-300/20 rounded-full blur-3xl"
           animate={{
             x: [0, 30, 0],
             y: [0, -20, 0],
@@ -110,7 +110,7 @@ export default function RaffleHero() {
 
         {/* Main headline */}
         <motion.h1
-          className="text-5xl md:text-7xl font-black text-sky-800 mb-6 leading-tight"
+          className="text-5xl md:text-7xl font-black text-slate-900 mb-6 leading-tight"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
@@ -124,7 +124,7 @@ export default function RaffleHero() {
 
         {/* Sub-headline */}
         <motion.p
-          className="text-xl md:text-2xl text-sky-700 mb-8 max-w-3xl mx-auto"
+          className="text-xl md:text-2xl text-slate-700 mb-8 max-w-3xl mx-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
@@ -144,28 +144,28 @@ export default function RaffleHero() {
           <div className="flex items-center gap-3">
             <div className="text-4xl font-black text-sunset">${displayPrice}</div>
             <div className="text-left">
-              <div className="text-sm line-through text-sky-600">${regularPrice}</div>
-              <div className="text-sm font-bold text-sky-800">Save ${savings}</div>
+              <div className="text-sm line-through text-slate-500">${regularPrice}</div>
+              <div className="text-sm font-bold text-slate-900">Save ${savings}</div>
             </div>
           </div>
 
-          <div className="hidden md:block w-px h-12 bg-sky-200" />
+          <div className="hidden md:block w-px h-12 bg-gray-300" />
 
           <div className="flex items-center gap-3">
             <Clock className="w-8 h-8 text-sunset" />
             <div className="text-left">
-              <div className="text-sm font-bold text-sky-800">Limited Time</div>
-              <div className="text-sm text-sky-600">7 Days Only</div>
+              <div className="text-sm font-bold text-slate-900">Limited Time</div>
+              <div className="text-sm text-slate-600">7 Days Only</div>
             </div>
           </div>
 
-          <div className="hidden md:block w-px h-12 bg-sky-200" />
+          <div className="hidden md:block w-px h-12 bg-gray-300" />
 
           <div className="flex items-center gap-3">
             <TrendingUp className="w-8 h-8 text-sunset" />
             <div className="text-left">
-              <div className="text-sm font-bold text-sky-800">16 Prizes</div>
-              <div className="text-sm text-sky-600">Worth $2,500+</div>
+              <div className="text-sm font-bold text-slate-900">16 Prizes</div>
+              <div className="text-sm text-slate-600">Worth $2,500+</div>
             </div>
           </div>
         </motion.div>
@@ -187,31 +187,31 @@ export default function RaffleHero() {
             </a>
           </Button>
 
-          <p className="text-sm text-sky-600">
+          <p className="text-sm text-slate-600">
             {warriorCount > 0
-              ? <>Join <span className="font-bold">{warriorCount} warriors</span> who&apos;ve already committed</>
-              : <>Be the <span className="font-bold">first warrior</span> to commit to transformation</>
+              ? <>Join <span className="font-bold text-slate-900">{warriorCount} warriors</span> who&apos;ve already committed</>
+              : <>Be the <span className="font-bold text-slate-900">first warrior</span> to commit to transformation</>
             }
           </p>
         </motion.div>
 
         {/* Trust indicators */}
         <motion.div
-          className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-sky-600"
+          className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-slate-600"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
           <div className="flex items-center gap-2">
-            <Users className="w-5 h-5" />
+            <Users className="w-5 h-5 text-slate-700" />
             <span>1,247+ Men Transformed</span>
           </div>
           <div className="flex items-center gap-2">
-            <Zap className="w-5 h-5" />
+            <Zap className="w-5 h-5 text-slate-700" />
             <span>Instant Access</span>
           </div>
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" />
+            <TrendingUp className="w-5 h-5 text-slate-700" />
             <span>31-Day Journey</span>
           </div>
         </motion.div>
