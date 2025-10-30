@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import RaffleHero from '@/components/raffle/RaffleHero';
 import PrizeShowcase from '@/components/raffle/PrizeShowcase';
-import TransformationCommitment from '@/components/raffle/TransformationCommitment';
+import RaffleAuthCTA from '@/components/raffle/RaffleAuthCTA';
 import LiveWarriorFeed from '@/components/raffle/LiveWarriorFeed';
 import RaffleCountdown from '@/components/raffle/RaffleCountdown';
 
@@ -19,19 +20,29 @@ export default function RafflePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero that creates the moment of decision */}
-      <RaffleHero />
+      <Suspense fallback={<div className="h-[600px] animate-pulse bg-gradient-to-b from-sky-100/50 to-white" />}>
+        <RaffleHero />
+      </Suspense>
 
       {/* Countdown creating urgency */}
-      <RaffleCountdown />
+      <Suspense fallback={<div className="py-12 px-4"><div className="h-24 animate-pulse bg-gray-100 rounded-xl max-w-4xl mx-auto" /></div>}>
+        <RaffleCountdown />
+      </Suspense>
 
       {/* Show the transformation tools they could win */}
-      <PrizeShowcase />
+      <Suspense fallback={<div className="py-20"><div className="h-96 animate-pulse bg-gray-50" /></div>}>
+        <PrizeShowcase />
+      </Suspense>
 
       {/* Live feed of warriors joining the movement */}
-      <LiveWarriorFeed />
+      <Suspense fallback={<div className="py-20 bg-gradient-to-b from-white to-sky-50"><div className="h-96 animate-pulse" /></div>}>
+        <LiveWarriorFeed />
+      </Suspense>
 
-      {/* The commitment ritual - capture their transformation intent */}
-      <TransformationCommitment />
+      {/* New Auth CTA - replaces TransformationCommitment */}
+      <Suspense fallback={<div className="py-24"><div className="h-96 animate-pulse bg-gradient-to-b from-white to-red-50" /></div>}>
+        <RaffleAuthCTA />
+      </Suspense>
     </div>
   );
 }

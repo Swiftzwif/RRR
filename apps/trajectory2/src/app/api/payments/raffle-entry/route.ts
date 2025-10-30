@@ -5,10 +5,13 @@ import { createClient } from '@/utils/supabase/server';
 // Validation schema for raffle entry
 const RaffleEntrySchema = z.object({
   email: z.string().email('Valid email required for transformation journey'),
+  fullName: z.string().optional(),
   phone: z.string().optional(),
-  commitmentMessage: z.string().min(10, 'Share your commitment (min 10 characters)'),
-  transformationGoal: z.string().min(20, 'What do you want to transform? (min 20 characters)'),
+  commitment: z.string().optional().default('I am ready to transform my life'),
+  transformationGoal: z.string().optional().default('To become the commander of my destiny'),
+  raffleId: z.string().uuid().optional(),
   guestCheckout: z.boolean().default(false),
+  userId: z.string().uuid().optional(),
 });
 
 // Square API configuration
@@ -85,11 +88,12 @@ export async function POST(request: NextRequest) {
     // Create metadata for webhook processing
     const metadata = {
       raffle_id: raffle.id,
-      commitment_message: validatedData.commitmentMessage,
+      commitment_message: validatedData.commitment,
       transformation_goal: validatedData.transformationGoal,
       phone: validatedData.phone || '',
       email: validatedData.email.toLowerCase(),
-      user_id: userId || '',
+      user_id: validatedData.userId || userId || '',
+      full_name: validatedData.fullName || '',
       is_raffle_entry: 'true',
     };
 
