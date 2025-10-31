@@ -125,31 +125,35 @@ export default function ResultsPage() {
   };
 
   const handlePurchase = async (product: "course" | "coaching") => {
-    // Payment integration coming soon
-    const productName =
-      product === "course" ? "Trajectory Course" : "1-on-1 Coaching";
-    const price = product === "course" ? "$99.99" : "$24.99";
+    try {
+      setIsSubmittingEmail(true);
 
-    alert(
-      `${productName} (${price}) - Payment integration coming soon! We'll notify you when it's ready.`
-    );
-
-    // Optional: Still capture intent
-    if (email) {
-      await fetch("/api/notify", {
+      // Call Square API for checkout
+      const response = await fetch("/api/payments/square/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
-          topic: product,
-          metadata: {
-            intent: "purchase",
-            timestamp: new Date().toISOString(),
-          },
+          product,
+          email: email || undefined,
+          redirectUrl: window.location.href,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to create checkout session");
+      }
+
+      const { checkoutUrl } = await response.json();
+
+      // Redirect to Square checkout
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      console.error("Error creating checkout:", error);
+      alert("Failed to process payment. Please try again.");
+    } finally {
+      setIsSubmittingEmail(false);
     }
   };
 
@@ -330,10 +334,9 @@ export default function ResultsPage() {
             </div>
             <button
               onClick={() => handlePurchase("course")}
-              className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-4 rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl opacity-75 cursor-not-allowed"
-              disabled
+              className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-4 rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
             >
-              Coming Soon
+              Get Access Now
             </button>
           </div>
 
@@ -352,10 +355,9 @@ export default function ResultsPage() {
             </div>
             <button
               onClick={() => handlePurchase("coaching")}
-              className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-4 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl opacity-75 cursor-not-allowed"
-              disabled
+              className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-4 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
             >
-              Coming Soon
+              Get Started
             </button>
           </div>
         </motion.div>
