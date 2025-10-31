@@ -4,14 +4,10 @@ import { getSupabaseServiceRole } from '@/lib/supabase';
 /**
  * Cron job to retry failed webhook events
  * Runs every 5 minutes to process webhook events that need retrying
- * 
- * Configure in vercel.json:
- * {
- *   "crons": [{
- *     "path": "/api/cron/retry-failed-webhooks",
- *     "schedule": "*/5 * * * *"
- *   }]
- * }
+ *
+ * Configure in vercel.json with a cron schedule.
+ * Example: Run every 5 minutes
+ * Path: /api/cron/retry-failed-webhooks
  */
 export async function GET(request: NextRequest) {
   try {
