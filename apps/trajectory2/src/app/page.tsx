@@ -455,15 +455,26 @@ export default function Home() {
                         ))}
                       </div>
 
-                      {/* COMPACT CTA */}
-                      <Button
-                        asChild
-                        className="w-full h-11 text-sm font-bold bg-gradient-to-r from-[var(--brand-gold)] to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black shadow-lg"
+                      {/* COMPACT PULSATING CTA */}
+                      <motion.div
+                        animate={{ 
+                          scale: [1, 1.01, 1],
+                        }}
+                        transition={{ 
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
                       >
-                        <Link href="/experience">
-                          Start Free 7 Days <ArrowRight className="w-4 h-4 ml-1.5" />
-                        </Link>
-                      </Button>
+                        <Button 
+                          asChild 
+                          className="w-full h-11 text-sm font-bold bg-gradient-to-r from-[var(--brand-gold)] to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black shadow-lg"
+                        >
+                          <Link href="/experience">
+                            Start Free 7 Days <ArrowRight className="w-4 h-4 ml-1.5" />
+                          </Link>
+                        </Button>
+                      </motion.div>
 
                       <p className="text-center text-xs text-gold font-medium">
                         Days 1-7 free • Full access after meeting with Jean
