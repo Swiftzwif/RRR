@@ -79,6 +79,11 @@ function CourseContent() {
 
   const handlePurchase = async () => {
     try {
+      if (!supabase) {
+        alert("Authentication service not available. Please try again.");
+        return;
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
