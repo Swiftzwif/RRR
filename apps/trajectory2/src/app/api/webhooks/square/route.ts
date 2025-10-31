@@ -146,6 +146,17 @@ export async function POST(request: NextRequest) {
       // Store purchase in Supabase
       const supabase = getSupabaseServiceRole();
       if (supabase && product) {
+        // Extract giveaway_id if present in metadata
+        let giveawayId = null;
+        if (noteMetadata) {
+          try {
+            const parsed = typeof noteMetadata === 'string' ? JSON.parse(noteMetadata) : noteMetadata;
+            giveawayId = parsed.giveaway_id || null;
+          } catch {
+            // Ignore parse errors
+          }
+        }
+
         // Store the purchase record
         const { data: purchaseRecord, error: purchaseError } = await supabase
           .from('purchases')
@@ -155,7 +166,7 @@ export async function POST(request: NextRequest) {
             product: product,
             amount_cents: amountCents,
             square_payment_id: paymentId,
-            raffle_id: isRaffleEntry ? raffleMetadata?.raffle_id : null,
+            giveaway_id: giveawayId,
             created_at: new Date().toISOString(),
           }, {
             onConflict: 'square_payment_id',
@@ -168,83 +179,75 @@ export async function POST(request: NextRequest) {
           // Don't fail the webhook - Square will retry
         }
 
-        // If this is a raffle entry, create the entry and grant course access
-        if (isRaffleEntry && raffleMetadata && purchaseRecord) {
+        // If this is a course purchase, create donation records
+        if (product === 'course' && purchaseRecord) {
           try {
-            // Create raffle entry
-            const { data: entry, error: entryError } = await supabase
-              .from('raffle_entries')
-              .insert({
-                raffle_id: raffleMetadata.raffle_id,
-                user_id: userId,
-                email: email,
-                phone: raffleMetadata.phone || null,
-                purchase_id: purchaseRecord.id,
-                commitment_message: raffleMetadata.commitment_message,
-                transformation_goal: raffleMetadata.transformation_goal,
-              })
-              .select()
-              .single();
+            // Charity list - $2 per charity per course sale
+            const charities = [
+              'Hurricane Relief Fund for Displaced Families of Jamaica',
+              "St. Jude's Children's Research Hospital",
+              'Bellesini Academy Lawrence MA',
+              'Minds with Purpose Lawrence MA',
+              'AFJ American Friends of Jamaica',
+              'Brothers in Arms Lawrence MA',
+            ];
 
-            if (entryError) {
-              console.error('Error creating raffle entry:', entryError);
-            } else if (entry) {
-              console.log('Raffle entry created:', entry.id);
+            // Create donation records for each charity
+            const donationRecords = charities.map(charity => ({
+              purchase_id: purchaseRecord.id,
+              charity_name: charity,
+              amount_cents: 200, // $2.00 per charity
+              status: 'pending',
+              created_at: new Date().toISOString(),
+            }));
 
-              // Grant course access if user exists
-              if (userId) {
-                const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
-                  user_metadata: {
-                    has_course_access: true,
-                    course_purchase_date: new Date().toISOString(),
-                    course_payment_id: paymentId,
-                    raffle_entry: true,
-                  }
-                });
+            const { error: donationError } = await supabase
+              .from('donations')
+              .insert(donationRecords);
 
-                if (updateError) {
-                  console.error('Error granting course access:', updateError);
+            if (donationError) {
+              console.error('Error creating donation records:', donationError);
+            } else {
+              console.log(`Created ${charities.length} donation records for course purchase:`, purchaseRecord.id);
+            }
+
+            // Grant course access if user exists
+            if (userId) {
+              const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+                user_metadata: {
+                  has_course_access: true,
+                  course_purchase_date: new Date().toISOString(),
+                  course_payment_id: paymentId,
                 }
-              }
+              });
 
-              // Get warrior count for email
-              const { count } = await supabase
-                .from('raffle_entries')
-                .select('*', { count: 'exact', head: true })
-                .eq('raffle_id', raffleMetadata.raffle_id);
-
-              // Send confirmation email
-              try {
-                await sendRaffleConfirmationEmail({
-                  to: email!,
-                  userName: raffleMetadata.user_name || email?.split('@')[0] || 'Warrior',
-                  productName: 'Kill The Boy Course - Grand Opening Special',
-                  amount: (amountCents / 100).toFixed(2),
-                  entryNumber: entry.entry_number,
-                  warriorCount: count || 1,
-                  transformationGoal: raffleMetadata.transformation_goal,
-                  accessUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.killttheboy.com'}/course`,
-                });
-              } catch (emailError) {
-                console.error('Error sending raffle confirmation email:', emailError);
-                // Don't fail - purchase is complete
+              if (updateError) {
+                console.error('Error granting course access:', updateError);
               }
             }
-          } catch (raffleError) {
-            console.error('Error processing raffle entry:', raffleError);
+          } catch (donationError) {
+            console.error('Error processing course purchase donations:', donationError);
             // Don't fail - purchase is stored
           }
-        } else if (!isRaffleEntry && email && product) {
-          // Send payment receipt for non-raffle purchases
+        }
+
+        // Send payment receipt email for course purchases
+        if (product === 'course' && email) {
           try {
+            const userName = userId
+              ? (await supabase.auth.admin.getUserById(userId)).data?.user?.user_metadata?.name || email.split('@')[0]
+              : email.split('@')[0];
+
             await sendPaymentReceiptEmail({
               to: email,
-              userName: userId ? (await supabase.auth.admin.getUserById(userId)).data?.user?.user_metadata?.name || email.split('@')[0] : email.split('@')[0],
-              productName: product === 'course' ? 'Kill The Boy Course' : 'Personal Coaching Session',
+              userName,
+              productName: product === 'course'
+                ? 'Change Your Trajectory by Shifting Lanes'
+                : 'Personal Coaching Session',
               amount: (amountCents / 100).toFixed(2),
               paymentId: paymentId,
               date: new Date().toLocaleString(),
-              invoiceUrl: undefined // Could generate invoice URL if needed
+              invoiceUrl: undefined, // Could generate invoice URL if needed
             });
           } catch (receiptError) {
             console.error('Error sending payment receipt email:', receiptError);
