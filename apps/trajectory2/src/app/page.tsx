@@ -32,24 +32,28 @@ export default function Home() {
   const words = ["attention", "energy", "money"];
   const [activeTab, setActiveTab] = useState("story");
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentWord((prev) => (prev + 1) % words.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [words.length]);
-
-  // Auto-cycle through tabs every 4 seconds
+  // Combine and slow down animations for subtlety
   useEffect(() => {
     const tabs = ["story", "assessment", "resources"];
-    const interval = setInterval(() => {
+
+    // Word cycling - slower and more subtle (6s)
+    const wordInterval = setInterval(() => {
+      setCurrentWord((prev) => (prev + 1) % words.length);
+    }, 6000);
+
+    // Tab cycling - slower to reduce distraction (8s)
+    const tabInterval = setInterval(() => {
       setActiveTab((prev) => {
         const currentIndex = tabs.indexOf(prev);
         return tabs[(currentIndex + 1) % tabs.length];
       });
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+    }, 8000);
+
+    return () => {
+      clearInterval(wordInterval);
+      clearInterval(tabInterval);
+    };
+  }, [words.length]);
 
   const features = [
     {
@@ -73,7 +77,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-base pt-20">
+    <div className="min-h-screen bg-base text-white pt-20">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Gold arc background element */}
@@ -105,9 +109,9 @@ export default function Home() {
           <div className="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
             <motion.div
               className="mb-12 lg:mb-0"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
             >
               <div className="mb-8">
                 <div className="flex items-center gap-4 mb-6">
@@ -128,10 +132,10 @@ export default function Home() {
                   <span>Command your </span>
                   <motion.span
                     key={currentWord}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.5 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
                     className="ml-2"
                   >
                     {words[currentWord]}
@@ -172,39 +176,15 @@ export default function Home() {
 
             <motion.div
               className="relative"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
             >
               <Card className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-2 border-[var(--brand-gold)] relative overflow-hidden shadow-2xl">
-                {/* Animated background effects */}
+                {/* Static background effects - no animation */}
                 <div className="absolute inset-0 opacity-20">
-                  <motion.div 
-                    className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 rounded-full blur-3xl"
-                    animate={{ 
-                      scale: [1, 1.2, 1],
-                      x: [0, 20, 0],
-                      y: [0, -20, 0]
-                    }}
-                    transition={{ 
-                      duration: 8,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                  <motion.div 
-                    className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-yellow-500 via-orange-500 to-red-500 rounded-full blur-3xl"
-                    animate={{ 
-                      scale: [1.2, 1, 1.2],
-                      x: [0, -20, 0],
-                      y: [0, 20, 0]
-                    }}
-                    transition={{ 
-                      duration: 10,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 rounded-full blur-3xl" />
+                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-yellow-500 via-orange-500 to-red-500 rounded-full blur-3xl" />
                 </div>
 
                 <CardHeader className="text-center pb-6 relative z-10">
@@ -241,21 +221,17 @@ export default function Home() {
                     {activeTab === "story" && (
                       <motion.div
                         key="story"
-                        initial={{ x: 20 }}
-                        animate={{ x: 0 }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
-                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10" />
                           <div className="relative space-y-6">
                             <div className="flex items-center gap-4">
-                              <motion.div 
-                                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl"
-                                animate={{ rotate: [0, 360] }}
-                                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                              >
+                              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl">
                                 <FileText className="w-8 h-8 text-white" />
-                              </motion.div>
+                              </div>
                               <div>
                                 <h3 className="text-3xl font-bold text-white mb-1">The Story</h3>
                                 <p className="text-orange-300">Where it all began</p>
@@ -291,24 +267,17 @@ export default function Home() {
                     {activeTab === "assessment" && (
                       <motion.div
                         key="assessment"
-                        initial={{ x: 20 }}
-                        animate={{ x: 0 }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
-                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10" />
                           <div className="relative space-y-6">
                             <div className="flex items-center gap-4">
-                              <motion.div 
-                                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl"
-                                animate={{ 
-                                  scale: [1, 1.1, 1],
-                                  rotate: [0, 180, 360]
-                                }}
-                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                              >
+                              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl">
                                 <Target className="w-8 h-8 text-white" />
-                              </motion.div>
+                              </div>
                               <div>
                                 <h3 className="text-3xl font-bold text-white mb-1">Life Assessment</h3>
                                 <p className="text-orange-300">Know where you stand</p>
@@ -344,24 +313,17 @@ export default function Home() {
                     {activeTab === "resources" && (
                       <motion.div
                         key="resources"
-                        initial={{ x: 20 }}
-                        animate={{ x: 0 }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
                       >
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-orange-600/20 border-2 border-orange-500/50 backdrop-blur-sm p-8">
-                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 animate-pulse" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10" />
                           <div className="relative space-y-6">
                             <div className="flex items-center gap-4">
-                              <motion.div 
-                                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl"
-                                animate={{ 
-                                  y: [0, -10, 0],
-                                  rotate: [0, 10, -10, 0]
-                                }}
-                                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                              >
+                              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-xl">
                                 <Gift className="w-8 h-8 text-white" />
-                              </motion.div>
+                              </div>
                               <div>
                                 <h3 className="text-3xl font-bold text-white mb-1">Free Resources</h3>
                                 <p className="text-orange-300">Wisdom you can access now</p>
@@ -420,26 +382,15 @@ export default function Home() {
                         ))}
                       </div>
 
-                      {/* COMPACT PULSATING CTA */}
-                      <motion.div
-                        animate={{ 
-                          scale: [1, 1.01, 1],
-                        }}
-                        transition={{ 
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
+                      {/* COMPACT CTA */}
+                      <Button
+                        asChild
+                        className="w-full h-11 text-sm font-bold bg-gradient-to-r from-[var(--brand-gold)] to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black shadow-lg"
                       >
-                        <Button 
-                          asChild 
-                          className="w-full h-11 text-sm font-bold bg-gradient-to-r from-[var(--brand-gold)] to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black shadow-lg"
-                        >
-                          <Link href="/experience">
-                            Start Free 7 Days <ArrowRight className="w-4 h-4 ml-1.5" />
-                          </Link>
-                        </Button>
-                      </motion.div>
+                        <Link href="/experience">
+                          Start Free 7 Days <ArrowRight className="w-4 h-4 ml-1.5" />
+                        </Link>
+                      </Button>
 
                       <p className="text-center text-xs text-gold font-medium">
                         Days 1-7 free • Full access after meeting with Jean
