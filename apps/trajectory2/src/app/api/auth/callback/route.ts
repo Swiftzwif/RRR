@@ -13,13 +13,26 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
 
     // Exchange code for session
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (!error) {
-      // Get the user
-      const { data: { user } } = await supabase.auth.getUser();
+    if (exchangeError) {
+      console.error('Error exchanging code for session:', exchangeError);
+      return NextResponse.redirect(
+        new URL('/login?error=' + encodeURIComponent('Authentication failed. Please try again.'), requestUrl.origin)
+      );
+    }
 
-      if (user) {
+    // Get the user after successful exchange
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      console.error('Error getting user after auth:', userError);
+      return NextResponse.redirect(
+        new URL('/login?error=' + encodeURIComponent('Failed to retrieve user information.'), requestUrl.origin)
+      );
+    }
+
+    if (user) {
         // Check if this is a new user (created within last 5 minutes)
         const createdAt = new Date(user.created_at);
         const now = new Date();
@@ -71,10 +84,10 @@ export async function GET(request: NextRequest) {
             new URL(`/raffle?auth=success&user=${user.id}`, requestUrl.origin)
           );
         }
-      }
 
-      // Default redirect
-      return NextResponse.redirect(new URL(redirect, requestUrl.origin));
+        // Handle redirect from login page or stored redirect
+        const redirectUrl = redirect !== '/' ? redirect : '/';
+        return NextResponse.redirect(new URL(redirectUrl, requestUrl.origin));
     }
   }
 
