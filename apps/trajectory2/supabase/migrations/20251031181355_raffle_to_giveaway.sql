@@ -206,4 +206,3 @@ BEGIN
   ALTER TABLE purchases ADD CONSTRAINT purchases_product_check 
     CHECK (product IN ('giveaway_entry', 'course', 'coaching'));
 END $$;
-

@@ -11,4 +11,3 @@ if (!CONVERTKIT_API_KEY && typeof window === 'undefined') {
 if (!CONVERTKIT_FORM_ID && typeof window === 'undefined') {
   console.warn('CONVERTKIT_FORM_ID is not set');
 }
-
