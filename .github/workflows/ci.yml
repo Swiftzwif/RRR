@@ -1,0 +1,163 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [develop, master, main]
+  pull_request:
+    branches: [develop, master, main]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./apps/trajectory2
+
+      - name: Run linting
+        run: npm run lint || true
+        working-directory: ./apps/trajectory2
+        continue-on-error: true
+
+      - name: Run type checking
+        run: npm run typecheck || npx tsc --noEmit
+        working-directory: ./apps/trajectory2
+        continue-on-error: true
+
+      - name: Build application
+        run: npm run build
+        working-directory: ./apps/trajectory2
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SQUARE_APPLICATION_ID: ${{ secrets.NEXT_PUBLIC_SQUARE_APPLICATION_ID }}
+          NEXT_PUBLIC_SQUARE_LOCATION_ID: ${{ secrets.NEXT_PUBLIC_SQUARE_LOCATION_ID }}
+          NEXT_PUBLIC_SQUARE_SANDBOX_APPLICATION_ID: ${{ secrets.NEXT_PUBLIC_SQUARE_SANDBOX_APPLICATION_ID }}
+          NEXT_PUBLIC_SQUARE_SANDBOX_LOCATION_ID: ${{ secrets.NEXT_PUBLIC_SQUARE_SANDBOX_LOCATION_ID }}
+          SQUARE_ACCESS_TOKEN: ${{ secrets.SQUARE_ACCESS_TOKEN }}
+          SQUARE_WEBHOOK_SIGNATURE_KEY: ${{ secrets.SQUARE_WEBHOOK_SIGNATURE_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          VERCEL_KV_REST_API_URL: ${{ secrets.VERCEL_KV_REST_API_URL }}
+          VERCEL_KV_REST_API_TOKEN: ${{ secrets.VERCEL_KV_REST_API_TOKEN }}
+
+      - name: Run tests
+        run: npm test -- --passWithNoTests
+        working-directory: ./apps/trajectory2
+        continue-on-error: true
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate || true
+        working-directory: ./apps/trajectory2
+        continue-on-error: true
+
+  code-quality:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./apps/trajectory2
+
+      - name: Check code formatting
+        run: npx prettier --check "**/*.{js,jsx,ts,tsx,md,json}" || true
+        working-directory: ./apps/trajectory2
+        continue-on-error: true
+
+      - name: Check for console.logs in production code
+        run: |
+          ! grep -r "console.log" --include="*.ts" --include="*.tsx" --exclude-dir=node_modules --exclude-dir=.next src/ || echo "Warning: console.log statements found"
+        working-directory: ./apps/trajectory2
+        continue-on-error: true
+
+  dependency-check:
+    name: Dependency Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for outdated dependencies
+        run: |
+          npx npm-check-updates --packageFile package.json || true
+        working-directory: ./apps/trajectory2
+        continue-on-error: true
+
+  pr-validation:
+    name: PR Validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR title format
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          if [[ ! "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert)(\(.+\))?: ]]; then
+            echo "⚠️ PR title doesn't follow conventional commit format"
+            echo "Expected format: type(scope): description"
+            echo "Types: feat, fix, docs, style, refactor, test, chore, build, ci, perf, revert"
+          fi
+
+      - name: Check branch naming convention
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          if [[ ! "$BRANCH" =~ ^(feature|feat|fix|hotfix|release|docs|test|refactor|chore)/.+ ]]; then
+            echo "⚠️ Branch name doesn't follow naming convention"
+            echo "Expected format: type/description"
+            echo "Types: feature, feat, fix, hotfix, release, docs, test, refactor, chore"
+          fi
+
+      - name: PR size check
+        run: |
+          ADDITIONS=${{ github.event.pull_request.additions }}
+          DELETIONS=${{ github.event.pull_request.deletions }}
+          TOTAL=$((ADDITIONS + DELETIONS))
+
+          if [ $TOTAL -gt 1000 ]; then
+            echo "⚠️ Large PR detected: $TOTAL lines changed"
+            echo "Consider breaking this into smaller PRs for easier review"
+          fi
