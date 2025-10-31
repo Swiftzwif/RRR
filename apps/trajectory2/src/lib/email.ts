@@ -91,11 +91,8 @@ export async function sendDailyExperienceEmail(data: DailyExperienceEmailData) {
 
 // Schedule daily emails for the 7-day experience
 export async function scheduleDailyEmails(email: string, userName?: string) {
-  // This would integrate with a job queue like BullMQ or Inngest
-  // For now, we'll just send Day 1 immediately and log the schedule
-  
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trajectory.com';
-  
+
   // Send Day 1 immediately
   await sendDailyExperienceEmail({
     to: email,
@@ -126,11 +123,43 @@ export async function scheduleDailyEmails(email: string, userName?: string) {
     experienceUrl: `${baseUrl}/experience/day/1`
   });
 
-  // Log schedule for remaining days (would be actual scheduling in production)
-  console.log(`Email schedule created for ${email}:
-    - Day 1: Sent immediately
-    - Day 2-7: Will be sent daily at 6 AM user's timezone
-  `);
+  // Schedule Days 2-7 in the database for cron job to process
+  const { getSupabaseServiceRole } = await import('./supabase');
+  const supabase = getSupabaseServiceRole();
+
+  if (supabase) {
+    const schedulePromises = [];
+    const today = new Date();
+
+    for (let day = 2; day <= 7; day++) {
+      const scheduledDate = new Date(today);
+      scheduledDate.setDate(scheduledDate.getDate() + (day - 1));
+      scheduledDate.setHours(11, 0, 0, 0); // 11 AM UTC
+
+      schedulePromises.push(
+        supabase.from('email_schedule').upsert({
+          email,
+          user_name: userName,
+          day_number: day,
+          scheduled_for: scheduledDate.toISOString(),
+          status: 'pending',
+          metadata: {
+            baseUrl,
+            createdAt: new Date().toISOString()
+          }
+        }, {
+          onConflict: 'email,day_number'
+        })
+      );
+    }
+
+    await Promise.all(schedulePromises);
+
+    console.log(`Email schedule created for ${email}:
+      - Day 1: Sent immediately
+      - Days 2-7: Scheduled for daily delivery at 11 AM UTC
+    `);
+  }
 
   return { success: true };
 }
