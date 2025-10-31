@@ -31,18 +31,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user exists
-    const { data: user, error: userError } = await supabase.auth.admin.getUserByEmail(email);
-
-    // Always return success to prevent email enumeration
-    if (!user || userError) {
-      console.log('Password reset requested for non-existent email:', email);
-      return NextResponse.json({
-        message: 'If an account exists with this email, you will receive a password reset link.'
-      });
-    }
-
-    // Generate password reset link
+    // Generate password reset link (works even if user doesn't exist to prevent email enumeration)
     const { data: resetData, error: resetError } = await supabase.auth.admin.generateLink({
       type: 'recovery',
       email: email,
@@ -51,43 +40,46 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Always return success to prevent email enumeration
     if (resetError || !resetData) {
-      console.error('Error generating reset link:', resetError);
-      return NextResponse.json(
-        { error: 'Failed to generate reset link' },
-        { status: 500 }
-      );
+      console.log('Password reset requested (always returning success to prevent enumeration):', email);
+      return NextResponse.json({
+        message: 'If an account exists with this email, you will receive a password reset link.'
+      });
     }
 
     // Send reset email
     const emailResult = await sendPasswordResetEmail({
       to: email,
-      userName: user.user_metadata?.name || email.split('@')[0],
-      resetUrl: resetData.properties.hashed_token
+      userName: email.split('@')[0],
+      resetUrl: resetData.properties?.hashed_token
         ? `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password?token=${resetData.properties.hashed_token}&type=recovery`
-        : resetData.properties.action_link || ''
+        : resetData.properties?.action_link || ''
     });
 
+    // Don't reveal if email send failed to prevent enumeration
     if (!emailResult.success) {
       console.error('Failed to send reset email:', emailResult.error);
-      return NextResponse.json(
-        { error: 'Failed to send reset email' },
-        { status: 500 }
-      );
     }
 
-    // Log password reset attempt
-    await supabase
-      .from('auth_events')
-      .insert({
-        user_id: user.id,
-        event_type: 'password_reset_requested',
-        metadata: {
-          email: email,
-          timestamp: new Date().toISOString()
-        }
-      })
-      .select();
+    // Try to log password reset attempt if user exists (but don't fail if it doesn't)
+    if (resetData.user) {
+      try {
+        await supabase
+          .from('auth_events')
+          .insert({
+            user_id: resetData.user.id,
+            event_type: 'password_reset_requested',
+            metadata: {
+              email: email,
+              timestamp: new Date().toISOString()
+            }
+          })
+          .select();
+      } catch (err) {
+        console.error('Failed to log auth event:', err);
+      }
+    }
 
     return NextResponse.json({
       message: 'If an account exists with this email, you will receive a password reset link.'

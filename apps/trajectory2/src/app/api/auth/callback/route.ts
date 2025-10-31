@@ -52,21 +52,21 @@ export async function GET(request: NextRequest) {
           if (!user.email_confirmed_at) {
             const serviceSupabase = getSupabaseServiceRole();
             if (serviceSupabase) {
-              // Generate verification link
+              // Generate verification link using magiclink type for OAuth users
               const { data: verifyData } = await serviceSupabase.auth.admin.generateLink({
-                type: 'signup',
+                type: 'magiclink',
                 email: user.email!,
                 options: {
                   redirectTo: `${requestUrl.origin}/auth/verify-success`,
                 }
               });
 
-              if (verifyData) {
+              if (verifyData?.properties) {
                 await sendEmailVerification({
                   to: user.email!,
                   userName: user.user_metadata?.name || user.email!.split('@')[0],
                   verificationUrl: verifyData.properties.hashed_token
-                    ? `${requestUrl.origin}/api/auth/verify-email?token=${verifyData.properties.hashed_token}&type=signup`
+                    ? `${requestUrl.origin}/api/auth/verify-email?token=${verifyData.properties.hashed_token}&type=magiclink`
                     : verifyData.properties.action_link || ''
                 });
               }

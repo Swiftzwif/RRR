@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
             buyer_phone_number: validatedData.phone,
           },
           payment_note: JSON.stringify(metadata), // Store metadata in payment note for webhook
-          description: `Transform your life with the Kill The Boy course at 35% off the regular price. Plus, you're automatically entered to win $2,500+ in transformation prizes. Your commitment: "${validatedData.commitmentMessage.substring(0, 100)}..."`,
+          description: `Transform your life with the Kill The Boy course at 35% off the regular price. Plus, you're automatically entered to win $2,500+ in transformation prizes. Your commitment: "${(validatedData.commitment || '').substring(0, 100)}..."`,
         }),
       }
     );

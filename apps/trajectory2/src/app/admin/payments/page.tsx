@@ -131,17 +131,24 @@ export default function PaymentReconciliationDashboard() {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       failed: { color: 'destructive' as const, icon: XCircle },
-      retrying: { color: 'warning' as const, icon: AlertCircle },
+      retrying: { color: 'secondary' as const, icon: AlertCircle },
       pending: { color: 'secondary' as const, icon: AlertCircle },
       processing: { color: 'default' as const, icon: RefreshCw },
-      completed: { color: 'success' as const, icon: CheckCircle },
+      completed: { color: 'default' as const, icon: CheckCircle },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
     const Icon = config.icon;
+    
+    // Add custom classes for visual distinction where needed
+    const classNameMap: Record<string, string> = {
+      completed: 'flex items-center gap-1 bg-green-500 hover:bg-green-600 text-white border-transparent',
+      retrying: 'flex items-center gap-1 bg-yellow-500 hover:bg-yellow-600 text-white border-transparent',
+    };
+    const customClassName = classNameMap[status] || 'flex items-center gap-1';
 
     return (
-      <Badge variant={config.color} className="flex items-center gap-1">
+      <Badge variant={config.color} className={customClassName}>
         <Icon className="w-3 h-3" />
         {status}
       </Badge>

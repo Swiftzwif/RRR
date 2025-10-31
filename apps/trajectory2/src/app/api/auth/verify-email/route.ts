@@ -22,39 +22,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user
+    // Get user - prefer userId, otherwise use email to generate link directly
     let user;
     if (userId) {
       const { data, error } = await supabase.auth.admin.getUserById(userId);
-      if (error || !data) {
+      if (error || !data?.user) {
         return NextResponse.json(
           { error: 'User not found' },
           { status: 404 }
         );
       }
       user = data.user;
+    } else if (email) {
+      // For email-only requests, generate link directly (will fail silently if user doesn't exist)
+      // We can't easily get user by email in admin API, so we'll generate link and handle gracefully
+      user = { email, email_confirmed_at: null } as any; // Temporary user object for email
     } else {
-      const { data, error } = await supabase.auth.admin.getUserByEmail(email);
-      if (error || !data) {
-        return NextResponse.json(
-          { error: 'User not found' },
-          { status: 404 }
-        );
-      }
-      user = data;
+      return NextResponse.json(
+        { error: 'Email or user ID is required' },
+        { status: 400 }
+      );
     }
 
-    // Check if already verified
-    if (user.email_confirmed_at) {
+    // Check if already verified (only if we have full user object)
+    if (user.email_confirmed_at && userId) {
       return NextResponse.json({
         message: 'Email already verified',
         verified: true
       });
     }
 
-    // Generate verification link
+    // Generate verification link using magiclink for OAuth users or signup for email users
     const { data: verifyData, error: verifyError } = await supabase.auth.admin.generateLink({
-      type: 'signup',
+      type: 'magiclink',
       email: user.email!,
       options: {
         redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify-success`,
@@ -72,10 +72,10 @@ export async function POST(request: NextRequest) {
     // Send verification email
     const emailResult = await sendEmailVerification({
       to: user.email!,
-      userName: user.user_metadata?.name || user.email!.split('@')[0],
-      verificationUrl: verifyData.properties.hashed_token
-        ? `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify?token=${verifyData.properties.hashed_token}&type=signup`
-        : verifyData.properties.action_link || ''
+      userName: (user as any).user_metadata?.name || user.email!.split('@')[0],
+      verificationUrl: verifyData.properties?.hashed_token
+        ? `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify?token=${verifyData.properties.hashed_token}&type=magiclink`
+        : verifyData.properties?.action_link || ''
     });
 
     if (!emailResult.success) {
@@ -135,11 +135,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Update user as verified
+    // Update user metadata to mark email as verified
+    // Note: email_confirmed_at is set automatically by verifyOtp, we just update metadata
     const { error: updateError } = await supabase.auth.admin.updateUserById(
       data.user.id,
       {
-        email_confirmed_at: new Date().toISOString(),
         user_metadata: {
           ...data.user.user_metadata,
           email_verified: true
