@@ -1,7 +1,7 @@
 import { getSupabaseServiceRole } from '@/lib/supabase';
 import { createHmac } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { sendRaffleConfirmationEmail } from '@/lib/email';
+import { sendRaffleConfirmationEmail, sendPaymentReceiptEmail } from '@/lib/email';
 
 // Square webhook event types
 const RELEVANT_EVENTS = [
@@ -25,11 +25,13 @@ function verifyWebhookSignature(
 }
 
 export async function POST(request: NextRequest) {
+  let webhookEventId: string | null = null;
+
   try {
     // Get raw body for signature verification
     const body = await request.text();
     const signature = request.headers.get('x-square-hmacsha256-signature');
-    
+
     // Verify webhook signature
     const webhookSignatureKey = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY;
     if (!webhookSignatureKey) {
@@ -44,10 +46,38 @@ export async function POST(request: NextRequest) {
 
     // Parse webhook payload
     const event = JSON.parse(body);
-    
+
     // Only process relevant events
     if (!RELEVANT_EVENTS.includes(event.type)) {
       return NextResponse.json({ received: true });
+    }
+
+    // Store webhook event for potential retry
+    const supabase = getSupabaseServiceRole();
+    if (supabase) {
+      const { data: webhookEvent, error: webhookError } = await supabase
+        .from('webhook_events')
+        .upsert({
+          event_id: event.event_id || `${event.type}_${Date.now()}`,
+          event_type: event.type,
+          payload: event,
+          status: 'processing',
+          created_at: new Date().toISOString()
+        }, {
+          onConflict: 'event_id'
+        })
+        .select()
+        .single();
+
+      if (!webhookError && webhookEvent) {
+        webhookEventId = webhookEvent.id;
+      }
+
+      // Check if already processed
+      if (webhookEvent?.status === 'completed') {
+        console.log('Webhook already processed:', event.event_id);
+        return NextResponse.json({ received: true, status: 'already_processed' });
+      }
     }
 
     // Handle payment events
@@ -204,13 +234,60 @@ export async function POST(request: NextRequest) {
             console.error('Error processing raffle entry:', raffleError);
             // Don't fail - purchase is stored
           }
+        } else if (!isRaffleEntry && email && product) {
+          // Send payment receipt for non-raffle purchases
+          try {
+            await sendPaymentReceiptEmail({
+              to: email,
+              userName: userId ? (await supabase.auth.admin.getUserById(userId)).data?.user?.user_metadata?.name || email.split('@')[0] : email.split('@')[0],
+              productName: product === 'course' ? 'Kill The Boy Course' : 'Personal Coaching Session',
+              amount: (amountCents / 100).toFixed(2),
+              paymentId: paymentId,
+              date: new Date().toLocaleString(),
+              invoiceUrl: undefined // Could generate invoice URL if needed
+            });
+          } catch (receiptError) {
+            console.error('Error sending payment receipt email:', receiptError);
+            // Don't fail - purchase is complete
+          }
         }
+      }
+    }
+
+    // Mark webhook as completed if we have an ID
+    if (webhookEventId) {
+      const supabase = getSupabaseServiceRole();
+      if (supabase) {
+        await supabase
+          .from('webhook_events')
+          .update({
+            status: 'completed',
+            processed_at: new Date().toISOString()
+          })
+          .eq('id', webhookEventId);
       }
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Webhook processing error:', error);
+
+    // Mark webhook as failed if we have an ID
+    if (webhookEventId) {
+      const supabase = getSupabaseServiceRole();
+      if (supabase) {
+        await supabase
+          .from('webhook_events')
+          .update({
+            status: 'failed',
+            last_error: error instanceof Error ? error.message : String(error),
+            attempts: 1,
+            next_retry_at: new Date(Date.now() + 60000).toISOString() // Retry in 1 minute
+          })
+          .eq('id', webhookEventId);
+      }
+    }
+
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }

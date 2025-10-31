@@ -84,7 +84,7 @@ export default function Navigation() {
               Story
             </Link>
             <Link
-              href="/assessment"
+              href="/assessment/landing"
               className={`transition-colors duration-200 ${
                 isDarkPage
                   ? "text-secondary hover:text-gold"
@@ -178,7 +178,7 @@ export default function Navigation() {
                 Story
               </Link>
               <Link
-                href="/assessment"
+                href="/assessment/landing"
                 className={`block px-3 py-2 transition-colors ${
                   isDarkPage
                     ? "text-secondary hover:text-gold"

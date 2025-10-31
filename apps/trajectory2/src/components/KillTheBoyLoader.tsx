@@ -20,9 +20,9 @@ export default function KillTheBoyLoader({ isLoading, onComplete }: KillTheBoyLo
     const splitTimer = setTimeout(() => {
       setStartSplit(true);
       if (onComplete) {
-        setTimeout(onComplete, 800); // Extended from 600ms to 800ms
+        setTimeout(onComplete, 2000); // Extended to 2000ms for smoother completion
       }
-    }, 2000); // Extended from 1200ms to 2000ms for longer visibility
+    }, 3500); // Extended to 3500ms - users have 3.4 seconds to read "KILL THE BOY"
 
     return () => {
       clearTimeout(textTimer);
@@ -60,7 +60,7 @@ export default function KillTheBoyLoader({ isLoading, onComplete }: KillTheBoyLo
             transition={{ duration: 0.5 }}
           >
             <div className="text-center">
-              <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-gold tracking-wider drop-shadow-2xl">
+              <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-white tracking-wider drop-shadow-2xl">
                 KILL THE BOY
               </h1>
             </div>

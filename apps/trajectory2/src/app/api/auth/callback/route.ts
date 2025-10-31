@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
+import { sendWelcomeEmail, sendEmailVerification } from '@/lib/email';
+import { getSupabaseServiceRole } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -17,11 +19,58 @@ export async function GET(request: NextRequest) {
       // Get the user
       const { data: { user } } = await supabase.auth.getUser();
 
-      if (user && action === 'payment') {
-        // Redirect to payment with user ID
-        return NextResponse.redirect(
-          new URL(`/raffle?auth=success&user=${user.id}`, requestUrl.origin)
-        );
+      if (user) {
+        // Check if this is a new user (created within last 5 minutes)
+        const createdAt = new Date(user.created_at);
+        const now = new Date();
+        const timeDiff = now.getTime() - createdAt.getTime();
+        const isNewUser = timeDiff < 5 * 60 * 1000; // 5 minutes
+
+        if (isNewUser) {
+          try {
+            // Send welcome email to new users
+            await sendWelcomeEmail({
+              to: user.email!,
+              userName: user.user_metadata?.name || user.user_metadata?.full_name || user.email!.split('@')[0],
+              verificationUrl: user.email_confirmed_at ? undefined : `${requestUrl.origin}/api/auth/verify-email?userId=${user.id}`
+            });
+
+            // If email not verified, send verification email
+            if (!user.email_confirmed_at) {
+              const serviceSupabase = getSupabaseServiceRole();
+              if (serviceSupabase) {
+                // Generate verification link
+                const { data: verifyData } = await serviceSupabase.auth.admin.generateLink({
+                  type: 'signup',
+                  email: user.email!,
+                  options: {
+                    redirectTo: `${requestUrl.origin}/auth/verify-success`,
+                  }
+                });
+
+                if (verifyData) {
+                  await sendEmailVerification({
+                    to: user.email!,
+                    userName: user.user_metadata?.name || user.email!.split('@')[0],
+                    verificationUrl: verifyData.properties.hashed_token
+                      ? `${requestUrl.origin}/api/auth/verify-email?token=${verifyData.properties.hashed_token}&type=signup`
+                      : verifyData.properties.action_link || ''
+                  });
+                }
+              }
+            }
+          } catch (emailError) {
+            console.error('Failed to send welcome/verification emails:', emailError);
+            // Don't fail the auth process if email fails
+          }
+        }
+
+        if (action === 'payment') {
+          // Redirect to payment with user ID
+          return NextResponse.redirect(
+            new URL(`/raffle?auth=success&user=${user.id}`, requestUrl.origin)
+          );
+        }
       }
 
       // Default redirect
