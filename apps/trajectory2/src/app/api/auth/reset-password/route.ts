@@ -32,7 +32,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user exists
-    const { data: user, error: userError } = await supabase.auth.admin.getUserByEmail(email);
+    const { data: usersData, error: userError } = await supabase.auth.admin.listUsers();
+    const user = usersData?.users?.find(u => u.email === email);
 
     // Always return success to prevent email enumeration
     if (!user || userError) {

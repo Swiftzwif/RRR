@@ -34,14 +34,15 @@ export async function POST(request: NextRequest) {
       }
       user = data.user;
     } else {
-      const { data, error } = await supabase.auth.admin.getUserByEmail(email);
-      if (error || !data) {
+      const { data: usersData, error } = await supabase.auth.admin.listUsers();
+      const foundUser = usersData?.users?.find(u => u.email === email);
+      if (error || !foundUser) {
         return NextResponse.json(
           { error: 'User not found' },
           { status: 404 }
         );
       }
-      user = data;
+      user = foundUser;
     }
 
     // Check if already verified
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     // Generate verification link
     const { data: verifyData, error: verifyError } = await supabase.auth.admin.generateLink({
-      type: 'signup',
+      type: 'magiclink',
       email: user.email!,
       options: {
         redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify-success`,
@@ -139,7 +140,7 @@ export async function GET(request: NextRequest) {
     const { error: updateError } = await supabase.auth.admin.updateUserById(
       data.user.id,
       {
-        email_confirmed_at: new Date().toISOString(),
+        email_confirm: true,
         user_metadata: {
           ...data.user.user_metadata,
           email_verified: true

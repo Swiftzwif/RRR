@@ -131,10 +131,10 @@ export default function PaymentReconciliationDashboard() {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       failed: { color: 'destructive' as const, icon: XCircle },
-      retrying: { color: 'warning' as const, icon: AlertCircle },
+      retrying: { color: 'outline' as const, icon: AlertCircle },
       pending: { color: 'secondary' as const, icon: AlertCircle },
       processing: { color: 'default' as const, icon: RefreshCw },
-      completed: { color: 'success' as const, icon: CheckCircle },
+      completed: { color: 'default' as const, icon: CheckCircle },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;

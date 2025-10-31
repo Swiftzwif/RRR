@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
               if (serviceSupabase) {
                 // Generate verification link
                 const { data: verifyData } = await serviceSupabase.auth.admin.generateLink({
-                  type: 'signup',
+                  type: 'magiclink',
                   email: user.email!,
                   options: {
                     redirectTo: `${requestUrl.origin}/auth/verify-success`,
@@ -65,9 +65,9 @@ export async function GET(request: NextRequest) {
                   await sendEmailVerification({
                     to: user.email!,
                     userName: user.user_metadata?.name || user.email!.split('@')[0],
-                    verificationUrl: verifyData.properties.hashed_token
+                    verificationUrl: verifyData.properties?.hashed_token
                       ? `${requestUrl.origin}/api/auth/verify-email?token=${verifyData.properties.hashed_token}&type=signup`
-                      : verifyData.properties.action_link || ''
+                      : verifyData.properties?.action_link || ''
                   });
                 }
               }

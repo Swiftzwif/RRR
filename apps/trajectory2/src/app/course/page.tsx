@@ -49,11 +49,11 @@ function CourseContent() {
       try {
         const {
           data: { user },
-        } = await supabase.auth.getUser();
+        } = await supabase!.auth.getUser();
 
         if (user) {
           // Check if user has purchased the course
-          const { data: purchase } = await supabase
+          const { data: purchase } = await supabase!
             .from("purchases")
             .select("*")
             .eq("user_id", user.id)
@@ -73,30 +73,44 @@ function CourseContent() {
   }, [searchParams]);
 
   const handlePurchase = async () => {
-    // Payment integration coming soon
-    alert(
-      "Course payment ($97) - Payment integration coming soon! We'll notify you when it's ready."
-    );
+    try {
+      setIsLoading(true);
 
-    // Optional: Capture intent if user is logged in
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user?.email) {
-      await fetch("/api/notify", {
+      // Get current user for email
+      const {
+        data: { user },
+      } = await supabase!.auth.getUser();
+
+      // Create payment link via Square API
+      const response = await fetch("/api/payments/square/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: user.email,
-          topic: "course",
-          metadata: {
-            intent: "purchase",
-            timestamp: new Date().toISOString(),
-          },
+          product: "course",
+          email: user?.email || undefined,
+          redirectUrl: window.location.href,
         }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create payment link");
+      }
+
+      // Redirect to Square checkout
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("Unable to process payment. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 

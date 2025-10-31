@@ -47,12 +47,12 @@ export default function AssessmentPage() {
     try {
       // Calculate scores
       const result = scoreDomains(answers);
-      
+
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const { data: { user } } = await supabase!.auth.getUser();
+
       // Save assessment to database
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from('assessments')
         .insert({
           user_id: user?.id || null,

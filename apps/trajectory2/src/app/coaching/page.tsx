@@ -13,11 +13,11 @@ export default function CoachingPage() {
   useEffect(() => {
     const checkAccess = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
+        const { data: { user } } = await supabase!.auth.getUser();
+
         if (user) {
           // Check if user has purchased coaching
-          const { data: purchase } = await supabase
+          const { data: purchase } = await supabase!
             .from('purchases')
             .select('*')
             .eq('user_id', user.id)
