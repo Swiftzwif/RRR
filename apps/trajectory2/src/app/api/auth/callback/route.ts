@@ -33,14 +33,15 @@ export async function GET(request: NextRequest) {
     }
 
     if (user) {
-      // Check if this is a new user (created within last 5 minutes)
-      const createdAt = new Date(user.created_at);
-      const now = new Date();
-      const timeDiff = now.getTime() - createdAt.getTime();
-      const isNewUser = timeDiff < 5 * 60 * 1000; // 5 minutes
+      // Check if this is a new user (welcome email not sent yet)
+      // Use metadata flag instead of time-based check to avoid race conditions
+      const welcomeEmailSent = user.user_metadata?.welcome_email_sent === true;
+      const isNewUser = !welcomeEmailSent;
 
       if (isNewUser) {
         try {
+          const serviceSupabase = getSupabaseServiceRole();
+          
           // Send welcome email to new users
           await sendWelcomeEmail({
             to: user.email!,
@@ -49,28 +50,39 @@ export async function GET(request: NextRequest) {
           });
 
           // If email not verified, send verification email
-          if (!user.email_confirmed_at) {
-            const serviceSupabase = getSupabaseServiceRole();
-            if (serviceSupabase) {
-              // Generate verification link using magiclink type for OAuth users
-              const { data: verifyData } = await serviceSupabase.auth.admin.generateLink({
-                type: 'magiclink',
-                email: user.email!,
-                options: {
-                  redirectTo: `${requestUrl.origin}/auth/verify-success`,
-                }
-              });
-
-              if (verifyData?.properties) {
-                await sendEmailVerification({
-                  to: user.email!,
-                  userName: user.user_metadata?.name || user.email!.split('@')[0],
-                  verificationUrl: verifyData.properties.hashed_token
-                    ? `${requestUrl.origin}/api/auth/verify-email?token=${verifyData.properties.hashed_token}&type=magiclink`
-                    : verifyData.properties.action_link || ''
-                });
+          if (!user.email_confirmed_at && serviceSupabase) {
+            // Generate verification link using magiclink type for OAuth users
+            const { data: verifyData } = await serviceSupabase.auth.admin.generateLink({
+              type: 'magiclink',
+              email: user.email!,
+              options: {
+                redirectTo: `${requestUrl.origin}/auth/verify-success`,
               }
+            });
+
+            if (verifyData?.properties) {
+              await sendEmailVerification({
+                to: user.email!,
+                userName: user.user_metadata?.name || user.email!.split('@')[0],
+                verificationUrl: verifyData.properties.hashed_token
+                  ? `${requestUrl.origin}/api/auth/verify-email?token=${verifyData.properties.hashed_token}&type=magiclink`
+                  : verifyData.properties.action_link || ''
+              });
             }
+          }
+
+          // Mark welcome email as sent to prevent duplicates
+          if (serviceSupabase) {
+            await serviceSupabase.auth.admin.updateUserById(user.id, {
+              user_metadata: {
+                ...user.user_metadata,
+                welcome_email_sent: true,
+                welcome_email_sent_at: new Date().toISOString()
+              }
+            }).catch(err => {
+              console.error('Failed to update welcome_email_sent flag:', err);
+              // Don't fail - email was sent
+            });
           }
         } catch (emailError) {
           console.error('Failed to send welcome/verification emails:', emailError);
