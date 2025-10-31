@@ -30,6 +30,17 @@ export default function ResultsPage() {
     const loadResults = async () => {
       try {
         // Check if user is authenticated
+        if (!supabase) {
+          // Check session storage for results
+          const storedResults = sessionStorage.getItem("assessmentResults");
+          if (storedResults) {
+            setResults(JSON.parse(storedResults));
+            setShowEmailCapture(true);
+          } else {
+            router.push("/assessment");
+          }
+          return;
+        }
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -92,7 +103,7 @@ export default function ResultsPage() {
     setIsSubmittingEmail(true);
     try {
       // Update assessment with email
-      if (results.assessmentId) {
+      if (results.assessmentId && supabase) {
         await supabase
           .from("assessments")
           .update({ email })

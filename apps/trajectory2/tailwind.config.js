@@ -50,6 +50,12 @@ module.exports = {
           "black-card": "#111111",
           "black-deep": "#1A1A1A",
         },
+        // Sunset/orange colors for CTAs and gradients
+        sunset: {
+          DEFAULT: "#F97316", // Orange-500
+          light: "#FB923C",   // Orange-400
+          dark: "#EA580C",    // Orange-600
+        },
         // Enhanced status colors with better contrast
         success: "#059669",  // Darker green for better contrast
         warn: "#D97706",     // Darker orange for better contrast
