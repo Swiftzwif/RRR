@@ -83,9 +83,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Create trigger for new user signups
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
+-- Create trigger for new user signups (unique name to avoid collision with other triggers)
+DROP TRIGGER IF EXISTS on_auth_user_created_log_event ON auth.users;
+CREATE TRIGGER on_auth_user_created_log_event
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION handle_new_user();

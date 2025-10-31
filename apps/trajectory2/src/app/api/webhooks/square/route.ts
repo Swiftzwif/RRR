@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
                   entryNumber: entry.entry_number,
                   warriorCount: count || 1,
                   transformationGoal: raffleMetadata.transformation_goal,
-                  accessUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.killttheboy.com'}/course`,
+                  accessUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.killtheboy.com'}/course`,
                 });
               } catch (emailError) {
                 console.error('Error sending raffle confirmation email:', emailError);

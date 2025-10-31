@@ -47,6 +47,11 @@ function CourseContent() {
 
     const checkAccess = async () => {
       try {
+        if (!supabase) {
+          setHasAccess(false);
+          setLoading(false);
+          return;
+        }
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -79,6 +84,7 @@ function CourseContent() {
     );
 
     // Optional: Capture intent if user is logged in
+    if (!supabase) return;
     const {
       data: { user },
     } = await supabase.auth.getUser();

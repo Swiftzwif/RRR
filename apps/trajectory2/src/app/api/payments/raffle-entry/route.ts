@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user exists (for non-guest checkout)
     let userId: string | null = null;
-    if (!validatedData.guestCheckout) {
+    if (!validatedData.guestCheckout && supabase) {
       const { data: { user } } = await supabase.auth.getUser();
       userId = user?.id || null;
     }

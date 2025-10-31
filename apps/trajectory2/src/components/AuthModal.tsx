@@ -85,7 +85,7 @@ export default function AuthModal({
         if (data.user) {
           setSuccess(true);
           setTimeout(() => {
-            onSuccess(data.user.id);
+            onSuccess(data.user?.id || '');
           }, 1500);
         }
       } else {
@@ -100,7 +100,7 @@ export default function AuthModal({
         if (data.user) {
           setSuccess(true);
           setTimeout(() => {
-            onSuccess(data.user.id);
+            onSuccess(data.user?.id || '');
           }, 1500);
         }
       }
