@@ -1,6 +1,7 @@
 import { AssessmentCompleteEmail } from '@/emails/assessment-complete';
 import { DailyExperienceEmail } from '@/emails/daily-experience';
 import { Resend } from 'resend';
+import { getSupabaseServiceRole } from '@/lib/supabase';
 
 let resend: Resend | null = null;
 
@@ -182,48 +183,104 @@ export async function sendRaffleConfirmationEmail(data: RaffleConfirmationEmailD
 
 // Schedule daily emails for the 7-day experience
 export async function scheduleDailyEmails(email: string, userName?: string) {
-  // This would integrate with a job queue like BullMQ or Inngest
-  // For now, we'll just send Day 1 immediately and log the schedule
-  
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trajectory.com';
-  
-  // Send Day 1 immediately
-  await sendDailyExperienceEmail({
-    to: email,
-    userName,
-    dayNumber: 1,
-    dayTitle: "Kill the Boy - The Awakening",
-    bookSummaries: [
-      {
-        title: "The Way of the Superior Man",
-        author: "David Deida",
-        keyTakeaway: "Your edge is where you stop short of your fullest gift."
-      },
-      {
-        title: "The 48 Laws of Power",
-        author: "Robert Greene",
-        keyTakeaway: "Never outshine the master, but always make those above you feel superior."
-      },
-      {
-        title: "Man's Search for Meaning",
-        author: "Viktor Frankl",
-        keyTakeaway: "When we can no longer change a situation, we are challenged to change ourselves."
-      }
-    ],
-    tasks: [
-      "Write down 3 areas where you're still playing the 'good soldier' role",
-      "Identify one decision you've been avoiding and commit to making it today"
-    ],
-    experienceUrl: `${baseUrl}/experience/day/1`
-  });
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trajectory.com';
 
-  // Log schedule for remaining days (would be actual scheduling in production)
-  console.log(`Email schedule created for ${email}:
+    // Send Day 1 immediately
+    await sendDailyExperienceEmail({
+      to: email,
+      userName,
+      dayNumber: 1,
+      dayTitle: "Kill the Boy - The Awakening",
+      bookSummaries: [
+        {
+          title: "The Way of the Superior Man",
+          author: "David Deida",
+          keyTakeaway: "Your edge is where you stop short of your fullest gift."
+        },
+        {
+          title: "The 48 Laws of Power",
+          author: "Robert Greene",
+          keyTakeaway: "Never outshine the master, but always make those above you feel superior."
+        },
+        {
+          title: "Man's Search for Meaning",
+          author: "Viktor Frankl",
+          keyTakeaway: "When we can no longer change a situation, we are challenged to change ourselves."
+        }
+      ],
+      tasks: [
+        "Write down 3 areas where you're still playing the 'good soldier' role",
+        "Identify one decision you've been avoiding and commit to making it today"
+      ],
+      experienceUrl: `${baseUrl}/experience/day/1`
+    });
+
+    // Get Supabase service role client for database access
+    const supabase = getSupabaseServiceRole();
+    if (!supabase) {
+      console.error('Failed to get Supabase service role client for scheduling emails');
+      return {
+        success: false,
+        error: 'Database service not configured. Day 1 sent but remaining days not scheduled.'
+      };
+    }
+
+    // Schedule Days 2-7 in the database
+    // Each day scheduled 24 hours apart, all at 11 AM UTC
+    const scheduledEmails = [];
+    const now = new Date();
+
+    for (let day = 2; day <= 7; day++) {
+      // Calculate scheduled_for: tomorrow at 11 AM UTC for Day 2, day after for Day 3, etc.
+      const scheduledFor = new Date();
+      scheduledFor.setUTCDate(now.getUTCDate() + (day - 1)); // Day 2 = tomorrow, Day 3 = day after, etc.
+      scheduledFor.setUTCHours(11, 0, 0, 0); // 11 AM UTC
+
+      scheduledEmails.push({
+        email,
+        user_name: userName || null,
+        day_number: day,
+        scheduled_for: scheduledFor.toISOString(),
+        status: 'pending',
+        metadata: {
+          base_url: baseUrl,
+          scheduled_at: now.toISOString()
+        }
+      });
+    }
+
+    // Insert all scheduled emails into the database
+    const { data, error } = await supabase
+      .from('email_schedule')
+      .insert(scheduledEmails)
+      .select();
+
+    if (error) {
+      console.error('Failed to schedule emails in database:', error);
+      return {
+        success: false,
+        error: `Day 1 sent successfully, but failed to schedule remaining days: ${error.message}`
+      };
+    }
+
+    console.log(`Email schedule created for ${email}:
     - Day 1: Sent immediately
-    - Day 2-7: Will be sent daily at 6 AM user's timezone
+    - Days 2-7: Scheduled in database (${data?.length || 0} records created)
   `);
 
-  return { success: true };
+    return {
+      success: true,
+      scheduledCount: data?.length || 0,
+      message: `Day 1 sent immediately. Days 2-7 scheduled successfully.`
+    };
+  } catch (error) {
+    console.error('Error in scheduleDailyEmails:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
 }
 
 // Welcome email for new signups
