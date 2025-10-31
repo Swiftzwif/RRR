@@ -30,7 +30,8 @@ interface SubscribeToFormParams {
   tags?: string[];
 }
 
-const CONVERTKIT_API_KEY = process.env.CONVERTKIT_API_KEY;
+import { CONVERTKIT_API_KEY } from './constants';
+
 const CONVERTKIT_API_BASE = 'https://api.convertkit.com/v4';
 
 /**
@@ -183,4 +184,3 @@ export async function getSubscriberByEmail(
     };
   }
 }
-
