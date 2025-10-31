@@ -13,6 +13,10 @@ export default function CoachingPage() {
   useEffect(() => {
     const checkAccess = async () => {
       try {
+        if (!supabase) {
+          setHasAccess(false);
+          return;
+        }
         const { data: { user } } = await supabase.auth.getUser();
         
         if (user) {

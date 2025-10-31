@@ -47,6 +47,11 @@ function CourseContent() {
 
     const checkAccess = async () => {
       try {
+        if (!supabase) {
+          setHasAccess(false);
+          setLoading(false);
+          return;
+        }
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -74,6 +79,11 @@ function CourseContent() {
 
   const handlePurchase = async () => {
     try {
+      if (!supabase) {
+        alert("Authentication service not available. Please try again.");
+        return;
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -338,7 +348,7 @@ function CourseContent() {
               Get lifetime access to all modules, future updates, and our
               private community of high-performers.
             </p>
-            <div className="text-5xl font-bold text-gold mb-2">$99.99</div>
+            <div className="text-5xl font-bold text-gold mb-2">$97</div>
             <p className="text-secondary mb-8">
               One-time payment • Lifetime access
             </p>
