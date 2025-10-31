@@ -78,31 +78,40 @@ function CourseContent() {
   }, [searchParams]);
 
   const handlePurchase = async () => {
-    // Payment integration coming soon
-    alert(
-      "Course payment ($97) - Payment integration coming soon! We'll notify you when it's ready."
-    );
+    try {
+      if (!supabase) {
+        alert("Authentication service not available. Please try again.");
+        return;
+      }
 
-    // Optional: Capture intent if user is logged in
-    if (!supabase) return;
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user?.email) {
-      await fetch("/api/notify", {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      // Call Square API for checkout
+      const response = await fetch("/api/payments/square/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: user.email,
-          topic: "course",
-          metadata: {
-            intent: "purchase",
-            timestamp: new Date().toISOString(),
-          },
+          product: "course",
+          email: user?.email || undefined,
+          redirectUrl: window.location.href,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to create checkout session");
+      }
+
+      const { checkoutUrl } = await response.json();
+
+      // Redirect to Square checkout
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      console.error("Error creating checkout:", error);
+      alert("Failed to process payment. Please try again.");
     }
   };
 

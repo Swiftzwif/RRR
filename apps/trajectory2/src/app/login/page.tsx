@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { LogoMark } from "@/components/LogoMark";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +19,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { login, signup } from "./actions";
 import { createClient } from '@/utils/supabase/client';
 
-export default function LoginPage() {
+function LoginContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [mode, setMode] = useState<'login' | 'signup'>('login')
@@ -39,7 +40,7 @@ export default function LoginPage() {
     try {
       setIsGoogleLoading(true)
       const redirectTo = searchParams.get('redirectTo') || '/'
-      
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -183,9 +184,9 @@ export default function LoginPage() {
               <form action={handleSubmit} className="space-y-4">
                 {/* Hidden redirect field */}
                 {searchParams.get('redirectTo') && (
-                  <input 
-                    type="hidden" 
-                    name="redirectTo" 
+                  <input
+                    type="hidden"
+                    name="redirectTo"
                     value={searchParams.get('redirectTo') || ''}
                   />
                 )}
@@ -324,5 +325,19 @@ export default function LoginPage() {
         </motion.div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-base flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-gold" />
+        </div>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   )
 }
