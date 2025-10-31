@@ -411,4 +411,3 @@ export default function GiveawayEntryForm() {
     </section>
   );
 }
-
