@@ -49,6 +49,10 @@ export default function AssessmentPage() {
       const result = scoreDomains(answers);
       
       // Get current user
+      if (!supabase) {
+        throw new Error('Database connection not available');
+      }
+      
       const { data: { user } } = await supabase.auth.getUser();
       
       // Save assessment to database

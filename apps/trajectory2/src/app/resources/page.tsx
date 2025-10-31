@@ -159,7 +159,7 @@ export default function ResourcesPage() {
               </li>
             </ul>
             <Link
-              href="/assessment"
+              href="/assessment/landing"
               className="inline-flex items-center w-full justify-center bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
             >
               Take Free Assessment
@@ -223,7 +223,7 @@ export default function ResourcesPage() {
               Take the free assessment now and discover your path to commanding your trajectory.
             </p>
             <Link
-              href="/assessment"
+              href="/assessment/landing"
               className="inline-flex items-center px-10 py-5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl hover:from-orange-600 hover:to-red-600 hover:scale-105 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl text-lg"
             >
               Start Free Assessment
