@@ -12,6 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LogoMark } from "./LogoMark";
+import UserStatus from "./UserStatus";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -117,6 +118,12 @@ export default function Navigation() {
               <>
                 {user ? (
                   <>
+                    <UserStatus 
+                      user={user} 
+                      variant="compact"
+                      className="hidden lg:flex"
+                      showIcon={true}
+                    />
                     <Link
                       href="/account"
                       className={`transition-colors duration-200 flex items-center gap-2 ${
@@ -214,6 +221,13 @@ export default function Navigation() {
                 <>
                   {user ? (
                     <>
+                      <div className="px-3 py-2">
+                        <UserStatus 
+                          user={user} 
+                          variant="default"
+                          showIcon={true}
+                        />
+                      </div>
                       <Link
                         href="/account"
                         className={`block px-3 py-2 transition-colors ${

@@ -26,6 +26,16 @@ export function createClient(): SupabaseClient {
     } as unknown as SupabaseClient
   }
 
-  clientInstance = createBrowserClient(supabaseUrl, supabaseAnonKey)
+  // Configure client with persistent session settings
+  clientInstance = createBrowserClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      flowType: 'pkce',
+    },
+  })
+  
   return clientInstance
 }
