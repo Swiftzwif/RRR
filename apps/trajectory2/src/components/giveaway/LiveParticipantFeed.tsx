@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Target, TrendingUp, Clock } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
@@ -20,6 +20,7 @@ export default function LiveParticipantFeed() {
   const [participants, setParticipants] = useState<ParticipantEntry[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [latestEntry, setLatestEntry] = useState<ParticipantEntry | null>(null);
+  const [fakeCount, setFakeCount] = useState(0);
 
   useEffect(() => {
     const fetchParticipants = async () => {
@@ -78,6 +79,37 @@ export default function LiveParticipantFeed() {
     fetchParticipants();
   }, []);
 
+  // Periodic fake count increment for social proof illusion
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isMountedRef = useRef(true);
+  
+  useEffect(() => {
+    isMountedRef.current = true;
+    
+    const scheduleNext = () => {
+      if (!isMountedRef.current) return;
+      
+      // Random interval between 10-30 minutes (600000ms to 1800000ms)
+      const interval = 600000 + Math.random() * 1200000;
+      timeoutRef.current = setTimeout(() => {
+        if (isMountedRef.current) {
+          setFakeCount((prev) => prev + 1);
+          scheduleNext(); // Chain to next interval
+        }
+      }, interval);
+    };
+
+    scheduleNext();
+    
+    return () => {
+      isMountedRef.current = false;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
+
   // Example participants for when the feed is empty
   const exampleParticipants: ParticipantEntry[] = [
     {
@@ -126,7 +158,7 @@ export default function LiveParticipantFeed() {
   // Use example data if no real entries yet
   const displayParticipants = participants.length > 0 ? participants : exampleParticipants;
   const displayLatest = latestEntry || exampleParticipants[0];
-  const displayCount = totalCount > 0 ? totalCount : 3;
+  const displayCount = totalCount > 0 ? totalCount + fakeCount : 3 + fakeCount;
   const isUsingExamples = participants.length === 0;
 
   return (
