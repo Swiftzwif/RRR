@@ -2,7 +2,15 @@ import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialize Resend to avoid errors when API key is not configured
+let resendInstance: Resend | null = null;
+
+function getResend() {
+  if (!resendInstance && process.env.RESEND_API_KEY) {
+    resendInstance = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendInstance;
+}
 
 // Email content for each day
 const emailContent: Record<number, { subject: string; content: string }> = {
@@ -189,6 +197,11 @@ export async function GET(request: NextRequest) {
 
       try {
         // Send email via Resend
+        const resend = getResend();
+        if (!resend) {
+          throw new Error('Resend not configured');
+        }
+        
         const { data, error } = await resend.emails.send({
           from: 'Trajectory <hello@trajectorygroup.org>',
           to: scheduled.email,
