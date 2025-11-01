@@ -52,6 +52,15 @@ export interface RaffleConfirmationEmailData {
   accessUrl: string;
 }
 
+export interface GiveawayConfirmationEmailData {
+  to: string;
+  firstName: string;
+  lastName: string;
+  entryNumber: number;
+  participantCount: number;
+  giveawayName: string;
+}
+
 export interface WelcomeEmailData {
   to: string;
   userName: string;
@@ -173,6 +182,68 @@ export async function sendRaffleConfirmationEmail(data: RaffleConfirmationEmailD
     return { success: true, data: result };
   } catch (error) {
     console.error('Error sending raffle confirmation email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    };
+  }
+}
+
+export async function sendGiveawayConfirmationEmail(data: GiveawayConfirmationEmailData) {
+  try {
+    const resendClient = getResendClient();
+    if (!resendClient) {
+      console.warn('Email service not configured');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trajectorygroup.org';
+    const fullName = `${data.firstName} ${data.lastName}`;
+
+    const emailContent = `
+      Hi ${data.firstName},
+
+      You're officially entered into the ${data.giveawayName}!
+
+      🎯 YOUR GIVEAWAY ENTRY
+      Entry Number: #${data.entryNumber}
+      Total Participants: ${data.participantCount}
+      Name: ${fullName}
+
+      ✅ WHAT YOU'VE COMPLETED
+      • Subscribed to Kill The Boy Weekly Newsletter
+      • Liked the Instagram post
+      • Shared the Instagram post
+      • Tagged a friend in the comments
+
+      🎁 WHAT YOU COULD WIN
+      We'll be giving away $2,500+ in transformation prizes to multiple winners. Winners will be selected and notified after the giveaway ends.
+
+      💎 OPTIONAL: ACCELERATE YOUR TRANSFORMATION
+      Want to start transforming your life right now? Get instant access to "Change Your Trajectory by Shifting Lanes" course at 35% off during our opening week.
+
+      ${baseUrl}/giveaway
+
+      🔍 VERIFICATION NOTE
+      Your entry will be manually verified by our team. We'll cross-reference your newsletter subscription and Instagram actions. Only verified entries are eligible to win.
+
+      Thank you for being part of the movement. Your journey from drift to dominion starts with a single decision.
+
+      Kill the boy,
+      The Trajectory Team
+    `;
+
+    const result = await resendClient.emails.send({
+      from: FROM_EMAIL,
+      to: data.to,
+      subject: `✅ Giveaway Entry #${data.entryNumber} Confirmed - You're In!`,
+      text: emailContent,
+      html: emailContent.replace(/\n/g, '<br>'),
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error sending giveaway confirmation email:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to send email',

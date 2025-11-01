@@ -2,7 +2,7 @@
 
 import KillTheBoyLoader from "@/components/KillTheBoyLoader";
 import { LogoMark } from "@/components/LogoMark";
-import RaffleHeroSection from "@/components/RaffleHeroSection";
+import GiveawayHeroSection from "@/components/GiveawayHeroSection";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -198,8 +198,8 @@ export default function Home() {
                   Trajectory
                 </h1>
 
-                {/* Grand Opening Raffle */}
-                <RaffleHeroSection />
+                {/* Grand Opening Giveaway */}
+                <GiveawayHeroSection />
 
                 <h2 className="text-3xl md:text-4xl font-light text-gold mb-8 h-16 flex items-center">
                   <span>Command your </span>

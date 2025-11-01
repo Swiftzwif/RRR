@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { motion } from 'framer-motion'
 import { ArrowRight, LogIn, Shield, UserPlus, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { login, signup } from "./actions";
 import { createClient } from '@/utils/supabase/client';
@@ -339,5 +339,5 @@ export default function LoginPage() {
     >
       <LoginContent />
     </Suspense>
-  )
+  );
 }

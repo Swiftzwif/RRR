@@ -30,6 +30,11 @@ export default function ResultsPage() {
 
   useEffect(() => {
     const loadResults = async () => {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
       try {
         // Check if user is authenticated
         if (!supabase) {
