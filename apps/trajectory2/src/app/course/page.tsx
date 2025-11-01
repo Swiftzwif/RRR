@@ -10,7 +10,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { supabase } from '@/lib/supabase';
+import { THINKIFIC_COURSE_URL, COURSE_CONFIG } from '@/lib/config';
 import { motion } from 'framer-motion';
 import {
     ArrowRight,
@@ -20,8 +20,7 @@ import {
     Lock,
     Users,
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 
 interface Module {
   title: string;
@@ -33,77 +32,9 @@ interface Module {
 }
 
 function CourseContent() {
-  const [hasAccess, setHasAccess] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [purchaseSuccess, setPurchaseSuccess] = useState(false);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    // Check for success param
-    if (searchParams.get("success") === "1") {
-      setPurchaseSuccess(true);
-    }
-
-    const checkAccess = async () => {
-      try {
-        if (!supabase) {
-          setHasAccess(false);
-          setLoading(false);
-          return;
-        }
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (user) {
-          // Check if user has purchased the course
-          const { data: purchase } = await supabase
-            .from("purchases")
-            .select("*")
-            .eq("user_id", user.id)
-            .eq("product", "course")
-            .single();
-
-          setHasAccess(!!purchase);
-        }
-      } catch (error) {
-        console.error("Error checking access:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAccess();
-  }, [searchParams]);
-
-  const handlePurchase = async () => {
-    // Payment integration coming soon
-    alert(
-      "Course payment ($97) - Payment integration coming soon! We'll notify you when it's ready."
-    );
-
-    // Optional: Capture intent if user is logged in
-    if (!supabase) return;
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user?.email) {
-      await fetch("/api/notify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: user.email,
-          topic: "course",
-          metadata: {
-            intent: "purchase",
-            timestamp: new Date().toISOString(),
-          },
-        }),
-      });
-    }
+  const handlePurchase = () => {
+    // Redirect to Thinkific course landing page
+    window.location.href = THINKIFIC_COURSE_URL;
   };
 
   const modules: Module[] = [
@@ -117,8 +48,8 @@ function CourseContent() {
         "Your First Command",
       ],
       duration: "2 hours",
-      status: hasAccess ? "completed" : "locked",
-      progress: hasAccess ? 100 : 0,
+      status: "locked",
+      progress: 0,
     },
     {
       title: "Module 2: Command Your Attention",
@@ -130,8 +61,8 @@ function CourseContent() {
         "Deep Work Mastery",
       ],
       duration: "3 hours",
-      status: hasAccess ? "in_progress" : "locked",
-      progress: hasAccess ? 65 : 0,
+      status: "locked",
+      progress: 0,
     },
     {
       title: "Module 3: Command Your Energy",
@@ -143,7 +74,7 @@ function CourseContent() {
         "Mental Energy Systems",
       ],
       duration: "2.5 hours",
-      status: hasAccess ? "unlocked" : "locked",
+      status: "locked",
       progress: 0,
     },
     {
@@ -173,41 +104,6 @@ function CourseContent() {
       progress: 0,
     },
   ];
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-base">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-          <p className="text-secondary text-lg">Loading course...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (purchaseSuccess && !hasAccess) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-base">
-        <motion.div
-          className="text-center max-w-md mx-auto px-6"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-        >
-          <div className="w-20 h-20 bg-gold-gradient rounded-full flex items-center justify-center mx-auto mb-6 gold-glow">
-            <CheckCircle className="w-10 h-10 text-black" />
-          </div>
-          <h1 className="text-3xl font-bold text-primary mb-4">
-            Payment Processing
-          </h1>
-          <p className="text-secondary mb-6">
-            Your payment is being processed. You&apos;ll receive an email
-            confirmation shortly with access to the course.
-          </p>
-          <Button onClick={() => window.location.reload()}>Check Access</Button>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-base py-12">
@@ -279,11 +175,7 @@ function CourseContent() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.1 * index }}
             >
-              <Card
-                className={`bg-elev-2 border-[var(--border-default)] ${
-                  module.status === "locked" && !hasAccess ? "opacity-60" : ""
-                }`}
-              >
+              <Card className="bg-elev-2 border-[var(--border-default)] opacity-60">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -291,12 +183,7 @@ function CourseContent() {
                         <CardTitle className="text-xl text-primary">
                           {module.title}
                         </CardTitle>
-                        {module.status === "locked" && !hasAccess && (
-                          <Lock className="w-5 h-5 text-muted" />
-                        )}
-                        {module.status === "completed" && (
-                          <CheckCircle className="w-5 h-5 text-green-500" />
-                        )}
+                        <Lock className="w-5 h-5 text-muted" />
                       </div>
                       <CardDescription className="text-secondary mb-3">
                         {module.description}
@@ -311,81 +198,46 @@ function CourseContent() {
                     </div>
                   </div>
                 </CardHeader>
-                {module.progress !== undefined && module.progress > 0 && (
-                  <CardContent>
-                    <Progress value={module.progress} className="h-2" />
-                    <p className="text-sm text-muted mt-2">
-                      {module.progress}% complete
-                    </p>
-                  </CardContent>
-                )}
               </Card>
             </motion.div>
           ))}
         </motion.div>
 
         {/* CTA */}
-        {!hasAccess && (
-          <motion.div
-            className="bg-elev-2 rounded-3xl p-12 text-center border border-[var(--border-gold)] gold-glow-sm"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <h2 className="text-4xl font-bold text-primary mb-6">
-              Ready to Transform Your Trajectory?
-            </h2>
-            <p className="text-xl text-secondary mb-8 max-w-3xl mx-auto">
-              Get lifetime access to all modules, future updates, and our
-              private community of high-performers.
-            </p>
-            <div className="text-5xl font-bold text-gold mb-2">$97</div>
-            <p className="text-secondary mb-8">
-              One-time payment • Lifetime access
-            </p>
+        <motion.div
+          className="bg-elev-2 rounded-3xl p-12 text-center border border-[var(--border-gold)] gold-glow-sm"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
+          <h2 className="text-4xl font-bold text-primary mb-6">
+            Ready to Transform Your Trajectory?
+          </h2>
+          <p className="text-xl text-secondary mb-8 max-w-3xl mx-auto">
+            Get lifetime access to all modules, future updates, and our
+            private community of high-performers.
+          </p>
+          <div className="text-5xl font-bold text-gold mb-2">${COURSE_CONFIG.price}</div>
+          <p className="text-secondary mb-8">
+            One-time payment • Lifetime access
+          </p>
 
-            <Button size="lg" onClick={handlePurchase} className="group">
-              Get Instant Access
-              <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" />
-            </Button>
+          <Button size="lg" onClick={handlePurchase} className="group">
+            Get Instant Access on Thinkific
+            <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" />
+          </Button>
 
-            <div className="mt-8 flex items-center justify-center gap-6 text-sm text-muted">
-              <span className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-gold" />
-                30-day money back guarantee
-              </span>
-              <span className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-gold" />
-                Secure payment via Square
-              </span>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Access Dashboard */}
-        {hasAccess && (
-          <motion.div
-            className="bg-elev-2 rounded-3xl p-12 text-center border border-[var(--border-gold)]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold text-primary mb-6">
-              Welcome Back, Commander
-            </h2>
-            <p className="text-xl text-secondary mb-8">
-              Continue your transformation journey where you left off.
-            </p>
-            <Button
-              size="lg"
-              className="group"
-              onClick={() => router.push("/course/dashboard")}
-            >
-              Go to Course Dashboard
-              <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" />
-            </Button>
-          </motion.div>
-        )}
+          <div className="mt-8 flex items-center justify-center gap-6 text-sm text-muted">
+            <span className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-gold" />
+              30-day money back guarantee
+            </span>
+            <span className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-gold" />
+              Secure payment via Thinkific
+            </span>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -9,10 +9,13 @@ const requiredEnvVars = {
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   
-  // Square payment configuration
+  // Square payment configuration (disabled - preserved for future use)
   SQUARE_WEBHOOK_SIGNATURE_KEY: process.env.SQUARE_WEBHOOK_SIGNATURE_KEY,
   SQUARE_ACCESS_TOKEN: process.env.SQUARE_ACCESS_TOKEN,
   SQUARE_LOCATION_ID: process.env.SQUARE_LOCATION_ID,
+  
+  // Thinkific integration
+  NEXT_PUBLIC_THINKIFIC_COURSE_URL: process.env.NEXT_PUBLIC_THINKIFIC_COURSE_URL,
   
   // Email configuration
   RESEND_API_KEY: process.env.RESEND_API_KEY,
