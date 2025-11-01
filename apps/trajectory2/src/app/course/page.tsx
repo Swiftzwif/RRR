@@ -46,6 +46,11 @@ function CourseContent() {
     }
 
     const checkAccess = async () => {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const {
           data: { user },
@@ -79,24 +84,26 @@ function CourseContent() {
     );
 
     // Optional: Capture intent if user is logged in
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user?.email) {
-      await fetch("/api/notify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: user.email,
-          topic: "course",
-          metadata: {
-            intent: "purchase",
-            timestamp: new Date().toISOString(),
+    if (supabase) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user?.email) {
+        await fetch("/api/notify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        }),
-      });
+          body: JSON.stringify({
+            email: user.email,
+            topic: "course",
+            metadata: {
+              intent: "purchase",
+              timestamp: new Date().toISOString(),
+            },
+          }),
+        });
+      }
     }
   };
 

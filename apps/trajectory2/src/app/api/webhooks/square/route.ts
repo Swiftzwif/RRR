@@ -148,10 +148,10 @@ export async function POST(request: NextRequest) {
       if (supabase && product) {
         // Extract giveaway_id if present in metadata
         let giveawayId = null;
-        if (noteMetadata) {
+        if (note) {
           try {
-            const parsed = typeof noteMetadata === 'string' ? JSON.parse(noteMetadata) : noteMetadata;
-            giveawayId = parsed.giveaway_id || null;
+            const parsed = typeof note === 'string' && note.startsWith('{') ? JSON.parse(note) : null;
+            giveawayId = parsed?.giveaway_id || null;
           } catch {
             // Ignore parse errors
           }

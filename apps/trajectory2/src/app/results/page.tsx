@@ -28,6 +28,11 @@ export default function ResultsPage() {
 
   useEffect(() => {
     const loadResults = async () => {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
       try {
         // Check if user is authenticated
         const {
@@ -92,7 +97,7 @@ export default function ResultsPage() {
     setIsSubmittingEmail(true);
     try {
       // Update assessment with email
-      if (results.assessmentId) {
+      if (results.assessmentId && supabase) {
         await supabase
           .from("assessments")
           .update({ email })
