@@ -135,14 +135,14 @@ export default function Navigation() {
                       <User className="w-4 h-4" />
                       Account
                     </Link>
-                    <Button onClick={handleSignOut} variant="outline" size="sm">
+                    <Button onClick={handleSignOut} variant={isDarkPage ? "outline" : "outlineLight"} size="sm">
                       <LogOut className="w-4 h-4 mr-2" />
                       Sign Out
                     </Button>
                   </>
                 ) : (
                   <>
-                    <Button asChild variant="outline" size="sm">
+                    <Button asChild variant={isDarkPage ? "outline" : "outlineLight"} size="sm">
                       <Link href="/login">Sign In</Link>
                     </Button>
                     <Button asChild>
@@ -241,7 +241,7 @@ export default function Navigation() {
                         Account
                       </Link>
                       <div className="px-3 pt-2">
-                        <Button onClick={handleSignOut} variant="outline" className="w-full">
+                        <Button onClick={handleSignOut} variant={isDarkPage ? "outline" : "outlineLight"} className="w-full">
                           <LogOut className="w-4 h-4 mr-2" />
                           Sign Out
                         </Button>
@@ -250,7 +250,7 @@ export default function Navigation() {
                   ) : (
                     <>
                       <div className="px-3 pt-2 space-y-2">
-                        <Button asChild variant="outline" className="w-full">
+                        <Button asChild variant={isDarkPage ? "outline" : "outlineLight"} className="w-full">
                           <Link href="/login" onClick={() => setIsMenuOpen(false)}>
                             Sign In
                           </Link>

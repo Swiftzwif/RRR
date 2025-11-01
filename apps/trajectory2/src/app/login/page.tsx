@@ -201,7 +201,7 @@ function LoginContent() {
                     autoComplete="email"
                     required
                     placeholder="you@example.com"
-                    className="bg-elev-1"
+                    className="bg-elev-1 text-white border-[var(--border-default)] placeholder:text-gray-400"
                   />
                 </div>
 
@@ -216,7 +216,7 @@ function LoginContent() {
                     autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                     required
                     placeholder="••••••••"
-                    className="bg-elev-1"
+                    className="bg-elev-1 text-white border-[var(--border-default)] placeholder:text-gray-400"
                   />
                   {mode === 'signup' && (
                     <p className="text-xs text-muted">

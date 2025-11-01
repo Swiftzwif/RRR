@@ -91,7 +91,7 @@ export default function TransformationCommitment() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Card className="border-2 border-sunset/20 shadow-2xl">
+          <Card className="border-2 border-sunset/20 shadow-2xl bg-white">
             <CardHeader className="text-center pb-8 pt-10">
               <motion.div
                 className="w-20 h-20 bg-gradient-to-br from-sunset to-sunset-dark rounded-full flex items-center justify-center mx-auto mb-4"

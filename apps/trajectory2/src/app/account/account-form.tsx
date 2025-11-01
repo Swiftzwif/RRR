@@ -60,7 +60,7 @@ export default function AccountForm({ user }: { user: User }) {
               type="email"
               value={user.email || ''}
               disabled
-              className="bg-elev-1"
+              className="bg-elev-1 text-white border-[var(--border-default)]"
             />
             <p className="text-xs text-muted">
               Your email address is verified and cannot be changed
@@ -79,7 +79,7 @@ export default function AccountForm({ user }: { user: User }) {
                 day: 'numeric'
               })}
               disabled
-              className="bg-elev-1"
+              className="bg-elev-1 text-white border-[var(--border-default)]"
             />
           </div>
         </CardContent>
