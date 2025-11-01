@@ -12,7 +12,7 @@ interface ProductCardProps {
   badgeVariant?: 'default' | 'gold' | 'silver';
   title: string;
   subtitle: string;
-  features: readonly string[] | string[];
+  features: string[];
   cta: {
     text: string;
     href: string;
@@ -106,4 +106,3 @@ export default function ProductCard({
     </motion.div>
   );
 }
-

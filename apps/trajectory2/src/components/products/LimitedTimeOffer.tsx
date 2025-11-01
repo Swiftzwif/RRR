@@ -1,64 +1,84 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Clock } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { isSaleActive } from '@/lib/config';
 
-interface LimitedTimeOfferProps {
-  saleEndsDate: string;
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
 }
 
-export default function LimitedTimeOffer({ saleEndsDate }: LimitedTimeOfferProps) {
-  const [timeRemaining, setTimeRemaining] = useState<{
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-  } | null>(null);
+export default function LimitedTimeOffer({ saleEndsDate }: { saleEndsDate: string }) {
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const calculateTimeRemaining = () => {
-      const now = new Date();
-      const end = new Date(saleEndsDate);
-      const diff = end.getTime() - now.getTime();
+    setMounted(true);
+    
+    if (!isSaleActive()) {
+      return;
+    }
 
-      if (diff <= 0) {
-        setTimeRemaining(null);
-        return;
+    const calculateTimeLeft = (): TimeLeft => {
+      const difference = +new Date(saleEndsDate) - +new Date();
+      
+      if (difference > 0) {
+        return {
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60)
+        };
       }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      setTimeRemaining({ days, hours, minutes, seconds });
+      
+      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
     };
 
-    calculateTimeRemaining();
-    const interval = setInterval(calculateTimeRemaining, 1000);
+    setTimeLeft(calculateTimeLeft());
+    
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, [saleEndsDate]);
 
-  if (!timeRemaining) {
+  if (!mounted || !isSaleActive() || !timeLeft) {
     return null;
   }
 
   return (
-    <div className="flex items-center justify-center gap-3 text-sm">
-      <Clock className="w-5 h-5 text-red-400" />
+    <div className="inline-flex items-center gap-4 bg-gradient-to-r from-red-500/20 to-orange-500/20 border border-red-500/50 rounded-xl px-6 py-3">
+      <span className="text-sm font-semibold text-red-400">Sale ends in:</span>
       <div className="flex items-center gap-2">
-        <span className="text-slate-300">Sale ends in:</span>
-        <div className="flex items-center gap-1 font-bold text-red-400">
-          {timeRemaining.days > 0 && (
-            <span>{timeRemaining.days}d </span>
-          )}
-          <span>{String(timeRemaining.hours).padStart(2, '0')}:</span>
-          <span>{String(timeRemaining.minutes).padStart(2, '0')}:</span>
-          <span>{String(timeRemaining.seconds).padStart(2, '0')}</span>
+        {timeLeft.days > 0 && (
+          <div className="flex flex-col items-center">
+            <span className="text-2xl font-bold text-white">{timeLeft.days}</span>
+            <span className="text-xs text-slate-400">days</span>
+          </div>
+        )}
+        {(timeLeft.days > 0 || timeLeft.hours > 0) && (
+          <>
+            <span className="text-white">:</span>
+            <div className="flex flex-col items-center">
+              <span className="text-2xl font-bold text-white">{String(timeLeft.hours).padStart(2, '0')}</span>
+              <span className="text-xs text-slate-400">hrs</span>
+            </div>
+          </>
+        )}
+        <span className="text-white">:</span>
+        <div className="flex flex-col items-center">
+          <span className="text-2xl font-bold text-white">{String(timeLeft.minutes).padStart(2, '0')}</span>
+          <span className="text-xs text-slate-400">min</span>
+        </div>
+        <span className="text-white">:</span>
+        <div className="flex flex-col items-center">
+          <span className="text-2xl font-bold text-white">{String(timeLeft.seconds).padStart(2, '0')}</span>
+          <span className="text-xs text-slate-400">sec</span>
         </div>
       </div>
     </div>
   );
 }
-

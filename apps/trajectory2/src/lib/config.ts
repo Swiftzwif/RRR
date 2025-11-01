@@ -11,17 +11,6 @@ export const APP_URL =
   'https://trajectorygroup.org';
 
 /**
- * Course configuration
- */
-export const COURSE_CONFIG = {
-  name: 'Rethink. Redesign. Reignite.',
-  price: 97,
-  currency: 'USD',
-  modules: 6,
-  totalHours: 15,
-} as const;
-
-/**
  * Products configuration
  */
 export const PRODUCTS = {
@@ -30,48 +19,54 @@ export const PRODUCTS = {
     tagline: "Change Your Trajectory by Shifting Lanes",
     regularPrice: 149,
     salePrice: 97,
-    saleEndsDate: "2025-11-07T23:59:59-05:00", // November 7, 2025 at 11:59 PM EST
+    saleEndsDate: "2025-11-07T23:59:59-05:00", // EST timezone
+    currency: "USD",
     thinkificUrl: THINKIFIC_COURSE_URL,
     benefits: [
-      "10 comprehensive lessons on transformation",
-      "Access to all frameworks and worksheets",
-      "Lifetime access to course materials",
-      "30-day money-back guarantee"
+      "10 Core Lessons + 7 Transformative Conversations",
+      "Master The Three Medicines: Fearlessness, Humility, Compassion",
+      "From Good Little Soldier → Commander of Your Life",
+      "Lifetime access + future updates"
     ],
-    impact: "This isn't just a course—it's an operating system upgrade for your life. Learn the frameworks that help you command your attention, energy, and resources. Transform from drifter to architect."
+    impact: "Organize your mind, evolve your consciousness, and discover your infinite worth. This isn't information—it's the operating system upgrade that transforms how you command your attention, energy, and money."
   },
   INNER_MASTERY: {
     name: "Inner Mastery Sessions",
-    tagline: "1-on-1 Transformation Coaching",
+    tagline: "Elite 1-on-1 Transformation Coaching",
+    status: "coming_soon",
     pricing: "Custom",
     applicationUrl: "/coaching",
-    description: "Work directly with Jean to create a personalized transformation roadmap. Limited to 250 clients per year for maximum impact and attention."
+    description: "Personal coaching with Jean. Limited to 250 clients per year. Coming soon."
   }
 } as const;
 
 /**
- * Check if sale is currently active
+ * Helper functions for sale logic
  */
-export function isSaleActive(): boolean {
+export const isSaleActive = (): boolean => {
   const now = new Date();
   const saleEnd = new Date(PRODUCTS.DIGITAL_COURSE.saleEndsDate);
   return now < saleEnd;
-}
+};
 
-/**
- * Get current price (sale or regular)
- */
-export function getCurrentPrice(): number {
+export const getCurrentPrice = (): number => {
   return isSaleActive() 
     ? PRODUCTS.DIGITAL_COURSE.salePrice 
     : PRODUCTS.DIGITAL_COURSE.regularPrice;
-}
+};
+
+export const getSalePercentage = (): number => {
+  const { regularPrice, salePrice } = PRODUCTS.DIGITAL_COURSE;
+  return Math.round(((regularPrice - salePrice) / regularPrice) * 100);
+};
 
 /**
- * Calculate discount percentage
+ * Legacy course configuration (deprecated - use PRODUCTS.DIGITAL_COURSE)
  */
-export function getSalePercentage(): number {
-  const regular = PRODUCTS.DIGITAL_COURSE.regularPrice;
-  const sale = PRODUCTS.DIGITAL_COURSE.salePrice;
-  return Math.round(((regular - sale) / regular) * 100);
-}
+export const COURSE_CONFIG = {
+  name: 'Rethink. Redesign. Reignite.',
+  price: 97,
+  currency: 'USD',
+  modules: 6,
+  totalHours: 15,
+} as const;
