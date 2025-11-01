@@ -1,4 +1,36 @@
+/**
+ * ============================================================================
+ * DISABLED - SQUARE PAYMENT INTEGRATION
+ * ============================================================================
+ * This route has been disabled in favor of Thinkific integration.
+ * All Square payment code is preserved for future use.
+ * 
+ * To re-enable:
+ * 1. Uncomment all code below
+ * 2. Add Square env vars back to env-validation.ts as required
+ * 3. Update course page to use this API endpoint
+ * 
+ * Last disabled: 2025-10-31
+ * Reason: Pivoting to Thinkific for faster time-to-market
+ * ============================================================================
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  return NextResponse.json(
+    { 
+      error: 'Square payment integration is currently disabled. Please use Thinkific for course purchases.',
+      redirect_url: process.env.NEXT_PUBLIC_THINKIFIC_COURSE_URL || 'https://jean-s-site-8b39.thinkific.com/products/courses/trajectory'
+    },
+    { status: 503 }
+  );
+}
+
+/* ============================================================================
+ * PRESERVED SQUARE PAYMENT CODE - DO NOT DELETE
+ * ============================================================================
+
 import { z } from 'zod';
 
 // Validation schema
@@ -30,7 +62,7 @@ const PRODUCTS = {
   },
 };
 
-export async function POST(request: NextRequest) {
+export async function POST_DISABLED(request: NextRequest) {
   try {
     // Parse and validate request body
     const body = await request.json();
@@ -103,3 +135,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+* ============================================================================ */

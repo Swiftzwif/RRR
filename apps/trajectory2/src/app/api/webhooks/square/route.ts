@@ -1,7 +1,40 @@
+/**
+ * ============================================================================
+ * DISABLED - SQUARE WEBHOOK HANDLER
+ * ============================================================================
+ * This route has been disabled in favor of Thinkific integration.
+ * All Square webhook code is preserved for future use.
+ * 
+ * To re-enable:
+ * 1. Uncomment all code below
+ * 2. Add Square env vars back to env-validation.ts as required
+ * 3. Configure webhook URL in Square dashboard
+ * 
+ * Last disabled: 2025-10-31
+ * Reason: Pivoting to Thinkific for faster time-to-market
+ * ============================================================================
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  return NextResponse.json(
+    { 
+      message: 'Square webhook handler is currently disabled.',
+      info: 'Using Thinkific for course purchases and access control.',
+      thinkific_url: 'https://jean-s-site-8b39.thinkific.com/products/courses/trajectory'
+    },
+    { status: 503 }
+  );
+}
+
+/* ============================================================================
+ * PRESERVED SQUARE WEBHOOK CODE - DO NOT DELETE
+ * ============================================================================
+
 import { getSupabaseServiceRole } from '@/lib/supabase';
 import { createHmac } from 'crypto';
-import { NextRequest, NextResponse } from 'next/server';
-import { sendRaffleConfirmationEmail } from '@/lib/email';
+import { sendRaffleConfirmationEmail, sendPaymentReceiptEmail } from '@/lib/email';
 
 // Square webhook event types
 const RELEVANT_EVENTS = [
@@ -24,12 +57,14 @@ function verifyWebhookSignature(
   return signature === expectedSignature;
 }
 
-export async function POST(request: NextRequest) {
+export async function POST_DISABLED(request: NextRequest) {
+  let webhookEventId: string | null = null;
+
   try {
     // Get raw body for signature verification
     const body = await request.text();
     const signature = request.headers.get('x-square-hmacsha256-signature');
-    
+
     // Verify webhook signature
     const webhookSignatureKey = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY;
     if (!webhookSignatureKey) {
@@ -44,10 +79,38 @@ export async function POST(request: NextRequest) {
 
     // Parse webhook payload
     const event = JSON.parse(body);
-    
+
     // Only process relevant events
     if (!RELEVANT_EVENTS.includes(event.type)) {
       return NextResponse.json({ received: true });
+    }
+
+    // Store webhook event for potential retry
+    const supabase = getSupabaseServiceRole();
+    if (supabase) {
+      const { data: webhookEvent, error: webhookError } = await supabase
+        .from('webhook_events')
+        .upsert({
+          event_id: event.event_id || `${event.type}_${Date.now()}`,
+          event_type: event.type,
+          payload: event,
+          status: 'processing',
+          created_at: new Date().toISOString()
+        }, {
+          onConflict: 'event_id'
+        })
+        .select()
+        .single();
+
+      if (!webhookError && webhookEvent) {
+        webhookEventId = webhookEvent.id;
+      }
+
+      // Check if already processed
+      if (webhookEvent?.status === 'completed') {
+        console.log('Webhook already processed:', event.event_id);
+        return NextResponse.json({ received: true, status: 'already_processed' });
+      }
     }
 
     // Handle payment events
@@ -116,6 +179,17 @@ export async function POST(request: NextRequest) {
       // Store purchase in Supabase
       const supabase = getSupabaseServiceRole();
       if (supabase && product) {
+        // Extract giveaway_id if present in metadata
+        let giveawayId = null;
+        if (note) {
+          try {
+            const parsed = typeof note === 'string' && note.startsWith('{') ? JSON.parse(note) : null;
+            giveawayId = parsed?.giveaway_id || null;
+          } catch {
+            // Ignore parse errors
+          }
+        }
+
         // Store the purchase record
         const { data: purchaseRecord, error: purchaseError } = await supabase
           .from('purchases')
@@ -125,7 +199,7 @@ export async function POST(request: NextRequest) {
             product: product,
             amount_cents: amountCents,
             square_payment_id: paymentId,
-            raffle_id: isRaffleEntry ? raffleMetadata?.raffle_id : null,
+            giveaway_id: giveawayId,
             created_at: new Date().toISOString(),
           }, {
             onConflict: 'square_payment_id',
@@ -138,82 +212,118 @@ export async function POST(request: NextRequest) {
           // Don't fail the webhook - Square will retry
         }
 
-        // If this is a raffle entry, create the entry and grant course access
-        if (isRaffleEntry && raffleMetadata && purchaseRecord) {
+        // Grant course access if user exists
+        if (product === 'course' && userId) {
           try {
-            // Create raffle entry
-            const { data: entry, error: entryError } = await supabase
-              .from('raffle_entries')
-              .insert({
-                raffle_id: raffleMetadata.raffle_id,
-                user_id: userId,
-                email: email,
-                phone: raffleMetadata.phone || null,
-                purchase_id: purchaseRecord.id,
-                commitment_message: raffleMetadata.commitment_message,
-                transformation_goal: raffleMetadata.transformation_goal,
-              })
-              .select()
-              .single();
-
-            if (entryError) {
-              console.error('Error creating raffle entry:', entryError);
-            } else if (entry) {
-              console.log('Raffle entry created:', entry.id);
-
-              // Grant course access if user exists
-              if (userId) {
-                const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
-                  user_metadata: {
-                    has_course_access: true,
-                    course_purchase_date: new Date().toISOString(),
-                    course_payment_id: paymentId,
-                    raffle_entry: true,
-                  }
-                });
-
-                if (updateError) {
-                  console.error('Error granting course access:', updateError);
-                }
+            const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+              user_metadata: {
+                has_course_access: true,
+                course_purchase_date: new Date().toISOString(),
+                course_payment_id: paymentId,
               }
+            });
 
-              // Get warrior count for email
-              const { count } = await supabase
-                .from('raffle_entries')
-                .select('*', { count: 'exact', head: true })
-                .eq('raffle_id', raffleMetadata.raffle_id);
-
-              // Send confirmation email
-              try {
-                await sendRaffleConfirmationEmail({
-                  to: email!,
-                  userName: raffleMetadata.user_name || email?.split('@')[0] || 'Warrior',
-                  productName: 'Kill The Boy Course - Grand Opening Special',
-                  amount: (amountCents / 100).toFixed(2),
-                  entryNumber: entry.entry_number,
-                  warriorCount: count || 1,
-                  transformationGoal: raffleMetadata.transformation_goal,
-                  accessUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.killttheboy.com'}/course`,
-                });
-              } catch (emailError) {
-                console.error('Error sending raffle confirmation email:', emailError);
-                // Don't fail - purchase is complete
-              }
+            if (updateError) {
+              console.error('Error granting course access:', updateError);
             }
-          } catch (raffleError) {
-            console.error('Error processing raffle entry:', raffleError);
+
+            // NOTE: Donation tracking removed - deferred until Thinkific integration
+            // NOTE: Giveaway/raffle confirmation email code preserved below for when Square is re-enabled
+            // When re-enabling Square, uncomment this section:
+            // 
+            // // Get warrior count for email
+            // const { count } = await supabase
+            //   .from('raffle_entries')
+            //   .select('*', { count: 'exact', head: true })
+            //   .eq('raffle_id', raffleMetadata.raffle_id);
+            //
+            // // Send confirmation email
+            // try {
+            //   await sendRaffleConfirmationEmail({
+            //     to: email!,
+            //     userName: raffleMetadata.user_name || email?.split('@')[0] || 'Warrior',
+            //     productName: 'Kill The Boy Course - Grand Opening Special',
+            //     amount: (amountCents / 100).toFixed(2),
+            //     entryNumber: entry.entry_number,
+            //     warriorCount: count || 1,
+            //     transformationGoal: raffleMetadata.transformation_goal,
+            //     accessUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.killtheboy.com'}/course`,
+            //   });
+            // } catch (emailError) {
+            //   console.error('Error sending raffle confirmation email:', emailError);
+            //   // Don't fail - purchase is complete
+            // }
+          } catch (accessError) {
+            console.error('Error processing course access:', accessError);
             // Don't fail - purchase is stored
           }
         }
+
+        // Send payment receipt email for course purchases
+        if (product === 'course' && email) {
+          try {
+            const userName = userId
+              ? (await supabase.auth.admin.getUserById(userId)).data?.user?.user_metadata?.name || email.split('@')[0]
+              : email.split('@')[0];
+
+            await sendPaymentReceiptEmail({
+              to: email,
+              userName,
+              productName: product === 'course'
+                ? 'Change Your Trajectory by Shifting Lanes'
+                : 'Personal Coaching Session',
+              amount: (amountCents / 100).toFixed(2),
+              paymentId: paymentId,
+              date: new Date().toLocaleString(),
+              invoiceUrl: undefined, // Could generate invoice URL if needed
+            });
+          } catch (receiptError) {
+            console.error('Error sending payment receipt email:', receiptError);
+            // Don't fail - purchase is complete
+          }
+        }
+      }
+    }
+
+    // Mark webhook as completed if we have an ID
+    if (webhookEventId) {
+      const supabase = getSupabaseServiceRole();
+      if (supabase) {
+        await supabase
+          .from('webhook_events')
+          .update({
+            status: 'completed',
+            processed_at: new Date().toISOString()
+          })
+          .eq('id', webhookEventId);
       }
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Webhook processing error:', error);
+
+    // Mark webhook as failed if we have an ID
+    if (webhookEventId) {
+      const supabase = getSupabaseServiceRole();
+      if (supabase) {
+        await supabase
+          .from('webhook_events')
+          .update({
+            status: 'failed',
+            last_error: error instanceof Error ? error.message : String(error),
+            attempts: 1,
+            next_retry_at: new Date(Date.now() + 60000).toISOString() // Retry in 1 minute
+          })
+          .eq('id', webhookEventId);
+      }
+    }
+
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
     );
   }
 }
+
+* ============================================================================ */

@@ -1,22 +1,30 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Client-side Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://nxtmcorzlosubfvxumpt.supabase.co';
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54dG1jb3J6bG9zdWJmdnh1bXB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjQ4MTUsImV4cCI6MjA5MTA0MDgxNX0.8Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q7Q';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// Create client only if credentials are available
+export const supabase = supabaseUrl && supabaseKey
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
+
+// Helper to check if Supabase is configured
+export const isSupabaseConfigured = (): boolean => {
+  return !!(supabaseUrl && supabaseKey);
+};
 
 // Server-side Supabase client with service role
 export function getSupabaseServiceRole() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE;
-  
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
   if (!url || !key) {
-    console.warn('SUPABASE_URL or SUPABASE_SERVICE_ROLE not configured');
+    console.warn('NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not configured');
     return null;
   }
-  
-  return createClient(url, key, { 
+
+  return createClient(url, key, {
     auth: { persistSession: false },
     db: { schema: 'public' }
   });

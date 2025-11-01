@@ -1,7 +1,8 @@
 "use client";
 
+import KillTheBoyLoader from "@/components/KillTheBoyLoader";
 import { LogoMark } from "@/components/LogoMark";
-import RaffleHeroSection from "@/components/RaffleHeroSection";
+import GiveawayHeroSection from "@/components/GiveawayHeroSection";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,9 +32,70 @@ export default function Home() {
   const [currentWord, setCurrentWord] = useState(0);
   const words = ["attention", "energy", "money"];
   const [activeTab, setActiveTab] = useState("story");
+  const [isLoading, setIsLoading] = useState(true);
+  const [showContent, setShowContent] = useState(false);
+
+  // Loading detection - only show on first visit
+  useEffect(() => {
+    // Check if we've already shown the loader this session
+    const hasShownLoader = sessionStorage.getItem("hasShownKillTheBoyLoader");
+
+    if (hasShownLoader === "true") {
+      setIsLoading(false);
+      setShowContent(true);
+      return;
+    }
+
+    // Track when everything is ready
+    let fontsLoaded = false;
+    let domReady = false;
+    let minimumTimeElapsed = false;
+
+    const checkAllReady = () => {
+      if (fontsLoaded && domReady && minimumTimeElapsed) {
+        // Mark that we've shown the loader
+        sessionStorage.setItem("hasShownKillTheBoyLoader", "true");
+      }
+    };
+
+    // Check font loading
+    if (document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        fontsLoaded = true;
+        checkAllReady();
+      });
+    } else {
+      fontsLoaded = true;
+      checkAllReady();
+    }
+
+    // DOM is ready since we're in useEffect
+    domReady = true;
+    checkAllReady();
+
+    // Minimum display time for the animation to complete
+    const minimumTimer = setTimeout(() => {
+      minimumTimeElapsed = true;
+      checkAllReady();
+    }, 2800); // Extended to match new animation timing
+
+    return () => {
+      clearTimeout(minimumTimer);
+    };
+  }, []);
+
+  // Handle loader completion
+  const handleLoaderComplete = () => {
+    setIsLoading(false);
+    setTimeout(() => {
+      setShowContent(true);
+    }, 100);
+  };
 
   // Combine and slow down animations for subtlety
   useEffect(() => {
+    if (!showContent) return;
+
     const tabs = ["story", "assessment", "resources"];
 
     // Word cycling - slower and more subtle (6s)
@@ -53,7 +115,7 @@ export default function Home() {
       clearInterval(wordInterval);
       clearInterval(tabInterval);
     };
-  }, [words.length]);
+  }, [words.length, showContent]);
 
   const features = [
     {
@@ -77,9 +139,20 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-base text-white pt-20">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
+    <>
+      {/* Loading Screen */}
+      <KillTheBoyLoader isLoading={isLoading} onComplete={handleLoaderComplete} />
+
+      {/* Main Content */}
+      {showContent && (
+        <motion.div
+          className="min-h-screen bg-base text-white pt-20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Hero Section */}
+          <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Gold arc background element */}
         <div className="absolute inset-0 opacity-10">
           <svg
@@ -125,8 +198,8 @@ export default function Home() {
                   Trajectory
                 </h1>
 
-                {/* Grand Opening Raffle */}
-                <RaffleHeroSection />
+                {/* Grand Opening Giveaway */}
+                <GiveawayHeroSection />
 
                 <h2 className="text-3xl md:text-4xl font-light text-gold mb-8 h-16 flex items-center">
                   <span>Command your </span>
@@ -382,15 +455,26 @@ export default function Home() {
                         ))}
                       </div>
 
-                      {/* COMPACT CTA */}
-                      <Button
-                        asChild
-                        className="w-full h-11 text-sm font-bold bg-gradient-to-r from-[var(--brand-gold)] to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black shadow-lg"
+                      {/* COMPACT PULSATING CTA */}
+                      <motion.div
+                        animate={{ 
+                          scale: [1, 1.01, 1],
+                        }}
+                        transition={{ 
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
                       >
-                        <Link href="/experience">
-                          Start Free 7 Days <ArrowRight className="w-4 h-4 ml-1.5" />
-                        </Link>
-                      </Button>
+                        <Button 
+                          asChild 
+                          className="w-full h-11 text-sm font-bold bg-gradient-to-r from-[var(--brand-gold)] to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black shadow-lg"
+                        >
+                          <Link href="/experience">
+                            Start Free 7 Days <ArrowRight className="w-4 h-4 ml-1.5" />
+                          </Link>
+                        </Button>
+                      </motion.div>
 
                       <p className="text-center text-xs text-gold font-medium">
                         Days 1-7 free • Full access after meeting with Jean
@@ -600,6 +684,8 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-    </div>
+    </motion.div>
+      )}
+    </>
   );
 }

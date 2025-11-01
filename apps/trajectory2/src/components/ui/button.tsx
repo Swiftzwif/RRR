@@ -15,6 +15,8 @@ const buttonVariants = cva(
           "bg-red-900 text-red-50 shadow-sm hover:bg-red-800",
         outline:
           "border border-[var(--border-default)] bg-transparent shadow-sm hover:bg-[var(--bg-elev-2)] hover:border-[var(--border-hover)]",
+        outlineLight:
+          "border border-gray-300 bg-white/50 text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-400",
         secondary:
           "bg-[var(--bg-elev-2)] text-[var(--text-primary)] shadow-sm hover:bg-[var(--bg-elev-3)]",
         ghost: "hover:bg-[var(--bg-elev-2)] hover:text-[var(--text-primary)]",

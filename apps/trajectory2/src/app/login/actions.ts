@@ -18,8 +18,11 @@ export async function login(formData: FormData) {
     redirect('/error?message=' + encodeURIComponent('Login failed. Please check your credentials.'))
   }
 
+  // Get redirect URL from form data or default to home
+  const redirectTo = formData.get('redirectTo') as string || '/'
+  
   revalidatePath('/', 'layout')
-  redirect('/')
+  redirect(redirectTo)
 }
 
 export async function signup(formData: FormData) {
@@ -39,4 +42,3 @@ export async function signup(formData: FormData) {
   revalidatePath('/', 'layout')
   redirect('/login?message=' + encodeURIComponent('Check your email to confirm your account!'))
 }
-
