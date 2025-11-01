@@ -108,7 +108,7 @@ export default function GiveawayHero() {
         >
           Kill The Boy.
           <br />
-          <span className="text-orange-600 gradient-text-fallback bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text">
+          <span className="text-orange-600 bg-gradient-to-r from-orange-500 to-red-600 gradient-text-fallback">
             Win The War.
           </span>
         </motion.h1>
