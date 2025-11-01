@@ -133,6 +133,7 @@ export async function POST(request: NextRequest) {
       .insert({
         giveaway_id: giveaway.id,
         email: validatedData.email.toLowerCase(),
+        name: `${validatedData.first_name} ${validatedData.last_name}`,
         first_name: validatedData.first_name,
         last_name: validatedData.last_name,
         newsletter_subscribed: newsletterSubscribed,
