@@ -1,5 +1,24 @@
-import { kv } from '@vercel/kv';
 import { NextRequest } from 'next/server';
+
+// Lazy import kv to avoid errors when KV is not configured
+let kv: any = null;
+
+async function getKV() {
+  if (kv) return kv;
+  
+  try {
+    // Check if KV environment variables are set
+    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+      const { kv: kvModule } = await import('@vercel/kv');
+      kv = kvModule;
+      return kv;
+    }
+    return null;
+  } catch (error) {
+    console.warn('Vercel KV not available, rate limiting disabled:', error);
+    return null;
+  }
+}
 
 interface RateLimitEntry {
   count: number;
@@ -35,6 +54,19 @@ export function rateLimit(config: Partial<RateLimitConfig> = {}) {
     reset: number;
   }> {
     try {
+      // Get KV instance (or null if not available)
+      const kvInstance = await getKV();
+      
+      // If KV is not configured, allow all requests
+      if (!kvInstance) {
+        return {
+          isAllowed: true,
+          limit: finalConfig.maxRequests,
+          remaining: finalConfig.maxRequests,
+          reset: Date.now() + finalConfig.windowMs,
+        };
+      }
+
       // Generate key based on IP address by default
       const key = finalConfig.keyGenerator
         ? finalConfig.keyGenerator(req)
@@ -48,7 +80,7 @@ export function rateLimit(config: Partial<RateLimitConfig> = {}) {
       const windowSeconds = Math.ceil(finalConfig.windowMs / 1000);
 
       // Try to get existing entry from Redis
-      const existingEntry = await kv.get<RateLimitEntry>(rateLimitKey);
+      const existingEntry = (await kvInstance.get(rateLimitKey)) as RateLimitEntry | null;
 
       let entry: RateLimitEntry;
 
@@ -59,7 +91,7 @@ export function rateLimit(config: Partial<RateLimitConfig> = {}) {
           resetTime: resetTime,
         };
         // Set with TTL (time-to-live) in seconds
-        await kv.set(rateLimitKey, entry, { ex: windowSeconds });
+        await kvInstance.set(rateLimitKey, entry, { ex: windowSeconds });
       } else {
         // Increment existing entry
         entry = {
@@ -71,7 +103,7 @@ export function rateLimit(config: Partial<RateLimitConfig> = {}) {
         const remainingSeconds = Math.ceil(remainingMs / 1000);
 
         if (remainingSeconds > 0) {
-          await kv.set(rateLimitKey, entry, { ex: remainingSeconds });
+          await kvInstance.set(rateLimitKey, entry, { ex: remainingSeconds });
         }
       }
 
