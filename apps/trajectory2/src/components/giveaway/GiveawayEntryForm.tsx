@@ -191,13 +191,6 @@ export default function GiveawayEntryForm() {
               </li>
             </ul>
           </div>
-          <Button
-            onClick={() => setIsSuccess(false)}
-            variant="outline"
-            size="lg"
-          >
-            Enter Another Entry
-          </Button>
         </div>
       </motion.div>
     );
