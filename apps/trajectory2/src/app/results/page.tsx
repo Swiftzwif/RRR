@@ -6,7 +6,9 @@ import ResultCard from "@/components/ResultCard";
 import { getCopy } from "@/lib/copy";
 import { Domain, getSuggestedActions } from "@/lib/scoring";
 import { supabase } from "@/lib/supabase";
+import { THINKIFIC_COURSE_URL } from "@/lib/config";
 import { motion } from "framer-motion";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -135,36 +137,13 @@ export default function ResultsPage() {
     }
   };
 
-  const handlePurchase = async (product: "course" | "coaching") => {
-    try {
-      setIsSubmittingEmail(true);
-
-      // Call Square API for checkout
-      const response = await fetch("/api/payments/square/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          product,
-          email: email || undefined,
-          redirectUrl: window.location.href,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create checkout session");
-      }
-
-      const { checkoutUrl } = await response.json();
-
-      // Redirect to Square checkout
-      window.location.href = checkoutUrl;
-    } catch (error) {
-      console.error("Error creating checkout:", error);
-      alert("Failed to process payment. Please try again.");
-    } finally {
-      setIsSubmittingEmail(false);
+  const handlePurchase = (product: "course" | "coaching") => {
+    if (product === "course") {
+      // Redirect to Thinkific course landing page
+      window.location.href = THINKIFIC_COURSE_URL;
+    } else {
+      // Coaching purchase logic can be added later
+      alert("Coaching integration coming soon!");
     }
   };
 
@@ -323,12 +302,73 @@ export default function ResultsPage() {
           </div>
         </motion.div>
 
+        {/* Transform Your Trajectory CTA */}
+        <motion.div
+          className="mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+        >
+          <div className="bg-gradient-to-br from-[#1a1a1a] via-[#2a2a2a] to-[#1a1a1a] p-12 text-center rounded-3xl border-2 border-[#FFD700] shadow-2xl relative overflow-hidden">
+            {/* Gold glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#FFD700]/10 to-transparent animate-pulse"></div>
+            
+            <div className="relative z-10">
+              <div className="inline-flex items-center px-6 py-3 bg-[#FFD700] text-black rounded-full text-sm font-bold mb-6 shadow-lg">
+                <span className="w-2 h-2 bg-black rounded-full mr-2 animate-pulse"></span>
+                TRANSFORM YOUR TRAJECTORY
+              </div>
+              <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
+                Ready to Change Your Life?
+              </h2>
+              <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                Your assessment revealed where you are. Now it&apos;s time to architect where you&apos;re going.
+                <br className="hidden md:block" />
+                The course provides the blueprint.
+              </p>
+              
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <div className="text-6xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+                  $97
+                </div>
+                <div className="text-slate-400 text-left">
+                  <p className="text-lg font-semibold">One-time payment</p>
+                  <p className="text-sm">Lifetime access</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => handlePurchase("course")}
+                className="inline-flex items-center justify-center px-12 py-5 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black text-lg font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl mb-8 group"
+              >
+                Unlock Your Transformation Course
+                <ArrowRight className="ml-3 group-hover:translate-x-2 transition-transform" />
+              </button>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
+                <div className="flex items-center gap-3 text-slate-300">
+                  <CheckCircle className="w-6 h-6 text-[#FFD700] flex-shrink-0" />
+                  <span className="text-sm">All 6 modules included</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-300">
+                  <CheckCircle className="w-6 h-6 text-[#FFD700] flex-shrink-0" />
+                  <span className="text-sm">30-day money-back guarantee</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-300">
+                  <CheckCircle className="w-6 h-6 text-[#FFD700] flex-shrink-0" />
+                  <span className="text-sm">Lifetime updates</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* CTAs */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 gap-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          transition={{ duration: 0.6, delay: 1.0 }}
         >
           <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-10 text-center rounded-3xl border border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6">

@@ -33,13 +33,19 @@ Since you're using Squarespace for domain:
 
 ## Critical Path to Launch (Priority Order)
 
-### Week 1: Core Functionality (Oct 18-24)
+### Week 1: Core Functionality (Oct 18-24) ✅ COMPLETE
 
 - [ ] **Supabase Setup**
   - [ ] Create project at supabase.com
   - [ ] Run database migrations (check `/scripts/supabase-schema.sql`)
   - [ ] Add credentials to Vercel env vars
   - [ ] Test assessment saves to database
+
+- [ ] **Thinkific Course Integration**
+  - [ ] Add `NEXT_PUBLIC_THINKIFIC_COURSE_URL` to Vercel env vars
+  - [ ] Test redirect from assessment results page
+  - [ ] Test redirect from course page
+  - [ ] Verify Thinkific checkout flow works
 
 - [ ] **Email Domain Verification**
   - [ ] Add trajectorygroup.org to Resend
@@ -50,6 +56,7 @@ Since you're using Squarespace for domain:
   - [ ] Complete assessment flow
   - [ ] Verify email is sent
   - [ ] Check results display correctly
+  - [ ] Test course purchase redirect to Thinkific
 
 ### Week 2: Content & Polish (Oct 25-31)
 
@@ -182,8 +189,11 @@ CREATE INDEX idx_purchases_email ON purchases(email);
 ## Post-Launch Priorities
 
 1. **Week 1**: Monitor user feedback, fix critical bugs
-2. **Week 2**: Add Square payments when ready
+2. **Week 2**: Track Thinkific conversion rates, optimize CTAs
 3. **Week 3**: Implement full 31-day content
-4. **Month 2**: Add community features
+4. **Month 2**: Consider re-enabling Square for custom checkout experience
+5. **Month 2**: Add community features
 
 Remember: Launch with core features working well rather than everything perfect. You can iterate after launch!
+
+**Note**: Square payment integration is preserved and ready to re-enable if you want more control over the checkout experience in the future.

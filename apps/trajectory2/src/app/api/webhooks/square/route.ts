@@ -1,6 +1,39 @@
+/**
+ * ============================================================================
+ * DISABLED - SQUARE WEBHOOK HANDLER
+ * ============================================================================
+ * This route has been disabled in favor of Thinkific integration.
+ * All Square webhook code is preserved for future use.
+ * 
+ * To re-enable:
+ * 1. Uncomment all code below
+ * 2. Add Square env vars back to env-validation.ts as required
+ * 3. Configure webhook URL in Square dashboard
+ * 
+ * Last disabled: 2025-10-31
+ * Reason: Pivoting to Thinkific for faster time-to-market
+ * ============================================================================
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  return NextResponse.json(
+    { 
+      message: 'Square webhook handler is currently disabled.',
+      info: 'Using Thinkific for course purchases and access control.',
+      thinkific_url: 'https://jean-s-site-8b39.thinkific.com/products/courses/trajectory'
+    },
+    { status: 503 }
+  );
+}
+
+/* ============================================================================
+ * PRESERVED SQUARE WEBHOOK CODE - DO NOT DELETE
+ * ============================================================================
+
 import { getSupabaseServiceRole } from '@/lib/supabase';
 import { createHmac } from 'crypto';
-import { NextRequest, NextResponse } from 'next/server';
 import { sendRaffleConfirmationEmail, sendPaymentReceiptEmail } from '@/lib/email';
 
 // Square webhook event types
@@ -24,7 +57,7 @@ function verifyWebhookSignature(
   return signature === expectedSignature;
 }
 
-export async function POST(request: NextRequest) {
+export async function POST_DISABLED(request: NextRequest) {
   let webhookEventId: string | null = null;
 
   try {
@@ -294,3 +327,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+* ============================================================================ */

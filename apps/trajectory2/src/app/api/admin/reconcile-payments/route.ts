@@ -1,4 +1,59 @@
+/**
+ * ============================================================================
+ * DISABLED - SQUARE PAYMENT RECONCILIATION
+ * ============================================================================
+ * This route has been disabled in favor of Thinkific integration.
+ * All Square reconciliation code is preserved for future use.
+ * 
+ * To re-enable:
+ * 1. Uncomment all code below
+ * 2. Add Square env vars back to env-validation.ts as required
+ * 3. Update admin dashboard to use this endpoint
+ * 
+ * Last disabled: 2025-10-31
+ * Reason: Pivoting to Thinkific for faster time-to-market
+ * ============================================================================
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  return NextResponse.json(
+    { 
+      message: 'Square reconciliation endpoint is currently disabled.',
+      info: 'Using Thinkific for course purchases and access control.',
+      unprocessed_events: [],
+      count: 0
+    },
+    { status: 503 }
+  );
+}
+
+export async function POST(request: NextRequest) {
+  return NextResponse.json(
+    { 
+      error: 'Square reconciliation is currently disabled.',
+      message: 'Please use Thinkific for course purchases.'
+    },
+    { status: 503 }
+  );
+}
+
+export async function PATCH(request: NextRequest) {
+  return NextResponse.json(
+    { 
+      message: 'Square webhook retry is currently disabled.',
+      processed: 0,
+      results: []
+    },
+    { status: 503 }
+  );
+}
+
+/* ============================================================================
+ * PRESERVED SQUARE RECONCILIATION CODE - DO NOT DELETE
+ * ============================================================================
+
 import { getSupabaseServiceRole } from '@/lib/supabase';
 
 // Helper function to verify admin authorization
@@ -15,7 +70,7 @@ function verifyAdminAuth(request: NextRequest): boolean {
 }
 
 // GET endpoint to check for unprocessed payments
-export async function GET(request: NextRequest) {
+export async function GET_DISABLED(request: NextRequest) {
   try {
     // Verify admin authorization
     if (!verifyAdminAuth(request)) {
@@ -54,7 +109,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST endpoint to manually reconcile a payment
-export async function POST(request: NextRequest) {
+export async function POST_DISABLED(request: NextRequest) {
   try {
     // Verify admin authorization
     if (!verifyAdminAuth(request)) {
@@ -237,7 +292,7 @@ export async function POST(request: NextRequest) {
 }
 
 // PATCH endpoint to retry all failed webhooks
-export async function PATCH(request: NextRequest) {
+export async function PATCH_DISABLED(request: NextRequest) {
   try {
     // Verify admin authorization
     if (!verifyAdminAuth(request)) {
@@ -314,3 +369,5 @@ export async function PATCH(request: NextRequest) {
     );
   }
 }
+
+* ============================================================================ */
