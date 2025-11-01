@@ -137,8 +137,21 @@ body {
   animation: gradient-shift 6s ease infinite;
 }
 
+/* Trajectory text gradient (similar to trajectory-text-glow but different colors) */
+.trajectory-text {
+  /* Fallback color for browsers that don't support background-clip */
+  color: #F59E0B; /* Gold fallback for visibility */
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
 /* Apply gradient text effect only if background-clip is supported */
 @supports (-webkit-background-clip: text) or (background-clip: text) {
+  .trajectory-text {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
   .trajectory-text-glow {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
