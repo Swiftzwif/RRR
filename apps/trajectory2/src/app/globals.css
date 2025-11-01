@@ -144,6 +144,13 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  
+  /* Generic gradient text fallback class for inline gradient text */
+  .gradient-text-fallback {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 .trajectory-button {
