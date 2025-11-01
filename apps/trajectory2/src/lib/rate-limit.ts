@@ -1,3 +1,4 @@
+import { kv } from '@vercel/kv';
 import { NextRequest } from 'next/server';
 
 interface RateLimitEntry {
@@ -5,18 +6,7 @@ interface RateLimitEntry {
   resetTime: number;
 }
 
-// In-memory store for rate limiting (use Redis in production)
-const rateLimitStore = new Map<string, RateLimitEntry>();
-
-// Clean up old entries periodically
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of rateLimitStore.entries()) {
-    if (entry.resetTime < now) {
-      rateLimitStore.delete(key);
-    }
-  }
-}, 60000); // Clean every minute
+// Note: No need for cleanup interval with Redis - TTL handles expiration automatically
 
 export interface RateLimitConfig {
   maxRequests: number;
@@ -31,7 +21,7 @@ const defaultConfig: RateLimitConfig = {
 };
 
 /**
- * Rate limiting middleware for Next.js API routes
+ * Rate limiting middleware for Next.js API routes using Redis
  * @param config Rate limit configuration
  * @returns Object with isAllowed boolean and reset time
  */
@@ -44,39 +34,70 @@ export function rateLimit(config: Partial<RateLimitConfig> = {}) {
     remaining: number;
     reset: number;
   }> {
-    // Generate key based on IP address by default
-    const key = finalConfig.keyGenerator
-      ? finalConfig.keyGenerator(req)
-      : getClientIp(req);
+    try {
+      // Generate key based on IP address by default
+      const key = finalConfig.keyGenerator
+        ? finalConfig.keyGenerator(req)
+        : getClientIp(req);
 
-    const now = Date.now();
-    const resetTime = now + finalConfig.windowMs;
+      // Create a prefixed key for rate limiting
+      const rateLimitKey = `rate_limit:${key}`;
 
-    // Get or create rate limit entry
-    let entry = rateLimitStore.get(key);
+      const now = Date.now();
+      const resetTime = now + finalConfig.windowMs;
+      const windowSeconds = Math.ceil(finalConfig.windowMs / 1000);
 
-    if (!entry || entry.resetTime < now) {
-      // Create new entry
-      entry = {
-        count: 0,
-        resetTime: resetTime,
+      // Try to get existing entry from Redis
+      const existingEntry = await kv.get<RateLimitEntry>(rateLimitKey);
+
+      let entry: RateLimitEntry;
+
+      if (!existingEntry || existingEntry.resetTime < now) {
+        // Create new entry
+        entry = {
+          count: 1,
+          resetTime: resetTime,
+        };
+        // Set with TTL (time-to-live) in seconds
+        await kv.set(rateLimitKey, entry, { ex: windowSeconds });
+      } else {
+        // Increment existing entry
+        entry = {
+          count: existingEntry.count + 1,
+          resetTime: existingEntry.resetTime,
+        };
+        // Calculate remaining TTL
+        const remainingMs = entry.resetTime - now;
+        const remainingSeconds = Math.ceil(remainingMs / 1000);
+
+        if (remainingSeconds > 0) {
+          await kv.set(rateLimitKey, entry, { ex: remainingSeconds });
+        }
+      }
+
+      // Check if limit exceeded
+      const isAllowed = entry.count <= finalConfig.maxRequests;
+      const remaining = Math.max(0, finalConfig.maxRequests - entry.count);
+
+      return {
+        isAllowed,
+        limit: finalConfig.maxRequests,
+        remaining,
+        reset: entry.resetTime,
       };
-      rateLimitStore.set(key, entry);
+    } catch (error) {
+      // If Redis is unavailable, fail open (allow request) but log the error
+      console.error('Rate limiting error:', error);
+
+      // In production, you might want to fail closed (deny request) instead
+      // For now, we'll fail open to avoid blocking legitimate users if Redis is down
+      return {
+        isAllowed: true,
+        limit: finalConfig.maxRequests,
+        remaining: finalConfig.maxRequests,
+        reset: Date.now() + finalConfig.windowMs,
+      };
     }
-
-    // Increment counter
-    entry.count++;
-
-    // Check if limit exceeded
-    const isAllowed = entry.count <= finalConfig.maxRequests;
-    const remaining = Math.max(0, finalConfig.maxRequests - entry.count);
-
-    return {
-      isAllowed,
-      limit: finalConfig.maxRequests,
-      remaining,
-      reset: entry.resetTime,
-    };
   };
 }
 
