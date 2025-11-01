@@ -12,7 +12,7 @@ interface ProductCardProps {
   badgeVariant?: 'default' | 'gold' | 'silver';
   title: string;
   subtitle: string;
-  features: string[];
+  features: readonly string[] | string[];
   cta: {
     text: string;
     href: string;
