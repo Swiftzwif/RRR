@@ -212,9 +212,6 @@ export async function sendGiveawayConfirmationEmail(data: GiveawayConfirmationEm
 
       ✅ WHAT YOU'VE COMPLETED
       • Subscribed to Kill The Boy Weekly Newsletter
-      • Liked the Instagram post
-      • Shared the Instagram post
-      • Tagged a friend in the comments
 
       🎁 WHAT YOU COULD WIN
       We'll be giving away $2,500+ in transformation prizes to multiple winners. Winners will be selected and notified after the giveaway ends.
@@ -225,7 +222,7 @@ export async function sendGiveawayConfirmationEmail(data: GiveawayConfirmationEm
       ${baseUrl}/giveaway
 
       🔍 VERIFICATION NOTE
-      Your entry will be manually verified by our team. We'll cross-reference your newsletter subscription and Instagram actions. Only verified entries are eligible to win.
+      Your entry will be manually verified by our team. We'll verify your newsletter subscription. Only verified entries are eligible to win.
 
       Thank you for being part of the movement. Your journey from drift to dominion starts with a single decision.
 
