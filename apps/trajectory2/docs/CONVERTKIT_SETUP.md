@@ -50,6 +50,7 @@ CONVERTKIT_FORM_ID=your_form_id_here
 ```
 
 **Example**:
+
 ```bash
 CONVERTKIT_API_KEY=kit_cb18ffdfde4e1b340d6e5bcdc35bd8cf
 CONVERTKIT_FORM_ID=384eb35d37
@@ -85,11 +86,13 @@ You can test the ConvertKit integration by:
 When a giveaway entry is submitted, look for these log messages:
 
 **Success**:
+
 ```
 Newsletter subscription successful: { email, subscriber_id }
 ```
 
 **Warning (ConvertKit failure, but entry still saved)**:
+
 ```
 ConvertKit subscription failed: Error message here
 ```
@@ -119,7 +122,8 @@ const subscriptionResult = await subscribeToForm({
 
 **Cause**: Environment variables not configured in Vercel
 
-**Solution**: 
+**Solution**:
+
 1. Add `CONVERTKIT_API_KEY` and `CONVERTKIT_FORM_ID` to Vercel Environment Variables
 2. Redeploy the application
 
@@ -128,6 +132,7 @@ const subscriptionResult = await subscribeToForm({
 **Cause**: Invalid Form ID or API Key
 
 **Solution**:
+
 1. Verify the Form ID in your ConvertKit account
 2. Check that your API Secret Key is correct
 3. Ensure you're using Vercel Production environment, not Preview
@@ -137,6 +142,7 @@ const subscriptionResult = await subscribeToForm({
 **Cause**: API authentication error or rate limit
 
 **Solution**:
+
 1. Check your ConvertKit account limits
 2. Verify the API Secret Key has proper permissions
 3. Check ConvertKit's status page for service issues
@@ -144,11 +150,13 @@ const subscriptionResult = await subscribeToForm({
 ### Issue: Subscribers not appearing in ConvertKit
 
 **Possible Causes**:
+
 1. Email confirmation required (check ConvertKit form settings)
 2. API Key doesn't have permission for that form
 3. Form is disabled or deleted
 
 **Solution**:
+
 1. Check ConvertKit form settings for double opt-in
 2. Verify the Form ID matches an active form
 3. Test the API manually with curl:
@@ -167,16 +175,19 @@ curl -X POST "https://api.convertkit.com/v4/forms/384eb35d37/subscribe" \
 ## API Reference
 
 ### Endpoint
+
 ```
 POST https://api.convertkit.com/v4/forms/{form_id}/subscribe
 ```
 
 ### Authentication
+
 ```
 Authorization: Bearer {api_secret_key}
 ```
 
 ### Request Body
+
 ```json
 {
   "email": "user@example.com",
@@ -186,6 +197,7 @@ Authorization: Bearer {api_secret_key}
 ```
 
 ### Response
+
 ```json
 {
   "subscription": {
@@ -214,6 +226,7 @@ Authorization: Bearer {api_secret_key}
 ## Cost Considerations
 
 ConvertKit pricing:
+
 - **Free**: Up to 300 subscribers
 - **Creator**: $9/month for 1,000 subscribers
 - **Creator Pro**: $19/month for 1,000 subscribers
@@ -237,8 +250,8 @@ ConvertKit pricing:
 ## Support
 
 If you encounter issues:
+
 1. Check this troubleshooting guide
 2. Review ConvertKit API status
 3. Check application logs in Vercel
 4. Contact ConvertKit support if API issues persist
-
