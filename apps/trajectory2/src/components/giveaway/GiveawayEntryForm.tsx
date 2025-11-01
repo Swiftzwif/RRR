@@ -206,7 +206,7 @@ export default function GiveawayEntryForm() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600 mb-6">
+          <h2 className="text-4xl md:text-5xl font-black text-orange-600 bg-gradient-to-r from-orange-600 to-red-600 gradient-text-fallback mb-6">
             Enter the Giveaway
           </h2>
           <p className="text-xl text-gray-700 mb-4">
