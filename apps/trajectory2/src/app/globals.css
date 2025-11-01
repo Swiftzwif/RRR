@@ -13,10 +13,10 @@
   --bg-elev-2: #15171C;
   --bg-elev-3: #1C1F26;
   
-  /* Text Colors */
+  /* Text Colors - Enhanced for better contrast */
   --text-primary: #FFFFFF;
-  --text-secondary: #B8BCC8;
-  --text-muted: #71758A;
+  --text-secondary: #D1D5DB; /* Improved from #B8BCC8 for better contrast on dark bg */
+  --text-muted: #9CA3AF; /* Improved from #71758A for better contrast (4.5:1 minimum) */
   
   /* Borders */
   --border-default: rgba(255, 255, 255, 0.08);
@@ -130,12 +130,40 @@ body {
 }
 
 .trajectory-text-glow {
+  /* Fallback color for browsers that don't support background-clip */
+  color: #0EA5E9;
   background: linear-gradient(135deg, #0ea5e9 0%, #f59e0b 50%, #8b5cf6 100%);
   background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   animation: gradient-shift 6s ease infinite;
+}
+
+/* Trajectory text gradient (similar to trajectory-text-glow but different colors) */
+.trajectory-text {
+  /* Fallback color for browsers that don't support background-clip */
+  color: #F59E0B; /* Gold fallback for visibility */
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+/* Apply gradient text effect only if background-clip is supported */
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .trajectory-text {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .trajectory-text-glow {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Generic gradient text fallback class for inline gradient text */
+  .gradient-text-fallback {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 .trajectory-button {

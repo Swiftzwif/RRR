@@ -19,7 +19,7 @@ export default function KillTheBoyPage() {
             <span className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
             THE TRANSFORMATION
           </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold bg-gradient-to-r from-slate-900 via-red-900 to-orange-900 bg-clip-text text-transparent mb-6">
+          <h1 className="text-4xl md:text-5xl font-display font-bold text-slate-900 bg-gradient-to-r from-slate-900 via-red-900 to-orange-900 gradient-text-fallback mb-6">
             Kill the Boy
           </h1>
           <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">

@@ -1,11 +1,10 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Zap, TrendingUp, Clock, Users } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
+import { Button } from "@/components/ui/button";
 import { createClient } from '@/utils/supabase/client';
+import { motion } from "framer-motion";
+import { Clock, TrendingUp, Users, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface RaffleConfig {
   id: string;
@@ -117,7 +116,7 @@ export default function RaffleHero() {
         >
           Kill The Boy.
           <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">
+          <span className="text-orange-600 bg-gradient-to-r from-orange-500 to-red-600 gradient-text-fallback">
             Win The War.
           </span>
         </motion.h1>

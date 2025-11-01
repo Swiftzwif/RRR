@@ -152,7 +152,7 @@ export default function RaffleAuthCTA() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600 mb-6">
+            <h2 className="text-4xl md:text-5xl font-black text-orange-600 bg-gradient-to-r from-orange-600 to-red-600 gradient-text-fallback mb-6">
               Your Transformation Starts Now
             </h2>
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
@@ -202,7 +202,7 @@ export default function RaffleAuthCTA() {
               {/* Price Display */}
               <div className="mb-6">
                 <div className="flex items-center justify-center gap-3">
-                  <span className="text-white/70 line-through text-2xl">$149</span>
+                  <span className="text-white/80 line-through text-2xl">$149</span>
                   <span className="text-5xl font-black text-white">$97</span>
                   <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                     SAVE 35%
@@ -237,7 +237,7 @@ export default function RaffleAuthCTA() {
               </Button>
 
               {user && (
-                <p className="text-white/70 text-sm mt-4">
+                <p className="text-white/90 text-sm mt-4">
                   <CheckCircle className="inline mr-1 h-4 w-4" />
                   Signed in as {user.email}
                 </p>
