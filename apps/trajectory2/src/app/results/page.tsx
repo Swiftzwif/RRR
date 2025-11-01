@@ -219,7 +219,7 @@ export default function ResultsPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 border border-slate-300 rounded-xl mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl mb-6 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
                 <button
