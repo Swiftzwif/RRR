@@ -17,6 +17,7 @@ import {
   ArrowRight,
   BookOpen,
   CheckCircle,
+  Clock,
   FileText,
   Gift,
   Heart,
@@ -27,6 +28,10 @@ import {
 } from "lucide-react";
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import ProductCard from '@/components/products/ProductCard';
+import PricingDisplay from '@/components/products/PricingDisplay';
+import LimitedTimeOffer from '@/components/products/LimitedTimeOffer';
+import { PRODUCTS } from '@/lib/config';
 
 export default function Home() {
   const [currentWord, setCurrentWord] = useState(0);
@@ -115,27 +120,6 @@ export default function Home() {
       clearInterval(tabInterval);
     };
   }, [words.length, showContent]);
-
-  const features = [
-    {
-      title: "Your Life Identity",
-      description:
-        "Discover if you're a Drifter, Balancer, or Architect through our comprehensive assessment",
-      icon: Users,
-    },
-    {
-      title: "Domain Analysis",
-      description:
-        "Understand your strengths and gaps across 7 key life domains with actionable insights",
-      icon: Zap,
-    },
-    {
-      title: "Action Plan",
-      description:
-        "Get a personalized roadmap with daily actions to transform your trajectory",
-      icon: CheckCircle,
-    },
-  ];
 
   return (
     <>
@@ -476,7 +460,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Products Section */}
       <section className="py-20 bg-elev-1 relative">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gold rounded-full blur-3xl" />
@@ -492,62 +476,101 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <Badge variant="outline" className="border-gold text-gold mb-4">
-              DISCOVER YOUR PATH
+              CHOOSE YOUR PATH
             </Badge>
             <h2 className="text-5xl font-bold text-primary mb-6">
-              Your Transformation Starts Here
+              Transform Your Trajectory
             </h2>
             <p className="text-xl text-secondary max-w-3xl mx-auto">
-              Take the Trajectory Assessment to understand where you are and get
-              a clear roadmap to where you want to be.
+              Command your attention, energy, and resources. Transform from drifter to architect.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="h-full bg-elev-2 border-[var(--border-default)] hover:border-[var(--border-gold)] transition-all duration-300 hover:gold-glow-sm group">
-                  <CardHeader>
-                    <div className="w-14 h-14 rounded-xl bg-elev-3 group-hover:bg-gold-gradient transition-all duration-300 flex items-center justify-center mb-4">
-                      <feature.icon className="w-7 h-7 text-gold group-hover:text-black transition-colors duration-300" />
-                    </div>
-                    <CardTitle className="text-xl text-primary">
-                      {feature.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-secondary">
-                      {feature.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            className="text-center mt-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <Button asChild size="lg" className="group">
-              <Link href="/assessment/landing">
-                Take the Free Assessment
-                <ArrowRight
-                  className="ml-2 group-hover:translate-x-2 transition-transform duration-300"
-                  size={20}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Digital Course */}
+            <ProductCard
+              badge="MOST POPULAR"
+              badgeVariant="gold"
+              title={PRODUCTS.DIGITAL_COURSE.name}
+              subtitle={PRODUCTS.DIGITAL_COURSE.tagline}
+              features={PRODUCTS.DIGITAL_COURSE.benefits}
+              cta={{
+                text: "Get Instant Access on Thinkific",
+                href: PRODUCTS.DIGITAL_COURSE.thinkificUrl,
+                external: true
+              }}
+            >
+              {/* Pricing */}
+              <div className="py-8 border-y border-slate-700">
+                <PricingDisplay
+                  regularPrice={PRODUCTS.DIGITAL_COURSE.regularPrice}
+                  salePrice={PRODUCTS.DIGITAL_COURSE.salePrice}
+                  size="lg"
                 />
-              </Link>
-            </Button>
-          </motion.div>
+                <div className="mt-4 flex justify-center">
+                  <LimitedTimeOffer saleEndsDate={PRODUCTS.DIGITAL_COURSE.saleEndsDate} />
+                </div>
+              </div>
+
+              {/* Impact Statement */}
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+                <p className="text-slate-200 leading-relaxed italic">
+                  {PRODUCTS.DIGITAL_COURSE.impact}
+                </p>
+              </div>
+
+              {/* Additional Info */}
+              <div className="grid grid-cols-3 gap-4 pt-4">
+                <div className="text-center">
+                  <BookOpen className="w-6 h-6 text-[#FFD700] mx-auto mb-2" />
+                  <p className="text-sm text-slate-400">10 Lessons</p>
+                </div>
+                <div className="text-center">
+                  <Clock className="w-6 h-6 text-[#FFD700] mx-auto mb-2" />
+                  <p className="text-sm text-slate-400">Lifetime Access</p>
+                </div>
+                <div className="text-center">
+                  <Users className="w-6 h-6 text-[#FFD700] mx-auto mb-2" />
+                  <p className="text-sm text-slate-400">1,000+ Students</p>
+                </div>
+              </div>
+            </ProductCard>
+
+            {/* Inner Mastery Sessions */}
+            <ProductCard
+              badge="COMING SOON"
+              badgeVariant="silver"
+              title={PRODUCTS.INNER_MASTERY.name}
+              subtitle={PRODUCTS.INNER_MASTERY.tagline}
+              features={[
+                "Personal coaching with Jean",
+                "Custom transformation roadmap",
+                "Weekly accountability calls",
+                "Direct access via private channel",
+                "Personalized frameworks",
+                "Limited to 250 clients per year"
+              ]}
+              cta={{
+                text: "Join Waitlist",
+                href: PRODUCTS.INNER_MASTERY.applicationUrl
+              }}
+            >
+              {/* Coming Soon Badge */}
+              <div className="py-8 border-y border-slate-700 text-center">
+                <div className="inline-block bg-slate-700 text-slate-300 px-6 py-3 rounded-xl text-lg font-semibold">
+                  {PRODUCTS.INNER_MASTERY.pricing} Pricing
+                </div>
+                <p className="text-slate-400 mt-4">Application Required</p>
+              </div>
+
+              {/* Description */}
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+                <p className="text-slate-200 leading-relaxed italic">
+                  {PRODUCTS.INNER_MASTERY.description}
+                </p>
+              </div>
+            </ProductCard>
+          </div>
         </div>
       </section>
 
