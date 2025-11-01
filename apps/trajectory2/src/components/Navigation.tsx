@@ -95,6 +95,16 @@ export default function Navigation() {
               Assessment
             </Link>
             <Link
+              href="/products"
+              className={`transition-colors duration-200 font-semibold ${
+                isDarkPage
+                  ? "text-gold hover:text-gold/80"
+                  : "text-brand-gold hover:text-brand-gold/80"
+              }`}
+            >
+              Products
+            </Link>
+            <Link
               href="/experience"
               className={`transition-colors duration-200 ${
                 isDarkPage
@@ -194,6 +204,17 @@ export default function Navigation() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Assessment
+              </Link>
+              <Link
+                href="/products"
+                className={`block px-3 py-2 transition-colors font-semibold ${
+                  isDarkPage
+                    ? "text-gold hover:text-gold/80"
+                    : "text-brand-gold hover:text-brand-gold/80"
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Products
               </Link>
               <Link
                 href="/experience"
