@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createClient } from '@/utils/supabase/server';
 import { subscribeToForm } from '@/lib/convertkit';
 import { sendGiveawayConfirmationEmail } from '@/lib/email';
+import { rateLimit } from '@/lib/rate-limit';
 
 // Validation schema for giveaway entry
 const GiveawayEntrySchema = z.object({
@@ -23,7 +24,34 @@ const GiveawayEntrySchema = z.object({
 
 const CONVERTKIT_FORM_ID = process.env.CONVERTKIT_FORM_ID;
 
+// Rate limiting for giveaway entries - 5 requests per 15 minutes
+const entryLimiter = rateLimit({
+  maxRequests: 5,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+});
+
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResult = await entryLimiter(request);
+  if (!rateLimitResult.isAllowed) {
+    return NextResponse.json(
+      { 
+        error: 'Too many requests',
+        message: 'Please wait before submitting another entry',
+        retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
+      },
+      { 
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+          'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
+        },
+      }
+    );
+  }
+
   try {
     const body = await request.json();
     const validatedData = GiveawayEntrySchema.parse(body);
