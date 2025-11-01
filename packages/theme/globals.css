@@ -105,10 +105,18 @@ h1,h2,h3,h4,h5,h6 {
 
 /* Inspiring text effects */
 .strata-text {
+  /* Fallback color for browsers that don't support background-clip */
+  color: var(--sky-600); /* Dark blue fallback for light backgrounds */
   background: linear-gradient(135deg, var(--sky-400), var(--sky-600));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+}
+
+/* Apply gradient text effect only if background-clip is supported */
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .strata-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 }
 
 /* Sky-inspired shadows */
@@ -203,7 +211,9 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 .strata-input::placeholder {
-  color: var(--sky-500);
+  /* Improved contrast - darker blue for better visibility on light backgrounds */
+  color: var(--sky-700); /* Changed from sky-500 to sky-700 for better contrast */
+  opacity: 0.7; /* Slightly reduce opacity while maintaining readability */
 }
 
 /* TRAJECTORY Logo-Inspired Styles */
@@ -223,18 +233,31 @@ h1,h2,h3,h4,h5,h6 {
 
 /* Logo-inspired text effects */
 .trajectory-text {
+  /* Fallback color for browsers that don't support background-clip */
+  color: var(--gold-600); /* Dark gold fallback for light backgrounds */
   background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
 .trajectory-text-glow {
+  /* Fallback color for browsers that don't support background-clip */
+  color: var(--gold-500); /* Gold fallback for light backgrounds */
   background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
   text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+/* Apply gradient text effect only if background-clip is supported */
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .trajectory-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  .trajectory-text-glow {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 }
 
 /* Logo-inspired backgrounds */
