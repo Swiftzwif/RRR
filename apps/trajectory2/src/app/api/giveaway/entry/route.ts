@@ -9,15 +9,6 @@ const GiveawayEntrySchema = z.object({
   email: z.string().email('Valid email required'),
   first_name: z.string().min(1, 'First name is required'),
   last_name: z.string().min(1, 'Last name is required'),
-  liked_post: z.boolean().refine((val) => val === true, {
-    message: 'You must like the Instagram post to enter',
-  }),
-  shared_post: z.boolean().refine((val) => val === true, {
-    message: 'You must share the Instagram post to enter',
-  }),
-  tagged_friend: z.boolean().refine((val) => val === true, {
-    message: 'You must tag a friend in the Instagram post comments to enter',
-  }),
   giveaway_id: z.string().uuid().optional(),
 });
 
@@ -109,10 +100,7 @@ export async function POST(request: NextRequest) {
         last_name: validatedData.last_name,
         newsletter_subscribed: newsletterSubscribed,
         convertkit_subscriber_id: convertkitSubscriberId,
-        liked_post: validatedData.liked_post,
-        shared_post: validatedData.shared_post,
-        tagged_friend: validatedData.tagged_friend,
-        verified: false, // Manual verification required
+        verified: false, // Manual verification required (newsletter subscription only)
       })
       .select('id, entry_number, created_at')
       .single();
