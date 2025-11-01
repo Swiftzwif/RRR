@@ -314,7 +314,7 @@ export default function GiveawayEntryForm() {
                 className={errors.likedPost ? 'border-red-500' : ''}
               />
               <Label htmlFor="likedPost" className="flex-1 cursor-pointer">
-                <span className="font-medium">I have liked the Instagram post</span>
+                <span className="font-medium text-gray-900">I have liked the Instagram post</span>
                 {errors.likedPost && (
                   <p className="text-red-500 text-sm mt-1">{errors.likedPost}</p>
                 )}
@@ -332,7 +332,7 @@ export default function GiveawayEntryForm() {
                 className={errors.sharedPost ? 'border-red-500' : ''}
               />
               <Label htmlFor="sharedPost" className="flex-1 cursor-pointer">
-                <span className="font-medium">I have shared the Instagram post</span>
+                <span className="font-medium text-gray-900">I have shared the Instagram post</span>
                 {errors.sharedPost && (
                   <p className="text-red-500 text-sm mt-1">{errors.sharedPost}</p>
                 )}
@@ -350,7 +350,7 @@ export default function GiveawayEntryForm() {
                 className={errors.taggedFriend ? 'border-red-500' : ''}
               />
               <Label htmlFor="taggedFriend" className="flex-1 cursor-pointer">
-                <span className="font-medium">I have tagged a friend in the Instagram post comments</span>
+                <span className="font-medium text-gray-900">I have tagged a friend in the Instagram post comments</span>
                 {errors.taggedFriend && (
                   <p className="text-red-500 text-sm mt-1">{errors.taggedFriend}</p>
                 )}
