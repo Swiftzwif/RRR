@@ -200,7 +200,7 @@ export default function RaffleHeroSection() {
                 <div className="flex items-center gap-3">
                   <span className="text-4xl font-black text-white">${displayPrice}</span>
                   <div className="flex flex-col">
-                    <span className="text-sm line-through text-white/70">${regularPrice}</span>
+                    <span className="text-sm line-through text-white/80">${regularPrice}</span>
                     <span className="text-sm font-bold text-yellow-200">Save ${savings}</span>
                   </div>
                 </div>

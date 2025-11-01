@@ -219,7 +219,7 @@ export default function ResultsPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 border border-slate-300 rounded-xl mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl mb-6 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
                 <button
@@ -245,7 +245,7 @@ export default function ResultsPage() {
             <span className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
             YOUR RESULTS
           </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 bg-clip-text text-transparent mb-6">
+          <h1 className="text-4xl md:text-5xl font-display font-bold text-slate-900 bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 gradient-text-fallback mb-6">
             {getCopy("results.title") as string}
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">{getCopy("results.subtitle") as string}</p>
@@ -333,7 +333,7 @@ export default function ResultsPage() {
               </p>
               
               <div className="flex items-center justify-center gap-4 mb-8">
-                <div className="text-6xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+                <div className="text-6xl font-bold text-[#FFA500] bg-gradient-to-r from-[#FFD700] to-[#FFA500] gradient-text-fallback">
                   $97
                 </div>
                 <div className="text-slate-400 text-left">

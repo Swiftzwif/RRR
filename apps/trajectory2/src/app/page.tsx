@@ -250,7 +250,7 @@ export default function Home() {
                   <CardTitle className="text-4xl font-bold text-white mb-3">
                     Your Path to Commanding Life
                   </CardTitle>
-                  <CardDescription className="text-orange-200 text-lg max-w-2xl mx-auto leading-relaxed">
+                  <CardDescription className="text-orange-100 text-lg max-w-2xl mx-auto leading-relaxed">
                     A comprehensive system combining proven frameworks, expert guidance, and a brotherhood of men committed to transformation
                   </CardDescription>
                 </CardHeader>

@@ -39,7 +39,7 @@ export default function PricingDisplay({
       )}
       
       <div className="flex items-baseline gap-2">
-        <span className={`font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent ${sizeClasses[size]}`}>
+        <span className={`font-bold text-[#FFA500] bg-gradient-to-r from-[#FFD700] to-[#FFA500] gradient-text-fallback ${sizeClasses[size]}`}>
           ${currentPrice}
         </span>
         {!isOnSale && (

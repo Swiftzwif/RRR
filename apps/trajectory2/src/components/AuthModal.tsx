@@ -127,7 +127,7 @@ export default function AuthModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md bg-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">
+          <DialogTitle className="text-2xl font-bold text-orange-600 bg-gradient-to-r from-orange-500 to-red-600 gradient-text-fallback">
             {title}
           </DialogTitle>
           <DialogDescription className="text-gray-600">
