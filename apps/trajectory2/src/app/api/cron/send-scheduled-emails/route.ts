@@ -68,7 +68,7 @@ const emailContent: Record<number, { subject: string; content: string }> = {
     `
   },
   5: {
-    subject: "Day 5: Command Your Money 💰",
+    subject: "Day 5: Know Your Worth 💎",
     content: `
       <h2>Day 5: Breaking Free from Money Scripts</h2>
 

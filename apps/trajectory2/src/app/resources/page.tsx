@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, Download, Mail } from 'lucide-react';
+import { ArrowRight, BookOpen, Download, Mail, Target } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ResourcesPage() {
@@ -185,6 +185,27 @@ export default function ResourcesPage() {
               Download Free List
               <Download className="ml-2 w-4 h-4" />
             </Link>
+          </div>
+
+          {/* Daily Performance Tracker */}
+          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mb-6">
+              <Target className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-display font-bold text-slate-800 mb-4">
+              Daily Performance Tracker
+            </h3>
+            <p className="text-slate-600 leading-relaxed mb-6">
+              Simple, printable tracker to measure daily execution.
+            </p>
+            <a
+              href="/daily-performance-tracker.csv"
+              download="daily-performance-tracker.csv"
+              className="inline-flex items-center w-full justify-center bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
+            >
+              Download CSV
+              <Download className="ml-2 w-4 h-4" />
+            </a>
           </div>
 
           {/* Weekly Newsletter */}

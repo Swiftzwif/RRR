@@ -42,7 +42,7 @@ export const COPY = {
         {
           title: "Your Life Avatar",
           description:
-            "Are you a Drifter, Balancer, or Architect? Discover your current trajectory pattern.",
+            "Are you a Good Little Soldier, Conformist, or Commander? Discover your current trajectory pattern.",
         },
         {
           title: "Domain Analysis",
@@ -132,19 +132,19 @@ export const COPY = {
     avatar: {
       title: "Your Life Avatar",
       drifter: {
-        title: "The Drifter",
+        title: "The Good Little Soldier",
         description:
           "You're in exploration mode, seeking direction and clarity. This is a powerful place to start building intentional momentum.",
         traits: ["Curious", "Adaptable", "Open to change"],
       },
       balancer: {
-        title: "The Balancer",
+        title: "The Conformist",
         description:
           "You're managing multiple priorities with varying success. You have solid foundations to build upon.",
         traits: ["Stable", "Practical", "Growth-oriented"],
       },
       architect: {
-        title: "The Architect",
+        title: "The Commander",
         description:
           "You're actively designing your life with intention and purpose. You have strong systems in place.",
         traits: ["Strategic", "Disciplined", "Purpose-driven"],
