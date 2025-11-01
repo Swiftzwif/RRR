@@ -52,6 +52,43 @@ export interface RaffleConfirmationEmailData {
   accessUrl: string;
 }
 
+export interface GiveawayConfirmationEmailData {
+  to: string;
+  firstName: string;
+  lastName: string;
+  entryNumber: number;
+  participantCount: number;
+  giveawayName: string;
+}
+
+export interface WelcomeEmailData {
+  to: string;
+  userName: string;
+  verificationUrl?: string;
+}
+
+export interface EmailVerificationData {
+  to: string;
+  userName: string;
+  verificationUrl: string;
+}
+
+export interface PasswordResetEmailData {
+  to: string;
+  userName: string;
+  resetUrl: string;
+}
+
+export interface PaymentReceiptEmailData {
+  to: string;
+  userName: string;
+  productName: string;
+  amount: string;
+  paymentId: string;
+  date: string;
+  invoiceUrl?: string;
+}
+
 export async function sendAssessmentCompleteEmail(data: AssessmentEmailData) {
   try {
     const resendClient = getResendClient();
@@ -152,13 +189,72 @@ export async function sendRaffleConfirmationEmail(data: RaffleConfirmationEmailD
   }
 }
 
+export async function sendGiveawayConfirmationEmail(data: GiveawayConfirmationEmailData) {
+  try {
+    const resendClient = getResendClient();
+    if (!resendClient) {
+      console.warn('Email service not configured');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trajectorygroup.org';
+    const fullName = `${data.firstName} ${data.lastName}`;
+
+    const emailContent = `
+      Hi ${data.firstName},
+
+      You're officially entered into the ${data.giveawayName}!
+
+      🎯 YOUR GIVEAWAY ENTRY
+      Entry Number: #${data.entryNumber}
+      Total Participants: ${data.participantCount}
+      Name: ${fullName}
+
+      ✅ WHAT YOU'VE COMPLETED
+      • Subscribed to Kill The Boy Weekly Newsletter
+      • Liked the Instagram post
+      • Shared the Instagram post
+      • Tagged a friend in the comments
+
+      🎁 WHAT YOU COULD WIN
+      We'll be giving away $2,500+ in transformation prizes to multiple winners. Winners will be selected and notified after the giveaway ends.
+
+      💎 OPTIONAL: ACCELERATE YOUR TRANSFORMATION
+      Want to start transforming your life right now? Get instant access to "Change Your Trajectory by Shifting Lanes" course at 35% off during our opening week.
+
+      ${baseUrl}/giveaway
+
+      🔍 VERIFICATION NOTE
+      Your entry will be manually verified by our team. We'll cross-reference your newsletter subscription and Instagram actions. Only verified entries are eligible to win.
+
+      Thank you for being part of the movement. Your journey from drift to dominion starts with a single decision.
+
+      Kill the boy,
+      The Trajectory Team
+    `;
+
+    const result = await resendClient.emails.send({
+      from: FROM_EMAIL,
+      to: data.to,
+      subject: `✅ Giveaway Entry #${data.entryNumber} Confirmed - You're In!`,
+      text: emailContent,
+      html: emailContent.replace(/\n/g, '<br>'),
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error sending giveaway confirmation email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    };
+  }
+}
+
 // Schedule daily emails for the 7-day experience
 export async function scheduleDailyEmails(email: string, userName?: string) {
-  // This would integrate with a job queue like BullMQ or Inngest
-  // For now, we'll just send Day 1 immediately and log the schedule
-  
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trajectory.com';
-  
+
   // Send Day 1 immediately
   await sendDailyExperienceEmail({
     to: email,
@@ -189,11 +285,248 @@ export async function scheduleDailyEmails(email: string, userName?: string) {
     experienceUrl: `${baseUrl}/experience/day/1`
   });
 
-  // Log schedule for remaining days (would be actual scheduling in production)
-  console.log(`Email schedule created for ${email}:
-    - Day 1: Sent immediately
-    - Day 2-7: Will be sent daily at 6 AM user's timezone
-  `);
+  // Schedule Days 2-7 in the database for cron job to process
+  const { getSupabaseServiceRole } = await import('./supabase');
+  const supabase = getSupabaseServiceRole();
+
+  if (supabase) {
+    const schedulePromises = [];
+    const today = new Date();
+
+    for (let day = 2; day <= 7; day++) {
+      const scheduledDate = new Date(today);
+      scheduledDate.setDate(scheduledDate.getDate() + (day - 1));
+      scheduledDate.setHours(11, 0, 0, 0); // 11 AM UTC
+
+      schedulePromises.push(
+        supabase.from('email_schedule').upsert({
+          email,
+          user_name: userName,
+          day_number: day,
+          scheduled_for: scheduledDate.toISOString(),
+          status: 'pending',
+          metadata: {
+            baseUrl,
+            createdAt: new Date().toISOString()
+          }
+        }, {
+          onConflict: 'email,day_number'
+        })
+      );
+    }
+
+    await Promise.all(schedulePromises);
+
+    console.log(`Email schedule created for ${email}:
+      - Day 1: Sent immediately
+      - Days 2-7: Scheduled for daily delivery at 11 AM UTC
+    `);
+  }
 
   return { success: true };
+}
+
+// Welcome email for new signups
+export async function sendWelcomeEmail(data: WelcomeEmailData) {
+  try {
+    const resendClient = getResendClient();
+    if (!resendClient) {
+      console.warn('Email service not configured');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    const emailContent = `
+      Welcome to Kill The Boy, ${data.userName}!
+
+      You've taken the first step toward transformation.
+
+      🔥 YOUR JOURNEY BEGINS
+      The path from drift to dominion starts with a single decision.
+      You've made that decision today.
+
+      📚 WHAT'S AVAILABLE NOW:
+      • Free Assessment: Discover your avatar (Drifter, Balancer, or Architect)
+      • Daily Wisdom: 7-day transformation experience
+      • Course Access: Transform your life with proven frameworks
+
+      ${data.verificationUrl ? `
+      ✅ VERIFY YOUR EMAIL
+      Click here to verify your account: ${data.verificationUrl}
+      ` : ''}
+
+      🎯 YOUR NEXT STEP:
+      Take the assessment to discover your starting point:
+      ${process.env.NEXT_PUBLIC_APP_URL || 'https://app.killtheboy.com'}/assessment
+
+      Remember: Comfort is the enemy of growth.
+      The boy must die for the man to be born.
+
+      Kill the boy,
+      The Trajectory Team
+    `;
+
+    const result = await resendClient.emails.send({
+      from: FROM_EMAIL,
+      to: data.to,
+      subject: `Welcome to Kill The Boy - Your Transformation Begins`,
+      text: emailContent,
+      html: emailContent.replace(/\n/g, '<br>'),
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    };
+  }
+}
+
+// Email verification
+export async function sendEmailVerification(data: EmailVerificationData) {
+  try {
+    const resendClient = getResendClient();
+    if (!resendClient) {
+      console.warn('Email service not configured');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    const emailContent = `
+      Hi ${data.userName},
+
+      Please verify your email address to complete your registration.
+
+      ✅ VERIFY YOUR EMAIL
+      Click the link below to verify your account:
+      ${data.verificationUrl}
+
+      This link will expire in 24 hours.
+
+      If you didn't create an account with Kill The Boy, you can safely ignore this email.
+
+      Kill the boy,
+      The Trajectory Team
+    `;
+
+    const result = await resendClient.emails.send({
+      from: FROM_EMAIL,
+      to: data.to,
+      subject: `Verify your Kill The Boy account`,
+      text: emailContent,
+      html: emailContent.replace(/\n/g, '<br>'),
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error sending verification email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    };
+  }
+}
+
+// Password reset email
+export async function sendPasswordResetEmail(data: PasswordResetEmailData) {
+  try {
+    const resendClient = getResendClient();
+    if (!resendClient) {
+      console.warn('Email service not configured');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    const emailContent = `
+      Hi ${data.userName},
+
+      We received a request to reset your password.
+
+      🔐 RESET YOUR PASSWORD
+      Click the link below to create a new password:
+      ${data.resetUrl}
+
+      This link will expire in 1 hour for security reasons.
+
+      If you didn't request a password reset, you can safely ignore this email.
+      Your password won't be changed unless you click the link above.
+
+      For security, this request was made from:
+      • Time: ${new Date().toISOString()}
+      • IP: [Logged for security]
+
+      Kill the boy,
+      The Trajectory Team
+    `;
+
+    const result = await resendClient.emails.send({
+      from: FROM_EMAIL,
+      to: data.to,
+      subject: `Reset your Kill The Boy password`,
+      text: emailContent,
+      html: emailContent.replace(/\n/g, '<br>'),
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    };
+  }
+}
+
+// Payment receipt email
+export async function sendPaymentReceiptEmail(data: PaymentReceiptEmailData) {
+  try {
+    const resendClient = getResendClient();
+    if (!resendClient) {
+      console.warn('Email service not configured');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    const emailContent = `
+      Hi ${data.userName},
+
+      Thank you for your purchase!
+
+      💳 PAYMENT RECEIPT
+      --------------------------------
+      Product: ${data.productName}
+      Amount: $${data.amount}
+      Date: ${data.date}
+      Payment ID: ${data.paymentId}
+      --------------------------------
+
+      ${data.invoiceUrl ? `
+      📄 INVOICE
+      Download your invoice here: ${data.invoiceUrl}
+      ` : ''}
+
+      🚀 WHAT'S NEXT?
+      Access your purchase immediately:
+      ${process.env.NEXT_PUBLIC_APP_URL || 'https://app.killtheboy.com'}/course
+
+      If you have any questions about your purchase, reply to this email.
+
+      Welcome to the transformation,
+      The Trajectory Team
+    `;
+
+    const result = await resendClient.emails.send({
+      from: FROM_EMAIL,
+      to: data.to,
+      subject: `Receipt for ${data.productName} - Kill The Boy`,
+      text: emailContent,
+      html: emailContent.replace(/\n/g, '<br>'),
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error sending payment receipt email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    };
+  }
 }

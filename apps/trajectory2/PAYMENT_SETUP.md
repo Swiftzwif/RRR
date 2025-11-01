@@ -1,28 +1,65 @@
-# Square Payment Setup Guide
+# Payment Setup Guide
 
 ## Overview
 
-This guide walks through setting up Square payments for the Trajectory2 platform.
+This guide covers payment integration for the Trajectory2 platform.
 
-## Environment Variables Required
+**Current Integration**: Thinkific (Active)
+**Preserved for Future**: Square Payment API
+
+## Current: Thinkific Integration ✅
+
+### Setup
+
+1. Course URL is configured in `.env.local`:
+   ```env
+   NEXT_PUBLIC_THINKIFIC_COURSE_URL=https://jean-s-site-8b39.thinkific.com/products/courses/trajectory
+   ```
+
+2. No additional setup required - redirects work automatically!
+
+3. Users are redirected to Thinkific to:
+   - Purchase the course
+   - Access course content
+   - Manage their enrollment
+
+## Preserved: Square Payment API (Disabled)
+
+**Status**: Code preserved but disabled. All Square infrastructure exists and can be re-enabled in minutes when needed.
+
+### Environment Variables (Optional - Not Required)
 
 ### Square Configuration
 
 ```env
+# These are preserved for future use - not required for Thinkific integration
+
 # Square API Access Token (from Square Dashboard)
-SQUARE_ACCESS_TOKEN=your_square_access_token
+# SQUARE_ACCESS_TOKEN=your_square_access_token
 
 # Square Location ID (from Square Dashboard)
-SQUARE_LOCATION_ID=your_square_location_id
+# SQUARE_LOCATION_ID=your_square_location_id
 
 # Environment: sandbox or production
-SQUARE_ENVIRONMENT=sandbox
+# SQUARE_ENVIRONMENT=sandbox
 
 # Webhook Signature Key (from Square Webhooks settings)
-SQUARE_WEBHOOK_SIGNATURE_KEY=your_webhook_signature_key
+# SQUARE_WEBHOOK_SIGNATURE_KEY=your_webhook_signature_key
 ```
 
-## Setup Steps
+## Re-enabling Square (When Needed)
+
+All Square code is preserved with clear comments. To re-enable:
+
+1. Uncomment Square routes in `/src/app/api/payments/square/` and `/src/app/api/webhooks/square/`
+2. Update `env-validation.ts` to make Square vars required again
+3. Add Square credentials to `.env.local`
+4. Configure webhook endpoint in Square dashboard
+5. Test the payment flow
+
+That's it! The entire integration is ready to go.
+
+### Original Square Setup Steps (Reference Only)
 
 ### 1. Create Square Account
 
