@@ -206,7 +206,7 @@ export default function GiveawayHeroSection() {
 
               {/* CTA */}
               <div className="flex items-center gap-2 text-white font-bold">
-                <span>Enter Now</span>
+                <span>Join the Giveaway Now</span>
                 <ArrowRight className="w-5 h-5" />
               </div>
             </div>
