@@ -1,6 +1,5 @@
 'use client'
 
-import { Suspense } from 'react'
 import { LogoMark } from "@/components/LogoMark";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +39,7 @@ function LoginContent() {
     try {
       setIsGoogleLoading(true)
       const redirectTo = searchParams.get('redirectTo') || '/'
-
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -184,9 +183,9 @@ function LoginContent() {
               <form action={handleSubmit} className="space-y-4">
                 {/* Hidden redirect field */}
                 {searchParams.get('redirectTo') && (
-                  <input
-                    type="hidden"
-                    name="redirectTo"
+                  <input 
+                    type="hidden" 
+                    name="redirectTo" 
                     value={searchParams.get('redirectTo') || ''}
                   />
                 )}
@@ -201,7 +200,7 @@ function LoginContent() {
                     autoComplete="email"
                     required
                     placeholder="you@example.com"
-                    className="bg-elev-1 text-white border-[var(--border-default)] placeholder:text-gray-400"
+                    className="bg-elev-1"
                   />
                 </div>
 
@@ -216,7 +215,7 @@ function LoginContent() {
                     autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                     required
                     placeholder="••••••••"
-                    className="bg-elev-1 text-white border-[var(--border-default)] placeholder:text-gray-400"
+                    className="bg-elev-1"
                   />
                   {mode === 'signup' && (
                     <p className="text-xs text-muted">
@@ -330,13 +329,14 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-base flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-gold" />
+    <Suspense fallback={
+      <div className="min-h-screen bg-base flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto text-gold mb-4" />
+          <p className="text-secondary">Loading...</p>
         </div>
-      }
-    >
+      </div>
+    }>
       <LoginContent />
     </Suspense>
   );

@@ -253,37 +253,42 @@ export async function POST_DISABLED(request: NextRequest) {
                   course_payment_id: paymentId,
                 }
               });
+<<<<<<< Current (Your changes)
 
               if (updateError) {
                 console.error('Error granting course access:', updateError);
               }
 
               // NOTE: Giveaway/raffle confirmation email code preserved below for when Square is re-enabled
-              // When re-enabling Square, uncomment this section:
-              /*
+              // When re-enabling Square, uncomment the following lines:
               // Get warrior count for email
-              const { count } = await supabase
-                .from('raffle_entries')
-                .select('*', { count: 'exact', head: true })
-                .eq('raffle_id', raffleMetadata.raffle_id);
-
+              // const { count } = await supabase
+              //   .from('raffle_entries')
+              //   .select('*', { count: 'exact', head: true })
+              //   .eq('raffle_id', raffleMetadata.raffle_id);
+              //
               // Send confirmation email
-              try {
-                await sendRaffleConfirmationEmail({
-                  to: email!,
-                  userName: raffleMetadata.user_name || email?.split('@')[0] || 'Warrior',
-                  productName: 'Kill The Boy Course - Grand Opening Special',
-                  amount: (amountCents / 100).toFixed(2),
-                  entryNumber: entry.entry_number,
-                  warriorCount: count || 1,
-                  transformationGoal: raffleMetadata.transformation_goal,
-                  accessUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.killtheboy.com'}/course`,
-                });
-              } catch (emailError) {
-                console.error('Error sending raffle confirmation email:', emailError);
-                // Don't fail - purchase is complete
+              // try {
+              //   await sendRaffleConfirmationEmail({
+              //     to: email!,
+              //     userName: raffleMetadata.user_name || email?.split('@')[0] || 'Warrior',
+              //     productName: 'Kill The Boy Course - Grand Opening Special',
+              //     amount: (amountCents / 100).toFixed(2),
+              //     entryNumber: entry.entry_number,
+              //     warriorCount: count || 1,
+              //     transformationGoal: raffleMetadata.transformation_goal,
+              //     accessUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.killtheboy.com'}/course`,
+              //   });
+              // } catch (emailError) {
+              //   console.error('Error sending raffle confirmation email:', emailError);
+              //   // Don't fail - purchase is complete
+              // }
+=======
+
+              if (updateError) {
+                console.error('Error granting course access:', updateError);
               }
-              */
+>>>>>>> Incoming (Background Agent changes)
             }
           } catch (donationError) {
             console.error('Error processing course purchase donations:', donationError);
