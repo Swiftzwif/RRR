@@ -80,7 +80,7 @@ export function rateLimit(config: Partial<RateLimitConfig> = {}) {
       const windowSeconds = Math.ceil(finalConfig.windowMs / 1000);
 
       // Try to get existing entry from Redis
-      const existingEntry = await kvInstance.get<RateLimitEntry>(rateLimitKey);
+      const existingEntry = (await kvInstance.get(rateLimitKey)) as RateLimitEntry | null;
 
       let entry: RateLimitEntry;
 
