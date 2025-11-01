@@ -1,11 +1,10 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Zap, TrendingUp, Clock, Users } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
+import { Button } from "@/components/ui/button";
 import { createClient } from '@/utils/supabase/client';
+import { motion } from "framer-motion";
+import { Clock, TrendingUp, Users, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface RaffleConfig {
   id: string;
