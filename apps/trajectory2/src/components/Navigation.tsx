@@ -105,6 +105,16 @@ export default function Navigation() {
               31-Day Experience
             </Link>
             <Link
+              href="/products"
+              className={`transition-colors duration-200 font-semibold ${
+                isDarkPage
+                  ? "text-gold hover:text-[#FFA500]"
+                  : "text-brand-gold hover:text-orange-500"
+              }`}
+            >
+              Products
+            </Link>
+            <Link
               href="/resources"
               className={`transition-colors duration-200 ${
                 isDarkPage
@@ -205,6 +215,17 @@ export default function Navigation() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 31-Day Experience
+              </Link>
+              <Link
+                href="/products"
+                className={`block px-3 py-2 transition-colors font-semibold ${
+                  isDarkPage
+                    ? "text-gold hover:text-[#FFA500]"
+                    : "text-brand-gold hover:text-orange-500"
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Products
               </Link>
               <Link
                 href="/resources"

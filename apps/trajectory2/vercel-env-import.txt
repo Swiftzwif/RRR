@@ -1,0 +1,45 @@
+# ====================================
+# VERCEL PRODUCTION ENVIRONMENT VARIABLES
+# ====================================
+# Import this file directly in Vercel Dashboard:
+# Settings -> Environment Variables -> Import .env
+
+# -------------------------------------
+# SUPABASE (Required)
+# -------------------------------------
+NEXT_PUBLIC_SUPABASE_URL=https://nxtmcorzlosubfvxumpt.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54dG1jb3J6bG9zdWJmdnh1bXB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMzI4MTUsImV4cCI6MjA3MjYwODgxNX0.tp3e3JMnjueRYSkwpZrHx4qaQ1Q2lXmYzQNGKx0ZdOI
+
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54dG1jb3J6bG9zdWJmdnh1bXB0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzAzMjgxNSwiZXhwIjoyMDcyNjA4ODE1fQ.F4a1NcT3UnGsM6PRjQzLmZGz0nxs9HrhknfVdAvjbQE
+
+# -------------------------------------
+# THINKIFIC COURSE INTEGRATION
+# -------------------------------------
+NEXT_PUBLIC_THINKIFIC_COURSE_URL=https://jean-s-site-8b39.thinkific.com/products/courses/trajectory
+
+# -------------------------------------
+# EMAIL - RESEND
+# -------------------------------------
+RESEND_API_KEY=re_jaK9ejza_L5cNqfeRsZmd7TN1oWEfyoLb
+RESEND_FROM_EMAIL=Jaymison from Trajectory <jsanchez@trajectorygroup.org>
+
+# -------------------------------------
+# APPLICATION
+# -------------------------------------
+NEXT_PUBLIC_APP_URL=https://trajectorygroup.org
+
+# -------------------------------------
+# CRON SECRET
+# -------------------------------------
+# TODO: Replace with a secure random string
+CRON_SECRET=m8bjaIRfF/nW389JuZJ08Wb0aP68PkNyKn7sIGZlsMo=
+
+# -------------------------------------
+# OPTIONAL: FUTURE FEATURES
+# -------------------------------------
+# PostHog Analytics (uncomment when ready)
+# NEXT_PUBLIC_POSTHOG_KEY=phc_your_posthog_key
+# NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+
+# Vercel Analytics (auto-enabled on Vercel)
+# NEXT_PUBLIC_ANALYTICS_ID=your_analytics_id

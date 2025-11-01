@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Zap, Trophy, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -13,18 +12,12 @@ interface FormData {
   email: string;
   firstName: string;
   lastName: string;
-  likedPost: boolean;
-  sharedPost: boolean;
-  taggedFriend: boolean;
 }
 
 interface FormErrors {
   email?: string;
   firstName?: string;
   lastName?: string;
-  likedPost?: string;
-  sharedPost?: string;
-  taggedFriend?: string;
   general?: string;
 }
 
@@ -33,9 +26,6 @@ export default function GiveawayEntryForm() {
     email: '',
     firstName: '',
     lastName: '',
-    likedPost: false,
-    sharedPost: false,
-    taggedFriend: false,
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,19 +52,6 @@ export default function GiveawayEntryForm() {
       newErrors.lastName = 'Last name is required';
     }
 
-    // Checkbox validations
-    if (!formData.likedPost) {
-      newErrors.likedPost = 'You must like the Instagram post to enter';
-    }
-
-    if (!formData.sharedPost) {
-      newErrors.sharedPost = 'You must share the Instagram post to enter';
-    }
-
-    if (!formData.taggedFriend) {
-      newErrors.taggedFriend = 'You must tag a friend in the comments to enter';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -99,9 +76,6 @@ export default function GiveawayEntryForm() {
           email: formData.email,
           first_name: formData.firstName.trim(),
           last_name: formData.lastName.trim(),
-          liked_post: formData.likedPost,
-          shared_post: formData.sharedPost,
-          tagged_friend: formData.taggedFriend,
         }),
       });
 
@@ -134,9 +108,6 @@ export default function GiveawayEntryForm() {
         email: '',
         firstName: '',
         lastName: '',
-        likedPost: false,
-        sharedPost: false,
-        taggedFriend: false,
       });
     } catch (error) {
       console.error('Error submitting giveaway entry:', error);
@@ -180,10 +151,6 @@ export default function GiveawayEntryForm() {
               <li className="flex items-start gap-2">
                 <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                 <span>You've been subscribed to the Kill The Boy Weekly Newsletter</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>Your Instagram actions will be verified</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
@@ -295,67 +262,6 @@ export default function GiveawayEntryForm() {
             {errors.lastName && (
               <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
             )}
-          </div>
-
-          {/* Instagram Requirements */}
-          <div className="mb-8 space-y-4">
-            <p className="text-sm font-semibold text-gray-700 mb-4">
-              Confirm you've completed these Instagram actions: <span className="text-red-500">*</span>
-            </p>
-
-            {/* Liked Post */}
-            <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
-              <Checkbox
-                id="likedPost"
-                checked={formData.likedPost}
-                onCheckedChange={(checked) =>
-                  setFormData({ ...formData, likedPost: checked === true })
-                }
-                className={errors.likedPost ? 'border-red-500' : ''}
-              />
-              <Label htmlFor="likedPost" className="flex-1 cursor-pointer">
-                <span className="font-medium">I have liked the Instagram post</span>
-                {errors.likedPost && (
-                  <p className="text-red-500 text-sm mt-1">{errors.likedPost}</p>
-                )}
-              </Label>
-            </div>
-
-            {/* Shared Post */}
-            <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
-              <Checkbox
-                id="sharedPost"
-                checked={formData.sharedPost}
-                onCheckedChange={(checked) =>
-                  setFormData({ ...formData, sharedPost: checked === true })
-                }
-                className={errors.sharedPost ? 'border-red-500' : ''}
-              />
-              <Label htmlFor="sharedPost" className="flex-1 cursor-pointer">
-                <span className="font-medium">I have shared the Instagram post</span>
-                {errors.sharedPost && (
-                  <p className="text-red-500 text-sm mt-1">{errors.sharedPost}</p>
-                )}
-              </Label>
-            </div>
-
-            {/* Tagged Friend */}
-            <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
-              <Checkbox
-                id="taggedFriend"
-                checked={formData.taggedFriend}
-                onCheckedChange={(checked) =>
-                  setFormData({ ...formData, taggedFriend: checked === true })
-                }
-                className={errors.taggedFriend ? 'border-red-500' : ''}
-              />
-              <Label htmlFor="taggedFriend" className="flex-1 cursor-pointer">
-                <span className="font-medium">I have tagged a friend in the Instagram post comments</span>
-                {errors.taggedFriend && (
-                  <p className="text-red-500 text-sm mt-1">{errors.taggedFriend}</p>
-                )}
-              </Label>
-            </div>
           </div>
 
           {/* Submit Button */}

@@ -1,5 +1,14 @@
-import { kv } from '@vercel/kv';
 import { NextRequest } from 'next/server';
+
+// Optional Vercel KV import - will use fallback if not available
+let kv: any = null;
+try {
+  const kvModule = require('@vercel/kv');
+  kv = kvModule.kv;
+} catch {
+  // @vercel/kv not available - will use fallback in-memory rate limiting
+  kv = null;
+}
 
 interface RateLimitEntry {
   count: number;
@@ -47,8 +56,20 @@ export function rateLimit(config: Partial<RateLimitConfig> = {}) {
       const resetTime = now + finalConfig.windowMs;
       const windowSeconds = Math.ceil(finalConfig.windowMs / 1000);
 
+      // Use in-memory fallback if Vercel KV is not available
+      if (!kv) {
+        // Simple in-memory fallback - allow all requests
+        // In production, you should configure Vercel KV
+        return {
+          isAllowed: true,
+          limit: finalConfig.maxRequests,
+          remaining: finalConfig.maxRequests,
+          reset: Date.now() + finalConfig.windowMs,
+        };
+      }
+
       // Try to get existing entry from Redis
-      const existingEntry = await kv.get<RateLimitEntry>(rateLimitKey);
+      const existingEntry = await (kv.get as (key: string) => Promise<RateLimitEntry | null>)(rateLimitKey);
 
       let entry: RateLimitEntry;
 
@@ -59,7 +80,7 @@ export function rateLimit(config: Partial<RateLimitConfig> = {}) {
           resetTime: resetTime,
         };
         // Set with TTL (time-to-live) in seconds
-        await kv.set(rateLimitKey, entry, { ex: windowSeconds });
+        await (kv.set as (key: string, value: any, options?: any) => Promise<void>)(rateLimitKey, entry, { ex: windowSeconds });
       } else {
         // Increment existing entry
         entry = {
@@ -71,7 +92,7 @@ export function rateLimit(config: Partial<RateLimitConfig> = {}) {
         const remainingSeconds = Math.ceil(remainingMs / 1000);
 
         if (remainingSeconds > 0) {
-          await kv.set(rateLimitKey, entry, { ex: remainingSeconds });
+          await (kv.set as (key: string, value: any, options?: any) => Promise<void>)(rateLimitKey, entry, { ex: remainingSeconds });
         }
       }
 

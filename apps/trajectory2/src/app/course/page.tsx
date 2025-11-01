@@ -32,84 +32,9 @@ interface Module {
 }
 
 function CourseContent() {
-<<<<<<< Current (Your changes)
   const handlePurchase = () => {
     // Redirect to Thinkific course landing page
     window.location.href = THINKIFIC_COURSE_URL;
-=======
-  const [hasAccess, setHasAccess] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [purchaseSuccess, setPurchaseSuccess] = useState(false);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    // Check for success param
-    if (searchParams.get("success") === "1") {
-      setPurchaseSuccess(true);
-    }
-
-    const checkAccess = async () => {
-      if (!supabase) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (user) {
-          // Check if user has purchased the course
-          const { data: purchase } = await supabase
-            .from("purchases")
-            .select("*")
-            .eq("user_id", user.id)
-            .eq("product", "course")
-            .single();
-
-          setHasAccess(!!purchase);
-        }
-      } catch (error) {
-        console.error("Error checking access:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAccess();
-  }, [searchParams]);
-
-  const handlePurchase = async () => {
-    // Payment integration coming soon
-    alert(
-      "Course payment ($97) - Payment integration coming soon! We'll notify you when it's ready."
-    );
-
-    // Optional: Capture intent if user is logged in
-    if (supabase) {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user?.email) {
-        await fetch("/api/notify", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: user.email,
-            topic: "course",
-            metadata: {
-              intent: "purchase",
-              timestamp: new Date().toISOString(),
-            },
-          }),
-        });
-      }
-    }
->>>>>>> Incoming (Background Agent changes)
   };
 
   const modules: Module[] = [

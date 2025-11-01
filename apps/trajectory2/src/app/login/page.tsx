@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense, useState, useEffect } from 'react'
 import { LogoMark } from "@/components/LogoMark";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { motion } from 'framer-motion'
 import { ArrowRight, LogIn, Shield, UserPlus, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { login, signup } from "./actions";
 import { createClient } from '@/utils/supabase/client';
@@ -39,7 +39,7 @@ function LoginContent() {
     try {
       setIsGoogleLoading(true)
       const redirectTo = searchParams.get('redirectTo') || '/'
-      
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -183,9 +183,9 @@ function LoginContent() {
               <form action={handleSubmit} className="space-y-4">
                 {/* Hidden redirect field */}
                 {searchParams.get('redirectTo') && (
-                  <input 
-                    type="hidden" 
-                    name="redirectTo" 
+                  <input
+                    type="hidden"
+                    name="redirectTo"
                     value={searchParams.get('redirectTo') || ''}
                   />
                 )}
@@ -200,7 +200,7 @@ function LoginContent() {
                     autoComplete="email"
                     required
                     placeholder="you@example.com"
-                    className="bg-elev-1"
+                    className="bg-elev-1 text-white border-[var(--border-default)] placeholder:text-gray-400"
                   />
                 </div>
 
@@ -215,7 +215,7 @@ function LoginContent() {
                     autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                     required
                     placeholder="••••••••"
-                    className="bg-elev-1"
+                    className="bg-elev-1 text-white border-[var(--border-default)] placeholder:text-gray-400"
                   />
                   {mode === 'signup' && (
                     <p className="text-xs text-muted">
@@ -329,14 +329,13 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-base flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto text-gold mb-4" />
-          <p className="text-secondary">Loading...</p>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-base flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-gold" />
         </div>
-      </div>
-    }>
+      }
+    >
       <LoginContent />
     </Suspense>
   );
