@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Notification error:", error);
+    logger.error("Notification error", error as Error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
