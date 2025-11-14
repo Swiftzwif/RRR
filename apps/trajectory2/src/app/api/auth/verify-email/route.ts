@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServiceRole } from '@/lib/supabase';
 import { sendEmailVerification } from '@/lib/email';
+import { logger } from '@/lib/logger';
 
 // POST /api/auth/verify-email - Send verification email
 export async function POST(request: NextRequest) {
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (verifyError || !verifyData) {
-      console.error('Error generating verification link:', verifyError);
+      logger.error('Error generating verification link', verifyError);
       return NextResponse.json(
         { error: 'Failed to generate verification link' },
         { status: 500 }
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!emailResult.success) {
-      console.error('Failed to send verification email:', emailResult.error);
+      logger.error('Failed to send verification email', emailResult.error);
       return NextResponse.json(
         { error: 'Failed to send verification email' },
         { status: 500 }
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
       email: user.email
     });
   } catch (error) {
-    console.error('Email verification error:', error);
+    logger.error('Email verification error', error as Error);
     return NextResponse.json(
       { error: 'An error occurred processing your request' },
       { status: 500 }
@@ -128,7 +129,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (error || !data.user) {
-      console.error('Token verification error:', error);
+      logger.error('Token verification error', error);
       return NextResponse.json(
         { error: 'Invalid or expired verification token' },
         { status: 400 }
@@ -148,7 +149,7 @@ export async function GET(request: NextRequest) {
     );
 
     if (updateError) {
-      console.error('Failed to update user verification status:', updateError);
+      logger.error('Failed to update user verification status', updateError);
     }
 
     // Log verification
@@ -169,7 +170,7 @@ export async function GET(request: NextRequest) {
       new URL('/auth/verify-success', process.env.NEXT_PUBLIC_APP_URL || request.url)
     );
   } catch (error) {
-    console.error('Email verification error:', error);
+    logger.error('Email verification error', error as Error);
     return NextResponse.json(
       { error: 'An error occurred verifying your email' },
       { status: 500 }
