@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (verifyError || !verifyData) {
-      console.error('Error generating verification link:', verifyError);
+      logger.error('Error generating verification link', verifyError);
       return NextResponse.json(
         { error: 'Failed to generate verification link' },
         { status: 500 }
