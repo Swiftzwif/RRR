@@ -5,6 +5,7 @@ import { Zap, Clock, Gift, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import type { Prize } from '@/types/giveaway';
 
 interface GiveawayConfig {
   id: string;
@@ -16,7 +17,7 @@ interface GiveawayConfig {
   regular_price: number;
   savings_amount: number;
   status: string;
-  prizes: any[];
+  prizes: Prize[];
 }
 
 export default function GiveawayHeroSection() {
