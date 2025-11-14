@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { logger } from '@/lib/logger';
 
 // Lazy initialize Resend to avoid errors when API key is not configured
 let resendInstance: Resend | null = null;
