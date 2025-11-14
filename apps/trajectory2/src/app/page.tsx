@@ -2,7 +2,6 @@
 
 import KillTheBoyLoader from "@/components/KillTheBoyLoader";
 import { LogoMark } from "@/components/LogoMark";
-import GiveawayHeroSection from "@/components/GiveawayHeroSection";
 import { FEATURE_FLAGS } from "@/lib/config";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -183,7 +182,7 @@ export default function Home() {
                 </h1>
 
                 {/* Grand Opening Giveaway - Hidden via feature flag */}
-                {FEATURE_FLAGS.GIVEAWAY_ENABLED && <GiveawayHeroSection />}
+                {/* Giveaway removed - event ended */}
 
                 <h2 className="text-3xl md:text-4xl font-light text-gold mb-8 h-16 flex items-center">
                   <span>Command your </span>
