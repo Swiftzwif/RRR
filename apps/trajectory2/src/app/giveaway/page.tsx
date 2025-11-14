@@ -1,10 +1,5 @@
 import { Metadata } from 'next';
-import { Suspense } from 'react';
-import GiveawayHero from '@/components/giveaway/GiveawayHero';
-import PrizeShowcase from '@/components/giveaway/PrizeShowcase';
-import GiveawayEntryForm from '@/components/giveaway/GiveawayEntryForm';
-import LiveParticipantFeed from '@/components/giveaway/LiveParticipantFeed';
-import GiveawayCountdown from '@/components/giveaway/GiveawayCountdown';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Kill The Boy Grand Opening - Enter to Win Transformation Prizes',
