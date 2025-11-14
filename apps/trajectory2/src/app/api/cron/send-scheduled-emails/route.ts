@@ -241,7 +241,7 @@ export async function GET(request: NextRequest) {
 
         results.push({ email: scheduled.email, day: scheduled.day_number, status: 'sent', id: data?.id });
       } catch (error) {
-        console.error(`Error sending email to ${scheduled.email}:`, error);
+        logger.error(`Error sending email to ${scheduled.email}`, error as Error);
 
         // Update status to failed
         await supabase!
