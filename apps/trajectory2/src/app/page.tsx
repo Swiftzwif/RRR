@@ -3,6 +3,7 @@
 import KillTheBoyLoader from "@/components/KillTheBoyLoader";
 import { LogoMark } from "@/components/LogoMark";
 import GiveawayHeroSection from "@/components/GiveawayHeroSection";
+import { FEATURE_FLAGS } from "@/lib/config";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
