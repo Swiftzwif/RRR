@@ -77,7 +77,7 @@ export default function TransformationCommitment() {
         window.location.href = data.paymentUrl;
       }
     } catch (error) {
-      console.error('Error submitting raffle entry:', error);
+      logger.error('Error submitting raffle entry', error as Error);
       alert('Technical issue - but your transformation is meant to be. Try again.');
     } finally {
       setIsSubmitting(false);
