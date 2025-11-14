@@ -170,7 +170,7 @@ export async function GET(request: NextRequest) {
       .order('scheduled_for', { ascending: true });
 
     if (fetchError) {
-      console.error('Error fetching scheduled emails:', fetchError);
+      logger.error('Error fetching scheduled emails', fetchError);
       return NextResponse.json({ error: 'Failed to fetch scheduled emails' }, { status: 500 });
     }
 
