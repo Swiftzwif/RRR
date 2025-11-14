@@ -4,6 +4,7 @@ import AssessmentStepper from '@/components/AssessmentStepper';
 import { getCopy } from '@/lib/copy';
 import { scoreDomains } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
