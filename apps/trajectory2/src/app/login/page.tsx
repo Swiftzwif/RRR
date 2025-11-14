@@ -71,7 +71,7 @@ function LoginContent() {
         await signup(formData)
       }
     } catch (error) {
-      console.error('Auth error:', error)
+      logger.error('Auth error', error as Error)
     } finally {
       setIsLoading(false)
     }
