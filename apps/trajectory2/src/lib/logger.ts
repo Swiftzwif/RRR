@@ -42,3 +42,12 @@ const warn = (message: string, ...args: unknown[]): void => {
     console.warn(`[WARN] ${message}`, ...args);
   }
 };
+
+/**
+ * Log debug messages (development only)
+ */
+const debug = (message: string, ...args: unknown[]): void => {
+  if (process.env.NODE_ENV === 'development') {
+    console.debug(`[DEBUG] ${message}`, ...args);
+  }
+};
