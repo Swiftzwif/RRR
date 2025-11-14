@@ -1,6 +1,6 @@
 "use client";
 
-import KillTheBoyLoader from "@/components/KillTheBoyLoader";
+import dynamic from 'next/dynamic';
 import { LogoMark } from "@/components/LogoMark";
 import { FEATURE_FLAGS } from "@/lib/config";
 import { Badge } from "@/components/ui/badge";
@@ -28,10 +28,22 @@ import {
 } from "lucide-react";
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import ProductCard from '@/components/products/ProductCard';
-import PricingDisplay from '@/components/products/PricingDisplay';
-import LimitedTimeOffer from '@/components/products/LimitedTimeOffer';
 import { PRODUCTS } from '@/lib/config';
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load heavy components with loading states
+const KillTheBoyLoader = dynamic(() => import("@/components/KillTheBoyLoader"), {
+  ssr: false,
+});
+const ProductCard = dynamic(() => import('@/components/products/ProductCard'), {
+  loading: () => <Skeleton className="h-[600px] w-full" />,
+});
+const PricingDisplay = dynamic(() => import('@/components/products/PricingDisplay'), {
+  loading: () => <Skeleton className="h-20 w-full" />,
+});
+const LimitedTimeOffer = dynamic(() => import('@/components/products/LimitedTimeOffer'), {
+  loading: () => <Skeleton className="h-8 w-48 mx-auto" />,
+});
 
 export default function Home() {
   const [currentWord, setCurrentWord] = useState(0);
