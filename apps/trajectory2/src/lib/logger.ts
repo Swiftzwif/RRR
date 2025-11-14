@@ -12,3 +12,12 @@ interface Logger {
   warn: (message: string, ...args: unknown[]) => void;
   debug: (message: string, ...args: unknown[]) => void;
 }
+
+/**
+ * Log informational messages
+ */
+const info = (message: string, ...args: unknown[]): void => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[INFO] ${message}`, ...args);
+  }
+};
