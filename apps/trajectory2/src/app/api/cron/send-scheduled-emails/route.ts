@@ -264,7 +264,7 @@ export async function GET(request: NextRequest) {
       results
     });
   } catch (error) {
-    console.error('Cron job error:', error);
+    logger.error('Cron job error', error as Error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
