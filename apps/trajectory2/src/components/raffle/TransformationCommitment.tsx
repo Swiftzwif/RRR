@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { createClient } from '@/utils/supabase/client';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 
 export default function TransformationCommitment() {
