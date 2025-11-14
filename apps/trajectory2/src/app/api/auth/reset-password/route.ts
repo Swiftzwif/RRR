@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServiceRole } from '@/lib/supabase';
 import { sendPasswordResetEmail } from '@/lib/email';
 import { rateLimit, rateLimitConfigs, createRateLimitResponse } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 // Create rate limiter for password reset
 const resetLimiter = rateLimit(rateLimitConfigs.passwordReset);
