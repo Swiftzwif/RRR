@@ -6,6 +6,7 @@ import ResultCard from "@/components/ResultCard";
 import { getCopy } from "@/lib/copy";
 import { Domain, getSuggestedActions } from "@/lib/scoring";
 import { supabase } from "@/lib/supabase";
+import { logger } from "@/lib/logger";
 import { THINKIFIC_COURSE_URL } from "@/lib/config";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
@@ -86,7 +87,7 @@ export default function ResultsPage() {
           }
         }
       } catch (error) {
-        console.error("Error loading results:", error);
+        logger.error("Error loading results", error as Error);
         router.push("/assessment");
       } finally {
         setLoading(false);
@@ -136,7 +137,7 @@ export default function ResultsPage() {
 
       setShowEmailCapture(false);
     } catch (error) {
-      console.error("Error saving email:", error);
+      logger.error("Error saving email", error as Error);
     } finally {
       setIsSubmittingEmail(false);
     }

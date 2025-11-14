@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Zap, Trophy, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { logger } from '@/lib/logger';
 
 interface FormData {
   email: string;
@@ -139,7 +140,7 @@ export default function GiveawayEntryForm() {
         taggedFriend: false,
       });
     } catch (error) {
-      console.error('Error submitting giveaway entry:', error);
+      logger.error('Error submitting giveaway entry', error as Error);
       setErrors({
         general: 'An unexpected error occurred. Please try again.',
       });

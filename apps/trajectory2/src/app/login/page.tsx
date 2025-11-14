@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from 'next/navigation'
 import { login, signup } from "./actions";
 import { createClient } from '@/utils/supabase/client';
+import { logger } from '@/lib/logger';
 
 function LoginContent() {
   const [isLoading, setIsLoading] = useState(false)
@@ -52,11 +53,11 @@ function LoginContent() {
       })
 
       if (error) {
-        console.error('Google auth error:', error)
+        logger.error('Google auth error', error)
         setIsGoogleLoading(false)
       }
     } catch (error) {
-      console.error('Google auth error:', error)
+      logger.error('Google auth error', error as Error)
       setIsGoogleLoading(false)
     }
   }
@@ -70,7 +71,7 @@ function LoginContent() {
         await signup(formData)
       }
     } catch (error) {
-      console.error('Auth error:', error)
+      logger.error('Auth error', error as Error)
     } finally {
       setIsLoading(false)
     }

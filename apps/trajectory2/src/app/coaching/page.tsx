@@ -2,6 +2,7 @@
 
 import { getCopy } from '@/lib/copy';
 import { supabase } from '@/lib/supabase';
+import { logger } from '@/lib/logger';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, Clock, Target, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -31,7 +32,7 @@ export default function CoachingPage() {
           setHasAccess(!!purchase);
         }
       } catch (error) {
-        console.error('Error checking access:', error);
+        logger.error('Error checking access', error as Error);
       } finally {
         setLoading(false);
       }

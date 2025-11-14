@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
+import { logger } from '@/lib/logger';
 import { motion } from 'framer-motion';
 import {
   Trophy,
@@ -209,7 +210,7 @@ export default function AdminGiveawayPage() {
 
     if (error) {
       alert('Failed to update verification status');
-      console.error('Verification update error:', error);
+      logger.error('Verification update error', error);
     } else {
       // Refresh data
       await fetchGiveawayData();

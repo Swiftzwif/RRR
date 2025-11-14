@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { createClient } from '@/utils/supabase/client';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 
 export default function TransformationCommitment() {
@@ -76,7 +77,7 @@ export default function TransformationCommitment() {
         window.location.href = data.paymentUrl;
       }
     } catch (error) {
-      console.error('Error submitting raffle entry:', error);
+      logger.error('Error submitting raffle entry', error as Error);
       alert('Technical issue - but your transformation is meant to be. Try again.');
     } finally {
       setIsSubmitting(false);

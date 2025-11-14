@@ -4,6 +4,7 @@ import AssessmentStepper from '@/components/AssessmentStepper';
 import { getCopy } from '@/lib/copy';
 import { scoreDomains } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -69,7 +70,7 @@ export default function AssessmentPage() {
         .single();
 
       if (error) {
-        console.error('Error saving assessment:', error);
+        logger.error('Error saving assessment', error);
         // Still proceed to results even if save fails
       }
 
@@ -82,7 +83,7 @@ export default function AssessmentPage() {
       // Redirect to results
       router.push('/results');
     } catch (err) {
-      console.error('Error processing assessment:', err);
+      logger.error('Error processing assessment', err as Error);
       setError('Failed to process assessment. Please try again.');
     }
   };
