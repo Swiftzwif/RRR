@@ -260,7 +260,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Raffle status error:', error);
+    logger.error('Raffle status error', error as Error);
     return NextResponse.json(
       { error: 'Unable to fetch raffle status' },
       { status: 500 }
