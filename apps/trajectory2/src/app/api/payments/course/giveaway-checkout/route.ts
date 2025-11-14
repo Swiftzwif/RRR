@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/utils/supabase/server';
+import { logger } from '@/lib/logger';
 
 // Validation schema
 const courseCheckoutSchema = z.object({
