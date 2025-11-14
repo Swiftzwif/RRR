@@ -53,7 +53,7 @@ function LoginContent() {
       })
 
       if (error) {
-        console.error('Google auth error:', error)
+        logger.error('Google auth error', error)
         setIsGoogleLoading(false)
       }
     } catch (error) {
