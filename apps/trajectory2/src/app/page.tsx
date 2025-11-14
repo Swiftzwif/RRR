@@ -182,8 +182,8 @@ export default function Home() {
                   Trajectory
                 </h1>
 
-                {/* Grand Opening Giveaway */}
-                <GiveawayHeroSection />
+                {/* Grand Opening Giveaway - Hidden via feature flag */}
+                {FEATURE_FLAGS.GIVEAWAY_ENABLED && <GiveawayHeroSection />}
 
                 <h2 className="text-3xl md:text-4xl font-light text-gold mb-8 h-16 flex items-center">
                   <span>Command your </span>
