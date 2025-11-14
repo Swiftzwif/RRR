@@ -2,33 +2,40 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServiceRole } from '@/lib/supabase';
 import { sendEmailVerification } from '@/lib/email';
 import { logger } from '@/lib/logger';
+import type { EmailVerificationRequest, EmailVerificationResponse, AuthErrorResponse } from '@/types/auth';
+import { emailVerificationRequestSchema } from '@/types/auth';
+import type { User } from '@supabase/supabase-js';
 
 // POST /api/auth/verify-email - Send verification email
 export async function POST(request: NextRequest) {
   try {
-    const { email, userId } = await request.json();
+    // Parse and validate request body
+    const body = await request.json();
+    const validation = emailVerificationRequestSchema.safeParse(body);
 
-    if (!email && !userId) {
-      return NextResponse.json(
-        { error: 'Email or user ID is required' },
+    if (!validation.success) {
+      return NextResponse.json<AuthErrorResponse>(
+        { error: validation.error.issues[0]?.message || 'Invalid request data' },
         { status: 400 }
       );
     }
 
+    const { email, userId } = validation.data;
+
     const supabase = getSupabaseServiceRole();
     if (!supabase) {
-      return NextResponse.json(
+      return NextResponse.json<AuthErrorResponse>(
         { error: 'Auth service not configured' },
         { status: 500 }
       );
     }
 
     // Get user - prefer userId, otherwise use email to generate link directly
-    let user;
+    let user: User | Pick<User, 'email' | 'email_confirmed_at'>;
     if (userId) {
       const { data, error } = await supabase.auth.admin.getUserById(userId);
       if (error || !data?.user) {
-        return NextResponse.json(
+        return NextResponse.json<AuthErrorResponse>(
           { error: 'User not found' },
           { status: 404 }
         );
@@ -37,9 +44,9 @@ export async function POST(request: NextRequest) {
     } else if (email) {
       // For email-only requests, generate link directly (will fail silently if user doesn't exist)
       // We can't easily get user by email in admin API, so we'll generate link and handle gracefully
-      user = { email, email_confirmed_at: null } as any; // Temporary user object for email
+      user = { email, email_confirmed_at: undefined };
     } else {
-      return NextResponse.json(
+      return NextResponse.json<AuthErrorResponse>(
         { error: 'Email or user ID is required' },
         { status: 400 }
       );
@@ -47,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     // Check if already verified (only if we have full user object)
     if (user.email_confirmed_at && userId) {
-      return NextResponse.json({
+      return NextResponse.json<EmailVerificationResponse>({
         message: 'Email already verified',
         verified: true
       });
@@ -71,9 +78,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Send verification email
+    const userName = 'user_metadata' in user && user.user_metadata?.name
+      ? String(user.user_metadata.name)
+      : user.email!.split('@')[0];
+
     const emailResult = await sendEmailVerification({
       to: user.email!,
-      userName: (user as any).user_metadata?.name || user.email!.split('@')[0],
+      userName,
       verificationUrl: verifyData.properties?.hashed_token
         ? `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify?token=${verifyData.properties.hashed_token}&type=magiclink`
         : verifyData.properties?.action_link || ''
@@ -84,19 +95,19 @@ export async function POST(request: NextRequest) {
         ? emailResult.error
         : 'Failed to send verification email';
       logger.error('Failed to send verification email', new Error(errorMessage));
-      return NextResponse.json(
+      return NextResponse.json<AuthErrorResponse>(
         { error: 'Failed to send verification email' },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({
+    return NextResponse.json<EmailVerificationResponse>({
       message: 'Verification email sent',
       email: user.email
     });
-  } catch (error) {
-    logger.error('Email verification error', error as Error);
-    return NextResponse.json(
+  } catch (error: unknown) {
+    logger.error('Email verification error', error);
+    return NextResponse.json<AuthErrorResponse>(
       { error: 'An error occurred processing your request' },
       { status: 500 }
     );
@@ -126,14 +137,15 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify the token
+    const otpType = (type === 'email' || type === 'signup') ? type : 'signup';
     const { data, error } = await supabase.auth.verifyOtp({
       token_hash: token,
-      type: type as 'signup' | 'email' || 'signup',
+      type: otpType,
     });
 
     if (error || !data.user) {
       logger.error('Token verification error', error || new Error('Invalid or expired token'));
-      return NextResponse.json(
+      return NextResponse.json<AuthErrorResponse>(
         { error: 'Invalid or expired verification token' },
         { status: 400 }
       );
@@ -172,9 +184,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(
       new URL('/auth/verify-success', process.env.NEXT_PUBLIC_APP_URL || request.url)
     );
-  } catch (error) {
-    logger.error('Email verification error', error as Error);
-    return NextResponse.json(
+  } catch (error: unknown) {
+    logger.error('Email verification error', error);
+    return NextResponse.json<AuthErrorResponse>(
       { error: 'An error occurred verifying your email' },
       { status: 500 }
     );

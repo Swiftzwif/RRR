@@ -3,6 +3,8 @@ import { getSupabaseServiceRole } from '@/lib/supabase';
 import { sendPasswordResetEmail } from '@/lib/email';
 import { rateLimit, rateLimitConfigs, createRateLimitResponse } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
+import type { PasswordResetRequest, PasswordResetConfirmation, PasswordResetSuccessResponse, AuthErrorResponse, AuthSuccessResponse } from '@/types/auth';
+import { passwordResetRequestSchema, passwordResetConfirmationSchema } from '@/types/auth';
 
 // Create rate limiter for password reset
 const resetLimiter = rateLimit(rateLimitConfigs.passwordReset);
@@ -15,18 +17,23 @@ export async function POST(request: NextRequest) {
     if (!isAllowed) {
       return createRateLimitResponse(reset);
     }
-    const { email } = await request.json();
 
-    if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
+    // Parse and validate request body
+    const body = await request.json();
+    const validation = passwordResetRequestSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json<AuthErrorResponse>(
+        { error: validation.error.issues[0]?.message || 'Invalid request data' },
         { status: 400 }
       );
     }
 
+    const { email } = validation.data;
+
     const supabase = getSupabaseServiceRole();
     if (!supabase) {
-      return NextResponse.json(
+      return NextResponse.json<AuthErrorResponse>(
         { error: 'Auth service not configured' },
         { status: 500 }
       );
@@ -80,17 +87,17 @@ export async function POST(request: NextRequest) {
             }
           })
           .select();
-      } catch (err) {
-        logger.error('Failed to log auth event', err as Error);
+      } catch (err: unknown) {
+        logger.error('Failed to log auth event', err);
       }
     }
 
-    return NextResponse.json({
+    return NextResponse.json<AuthSuccessResponse>({
       message: 'If an account exists with this email, you will receive a password reset link.'
     });
-  } catch (error) {
-    logger.error('Password reset error', error as Error);
-    return NextResponse.json(
+  } catch (error: unknown) {
+    logger.error('Password reset error', error);
+    return NextResponse.json<AuthErrorResponse>(
       { error: 'An error occurred processing your request' },
       { status: 500 }
     );
@@ -100,26 +107,22 @@ export async function POST(request: NextRequest) {
 // PUT /api/auth/reset-password - Update password with reset token
 export async function PUT(request: NextRequest) {
   try {
-    const { token, password } = await request.json();
+    // Parse and validate request body
+    const body = await request.json();
+    const validation = passwordResetConfirmationSchema.safeParse(body);
 
-    if (!token || !password) {
-      return NextResponse.json(
-        { error: 'Token and password are required' },
+    if (!validation.success) {
+      return NextResponse.json<AuthErrorResponse>(
+        { error: validation.error.issues[0]?.message || 'Invalid request data' },
         { status: 400 }
       );
     }
 
-    // Validate password strength
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: 'Password must be at least 8 characters long' },
-        { status: 400 }
-      );
-    }
+    const { token, password } = validation.data;
 
     const supabase = getSupabaseServiceRole();
     if (!supabase) {
-      return NextResponse.json(
+      return NextResponse.json<AuthErrorResponse>(
         { error: 'Auth service not configured' },
         { status: 500 }
       );
@@ -172,16 +175,16 @@ export async function PUT(request: NextRequest) {
       })
       .select();
 
-    return NextResponse.json({
+    return NextResponse.json<PasswordResetSuccessResponse>({
       message: 'Password successfully reset',
       user: {
         email: data.user.email,
         id: data.user.id
       }
     });
-  } catch (error) {
-    logger.error('Password update error', error as Error);
-    return NextResponse.json(
+  } catch (error: unknown) {
+    logger.error('Password update error', error);
+    return NextResponse.json<AuthErrorResponse>(
       { error: 'An error occurred updating your password' },
       { status: 500 }
     );
