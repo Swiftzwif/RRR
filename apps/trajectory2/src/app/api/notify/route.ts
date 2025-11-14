@@ -2,6 +2,7 @@ import { scheduleDailyEmails, sendAssessmentCompleteEmail } from "@/lib/email";
 import { getSupabaseServiceRole } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { logger } from "@/lib/logger";
 
 // Validation schema
 const notifySchema = z.object({
