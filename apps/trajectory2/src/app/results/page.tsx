@@ -12,14 +12,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-interface AssessmentResults {
-  domainScores: Record<Domain, number>;
-  overall: number;
-  avatar: "Drifter" | "Balancer" | "Architect";
-  lowestTwoDomains: [Domain, Domain];
-  assessmentId?: string;
-}
+import type { AssessmentResults } from "@/types/assessment";
 
 export default function ResultsPage() {
   const [results, setResults] = useState<AssessmentResults | null>(null);
@@ -86,8 +79,8 @@ export default function ResultsPage() {
             return;
           }
         }
-      } catch (error) {
-        logger.error("Error loading results", error as Error);
+      } catch (error: unknown) {
+        logger.error("Error loading results", error);
         router.push("/assessment");
       } finally {
         setLoading(false);
@@ -136,8 +129,8 @@ export default function ResultsPage() {
       });
 
       setShowEmailCapture(false);
-    } catch (error) {
-      logger.error("Error saving email", error as Error);
+    } catch (error: unknown) {
+      logger.error("Error saving email", error);
     } finally {
       setIsSubmittingEmail(false);
     }

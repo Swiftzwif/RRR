@@ -80,13 +80,13 @@ export async function GET(request: NextRequest) {
                 welcome_email_sent: true,
                 welcome_email_sent_at: new Date().toISOString()
               }
-            }).catch(err => {
-              logger.error('Failed to update welcome_email_sent flag', err as Error);
+            }).catch((err: unknown) => {
+              logger.error('Failed to update welcome_email_sent flag', err);
               // Don't fail - email was sent
             });
           }
-        } catch (emailError) {
-          logger.error('Failed to send welcome/verification emails', emailError as Error);
+        } catch (emailError: unknown) {
+          logger.error('Failed to send welcome/verification emails', emailError);
           // Don't fail the auth process if email fails
         }
       }

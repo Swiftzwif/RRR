@@ -4,16 +4,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-
-interface Question {
-  id: string;
-  domain: string;
-  prompt: string;
-}
+import type { Question, AssessmentAnswers } from "@/types/assessment";
 
 interface AssessmentStepperProps {
   questions: Question[];
-  onComplete: (answers: Record<string, number>) => void;
+  onComplete: (answers: AssessmentAnswers) => void;
   className?: string;
 }
 
@@ -23,7 +18,7 @@ export default function AssessmentStepper({
   className = "",
 }: AssessmentStepperProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [answers, setAnswers] = useState<AssessmentAnswers>({});
   const [, setIsComplete] = useState(false);
 
   const currentQuestion = questions[currentIndex];
