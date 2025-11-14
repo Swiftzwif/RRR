@@ -33,7 +33,7 @@ ConvertKit is used to automatically subscribe giveaway entrants to your newslett
 2. Find **API Secret** section
 3. Copy your API Secret Key (starts with `kit_`)
 
-**Example**: `kit_cb18ffdfde4e1b340d6e5bcdc35bd8cf`
+**Example**: `kit_your_api_key_here`
 
 ⚠️ **Security**: Keep this key secure! Never commit it to public repositories.
 
@@ -49,10 +49,10 @@ CONVERTKIT_API_KEY=kit_your_api_key_here
 CONVERTKIT_FORM_ID=your_form_id_here
 ```
 
-**Example**:
+**Example** (with your actual values):
 
 ```bash
-CONVERTKIT_API_KEY=kit_cb18ffdfde4e1b340d6e5bcdc35bd8cf
+CONVERTKIT_API_KEY=kit_your_actual_api_key_here
 CONVERTKIT_FORM_ID=384eb35d37
 ```
 

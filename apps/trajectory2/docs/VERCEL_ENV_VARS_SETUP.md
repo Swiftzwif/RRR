@@ -19,7 +19,7 @@ Quick guide to add ConvertKit credentials to your Vercel production environment.
 1. Click **Add New**
 2. Enter the following:
    - **Key**: `CONVERTKIT_API_KEY`
-   - **Value**: `kit_cb18ffdfde4e1b340d6e5bcdc35bd8cf`
+   - **Value**: `kit_your_convertkit_api_key_here` (get from ConvertKit settings)
    - **Environments**: Check all three boxes:
      - ✅ Production
      - ✅ Preview
@@ -59,7 +59,7 @@ After redeployment, test by:
 Your environment variables should look like this:
 
 ```
-CONVERTKIT_API_KEY = kit_cb18ffdfde4e1b340d6e5bcdc35bd8cf
+CONVERTKIT_API_KEY = kit_your_convertkit_api_key_here
   ☑️ Production  ☑️ Preview  ☑️ Development
 
 CONVERTKIT_FORM_ID = 384eb35d37

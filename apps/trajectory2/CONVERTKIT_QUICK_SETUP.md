@@ -17,10 +17,12 @@ Add two environment variables to Vercel and redeploy.
 3. Add FIRST variable:
    ```
    Key: CONVERTKIT_API_KEY
-   Value: kit_cb18ffdfde4e1b340d6e5bcdc35bd8cf
+   Value: kit_your_convertkit_api_key_here
    Environments: ✅ Production ✅ Preview ✅ Development
    ```
    Click **Save**
+
+   ⚠️ Get your actual API key from: https://app.convertkit.com/account_settings/advanced_settings
 
 4. Click **Add New** again
 5. Add SECOND variable:
