@@ -195,6 +195,62 @@ This project follows strict git hygiene (see `.cursorrules` for full details):
 - `fix/<ticket>-<description>`: Bug fixes
 - `hotfix/<ticket>-<description>`: Urgent production fixes
 
+### Git Worktree Workflow
+
+**CRITICAL**: This project uses git worktrees as the PRIMARY method for managing branches. NEVER use `git checkout` to switch branches in the main repository.
+
+**Directory Structure**:
+```
+/home/locker/Projects/RRR/                    # Main repo (stays on master)
+/home/locker/Projects/RRR-worktrees/          # Worktree directory
+├── develop/                                   # Development integration branch
+├── pr-43-api-routes/                         # PR-specific worktrees
+├── pr-44-assessment/
+├── pr-45-auth/
+└── pr-46-giveaway-removal/
+```
+
+**Key Benefits**:
+- No branch switching = no context loss
+- Parallel work on multiple branches simultaneously
+- No merge conflicts from switching
+- Each worktree has independent node_modules and build cache
+- Clean separation of concerns
+
+**Common Worktree Commands**:
+```bash
+# List all worktrees
+git worktree list
+
+# Create new worktree for feature branch
+git worktree add ../RRR-worktrees/feature-name feature/feature-name
+
+# Create new worktree with new branch
+git worktree add -b feature/new-feature ../RRR-worktrees/new-feature
+
+# Navigate to worktree
+cd /home/locker/Projects/RRR-worktrees/feature-name
+
+# Remove worktree (after branch merged)
+git worktree remove ../RRR-worktrees/feature-name
+# OR delete directory and prune
+rm -rf ../RRR-worktrees/feature-name && git worktree prune
+```
+
+**Workflow**:
+1. Main repo at `/home/locker/Projects/RRR` always stays on `master`
+2. For new feature: `git worktree add ../RRR-worktrees/feature-name -b feature/ticket-description`
+3. Work in worktree directory: `cd ../RRR-worktrees/feature-name`
+4. Commit and push from worktree
+5. After PR merged: `git worktree remove ../RRR-worktrees/feature-name`
+6. Update main repo: `cd /home/locker/Projects/RRR && git pull`
+
+**Rules**:
+- ALWAYS work in worktrees, NEVER checkout different branches in main repo
+- Each worktree should run `npm install` independently
+- Main repo is for reference and worktree management only
+- Clean up merged worktrees regularly
+
 ### Commit Convention
 ```
 <type>(<scope>): <subject>
