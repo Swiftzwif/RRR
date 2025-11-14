@@ -2,13 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Kill The Boy Grand Opening - Enter to Win Transformation Prizes',
-  description: 'Join the movement. Enter to win transformation accelerators worth over $2,500. Your journey from drift to dominion starts with a single decision.',
-  openGraph: {
-    title: 'Kill The Boy Grand Opening - Enter to Win Transformation Prizes',
-    description: 'Join the movement. Enter to win transformation accelerators worth over $2,500.',
-    images: ['/og-giveaway.png'],
-  },
+  title: 'Giveaway Event Ended | Trajectory',
+  description: 'The Kill The Boy Grand Opening giveaway has ended. Thank you for your interest! Stay tuned for future opportunities.',
 };
 
 export default function GiveawayPage() {
