@@ -43,6 +43,7 @@ export interface AssessmentResults extends ScoringResult {
 export interface SavedAssessment {
   id: string;
   user_id: string | null;
+  email: string | null;
   answers: AssessmentAnswers;
   domain_scores: Record<Domain, number>;
   avatar: Avatar;
