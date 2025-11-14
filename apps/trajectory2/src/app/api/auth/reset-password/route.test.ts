@@ -125,7 +125,7 @@ describe('POST /api/auth/reset-password', () => {
     };
 
     vi.mocked(getSupabaseServiceRole).mockReturnValue(mockSupabase as any);
-    vi.mocked(sendPasswordResetEmail).mockResolvedValue({ success: true });
+    vi.mocked(sendPasswordResetEmail).mockResolvedValue({ success: true, data: { id: 'email-id' } } as any);
 
     const request = createMockRequest('/api/auth/reset-password', {
       method: 'POST',

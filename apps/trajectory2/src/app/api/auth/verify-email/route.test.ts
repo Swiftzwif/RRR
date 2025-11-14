@@ -142,7 +142,7 @@ describe('POST /api/auth/verify-email', () => {
     };
 
     vi.mocked(getSupabaseServiceRole).mockReturnValue(mockSupabase as any);
-    vi.mocked(sendEmailVerification).mockResolvedValue({ success: true });
+    vi.mocked(sendEmailVerification).mockResolvedValue({ success: true, data: { id: 'email-id' } } as any);
 
     const request = createMockRequest('/api/auth/verify-email', {
       method: 'POST',

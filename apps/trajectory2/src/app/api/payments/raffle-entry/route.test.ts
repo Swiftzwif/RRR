@@ -411,7 +411,7 @@ describe('GET /api/payments/raffle-entry', () => {
       }),
     };
 
-    // Mock count separately
+    // Mock count separately - type assertion to avoid complex typing
     mockSupabase.from = vi.fn((table: string) => {
       if (table === 'raffle_entries') {
         return {
@@ -440,7 +440,7 @@ describe('GET /api/payments/raffle-entry', () => {
           error: null,
         }),
       };
-    });
+    }) as any;
 
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 

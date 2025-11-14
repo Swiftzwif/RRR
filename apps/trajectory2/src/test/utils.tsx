@@ -1,5 +1,6 @@
 import { render, RenderOptions } from '@testing-library/react';
 import { ReactElement } from 'react';
+import { vi } from 'vitest';
 
 /**
  * Custom render function for testing React components

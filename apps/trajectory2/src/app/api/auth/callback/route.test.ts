@@ -121,7 +121,7 @@ describe('GET /api/auth/callback', () => {
 
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
     vi.mocked(getSupabaseServiceRole).mockReturnValue(mockServiceSupabase as any);
-    vi.mocked(sendWelcomeEmail).mockResolvedValue({ success: true });
+    vi.mocked(sendWelcomeEmail).mockResolvedValue({ success: true, data: { id: 'email-id' } } as any);
 
     const request = createMockRequest('/api/auth/callback', {
       method: 'GET',
@@ -213,8 +213,8 @@ describe('GET /api/auth/callback', () => {
 
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
     vi.mocked(getSupabaseServiceRole).mockReturnValue(mockServiceSupabase as any);
-    vi.mocked(sendWelcomeEmail).mockResolvedValue({ success: true });
-    vi.mocked(sendEmailVerification).mockResolvedValue({ success: true });
+    vi.mocked(sendWelcomeEmail).mockResolvedValue({ success: true, data: { id: 'email-id' } } as any);
+    vi.mocked(sendEmailVerification).mockResolvedValue({ success: true, data: { id: 'email-id' } } as any);
 
     const request = createMockRequest('/api/auth/callback', {
       method: 'GET',
@@ -325,7 +325,7 @@ describe('GET /api/auth/callback', () => {
         },
       },
     } as any);
-    vi.mocked(sendWelcomeEmail).mockRejectedValue(new Error('Email service down'));
+    vi.mocked(sendWelcomeEmail).mockRejectedValue(new Error('Email service down') as any);
 
     const request = createMockRequest('/api/auth/callback', {
       method: 'GET',

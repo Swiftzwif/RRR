@@ -22,11 +22,12 @@ export default defineConfig({
         'src/emails/**', // Email templates are visual, not testable
       ],
       include: ['src/**/*.ts', 'src/**/*.tsx'],
-      all: true,
-      lines: 70,
-      functions: 70,
-      branches: 70,
-      statements: 70,
+      thresholds: {
+        lines: 70,
+        functions: 70,
+        branches: 70,
+        statements: 70,
+      },
     },
   },
   resolve: {
