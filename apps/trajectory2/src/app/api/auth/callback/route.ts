@@ -25,9 +25,9 @@ export async function GET(request: NextRequest) {
 
     // Get the user after successful exchange
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError || !user) {
-      logger.error('Error getting user after auth', userError);
+      logger.error('Error getting user after auth', userError || new Error('User not found'));
       return NextResponse.redirect(
         new URL('/login?error=' + encodeURIComponent('Failed to retrieve user information.'), requestUrl.origin)
       );
