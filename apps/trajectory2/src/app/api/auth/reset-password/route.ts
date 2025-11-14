@@ -129,7 +129,7 @@ export async function PUT(request: NextRequest) {
     });
 
     if (error) {
-      console.error('Token verification error:', error);
+      logger.error('Token verification error', error);
       return NextResponse.json(
         { error: 'Invalid or expired reset token' },
         { status: 400 }
