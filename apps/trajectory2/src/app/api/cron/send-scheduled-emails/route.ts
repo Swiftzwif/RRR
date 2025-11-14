@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { logger } from '@/lib/logger';
 
 // Lazy initialize Resend to avoid errors when API key is not configured
 let resendInstance: Resend | null = null;
@@ -148,7 +149,7 @@ export async function GET(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
 
     if (!cronSecret) {
-      console.error('CRON_SECRET not configured');
+      logger.error('CRON_SECRET not configured');
       return NextResponse.json({ error: 'Cron secret not configured' }, { status: 500 });
     }
 
@@ -169,7 +170,7 @@ export async function GET(request: NextRequest) {
       .order('scheduled_for', { ascending: true });
 
     if (fetchError) {
-      console.error('Error fetching scheduled emails:', fetchError);
+      logger.error('Error fetching scheduled emails', fetchError);
       return NextResponse.json({ error: 'Failed to fetch scheduled emails' }, { status: 500 });
     }
 
@@ -240,7 +241,7 @@ export async function GET(request: NextRequest) {
 
         results.push({ email: scheduled.email, day: scheduled.day_number, status: 'sent', id: data?.id });
       } catch (error) {
-        console.error(`Error sending email to ${scheduled.email}:`, error);
+        logger.error(`Error sending email to ${scheduled.email}`, error as Error);
 
         // Update status to failed
         await supabase!
@@ -263,7 +264,7 @@ export async function GET(request: NextRequest) {
       results
     });
   } catch (error) {
-    console.error('Cron job error:', error);
+    logger.error('Cron job error', error as Error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/utils/supabase/server';
+import { logger } from '@/lib/logger';
 
 // Validation schema for raffle entry
 const RaffleEntrySchema = z.object({
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
 
     if (!paymentLinkResponse.ok) {
       const error = await paymentLinkResponse.json();
-      console.error('Square API Error:', error);
+      logger.error('Square API Error', error);
 
       // Handle specific Square errors
       if (error.errors?.[0]?.code === 'INVALID_EMAIL_ADDRESS') {
@@ -161,7 +162,7 @@ export async function POST(request: NextRequest) {
 
     // Track the commitment moment (if analytics available)
     // This would integrate with your analytics system
-    console.log('Raffle entry initiated:', {
+    logger.info('Raffle entry initiated', {
       email: validatedData.email,
       raffle_id: raffle.id,
       goal_preview: validatedData.transformationGoal.substring(0, 50),
@@ -197,7 +198,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('Raffle entry error:', error);
+    logger.error('Raffle entry error', error as Error);
 
     return NextResponse.json(
       {
@@ -259,7 +260,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Raffle status error:', error);
+    logger.error('Raffle status error', error as Error);
     return NextResponse.json(
       { error: 'Unable to fetch raffle status' },
       { status: 500 }

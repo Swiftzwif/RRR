@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServiceRole } from '@/lib/supabase';
+import { logger } from '@/lib/logger';
 
 /**
  * Cron job to retry failed webhook events
@@ -12,7 +13,7 @@ export async function GET(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
     
     if (!cronSecret) {
-      console.error('CRON_SECRET not configured');
+      logger.error('CRON_SECRET not configured');
       return NextResponse.json({ error: 'Cron secret not configured' }, { status: 500 });
     }
 
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
       .limit(50); // Process up to 50 events per run to avoid timeout
 
     if (fetchError) {
-      console.error('Error fetching webhook events to retry:', fetchError);
+      logger.error('Error fetching webhook events to retry', fetchError);
       return NextResponse.json({ error: 'Failed to fetch events' }, { status: 500 });
     }
 
@@ -107,8 +108,8 @@ export async function GET(request: NextRequest) {
         
         processed++;
       } catch (error) {
-        console.error(`Error processing webhook event ${event.id}:`, error);
-        
+        logger.error(`Error processing webhook event ${event.id}`, error as Error);
+
         // Update with error
         const nextAttempt = (event.attempts || 0) + 1;
         const nextRetryAt = calculateNextRetryTime(nextAttempt);
@@ -137,7 +138,7 @@ export async function GET(request: NextRequest) {
       message: `Processed ${processed} webhook events (${succeeded} succeeded, ${failed} failed)`
     });
   } catch (error) {
-    console.error('Error in retry-failed-webhooks cron:', error);
+    logger.error('Error in retry-failed-webhooks cron', error as Error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -176,8 +177,8 @@ async function processWebhookPayload(
     
     // For now, return success to avoid infinite retry loops
     // In production, implement the full retry logic
-    console.log('Processing webhook payload retry:', payload.type);
-    
+    logger.info('Processing webhook payload retry', payload.type);
+
     return { success: true };
   } catch (error) {
     return {

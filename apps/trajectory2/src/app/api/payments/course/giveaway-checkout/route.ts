@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/utils/supabase/server';
+import { logger } from '@/lib/logger';
 
 // Validation schema
 const courseCheckoutSchema = z.object({
@@ -121,7 +122,7 @@ export async function POST(request: NextRequest) {
 
     if (!paymentLinkResponse.ok) {
       const error = await paymentLinkResponse.json();
-      console.error('Square API Error:', error);
+      logger.error('Square API Error', error);
 
       if (error.errors?.[0]?.code === 'INVALID_EMAIL_ADDRESS') {
         return NextResponse.json(
@@ -173,7 +174,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('Course checkout error:', error);
+    logger.error('Course checkout error', error as Error);
 
     return NextResponse.json(
       {

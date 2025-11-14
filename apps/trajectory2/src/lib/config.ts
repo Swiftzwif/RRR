@@ -2,6 +2,20 @@
  * Application-wide configuration constants
  */
 
+/**
+ * Feature flags interface for runtime feature control
+ */
+export interface FeatureFlags {
+  GIVEAWAY_ENABLED: boolean;
+}
+
+/**
+ * Feature flags for controlling application features at runtime
+ */
+export const FEATURE_FLAGS: FeatureFlags = {
+  GIVEAWAY_ENABLED: false,
+};
+
 export const THINKIFIC_COURSE_URL = 
   process.env.NEXT_PUBLIC_THINKIFIC_COURSE_URL || 
   'https://jean-s-site-8b39.thinkific.com/products/courses/trajectory';

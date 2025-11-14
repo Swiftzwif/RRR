@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { sendWelcomeEmail, sendEmailVerification } from '@/lib/email';
 import { getSupabaseServiceRole } from '@/lib/supabase';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
     const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
     if (exchangeError) {
-      console.error('Error exchanging code for session:', exchangeError);
+      logger.error('Error exchanging code for session', exchangeError);
       return NextResponse.redirect(
         new URL('/login?error=' + encodeURIComponent('Authentication failed. Please try again.'), requestUrl.origin)
       );
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     if (userError || !user) {
-      console.error('Error getting user after auth:', userError);
+      logger.error('Error getting user after auth', userError);
       return NextResponse.redirect(
         new URL('/login?error=' + encodeURIComponent('Failed to retrieve user information.'), requestUrl.origin)
       );
@@ -80,12 +81,12 @@ export async function GET(request: NextRequest) {
                 welcome_email_sent_at: new Date().toISOString()
               }
             }).catch(err => {
-              console.error('Failed to update welcome_email_sent flag:', err);
+              logger.error('Failed to update welcome_email_sent flag', err as Error);
               // Don't fail - email was sent
             });
           }
         } catch (emailError) {
-          console.error('Failed to send welcome/verification emails:', emailError);
+          logger.error('Failed to send welcome/verification emails', emailError as Error);
           // Don't fail the auth process if email fails
         }
       }

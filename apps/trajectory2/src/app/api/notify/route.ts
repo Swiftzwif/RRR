@@ -2,6 +2,7 @@ import { scheduleDailyEmails, sendAssessmentCompleteEmail } from "@/lib/email";
 import { getSupabaseServiceRole } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { logger } from "@/lib/logger";
 
 // Validation schema
 const notifySchema = z.object({
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Notification error:", error);
+    logger.error("Notification error", error as Error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

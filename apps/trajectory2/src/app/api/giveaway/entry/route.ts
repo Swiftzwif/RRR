@@ -4,6 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 import { subscribeToForm } from '@/lib/convertkit';
 import { sendGiveawayConfirmationEmail } from '@/lib/email';
 import { rateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 // Validation schema for giveaway entry
 const GiveawayEntrySchema = z.object({
@@ -121,10 +122,10 @@ export async function POST(request: NextRequest) {
         convertkitSubscriberId = subscriptionResult.subscriber_id;
       } else {
         // Log error but don't block entry
-        console.error('ConvertKit subscription failed:', subscriptionResult.error);
+        logger.error('ConvertKit subscription failed', subscriptionResult.error);
       }
     } else {
-      console.warn('CONVERTKIT_FORM_ID is not configured');
+      logger.warn('CONVERTKIT_FORM_ID is not configured');
     }
 
     // Create giveaway entry
@@ -147,7 +148,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (entryError || !entry) {
-      console.error('Error creating giveaway entry:', entryError);
+      logger.error('Error creating giveaway entry', entryError);
       return NextResponse.json(
         { error: 'Failed to process your entry. Please try again.' },
         { status: 500 }
@@ -172,11 +173,11 @@ export async function POST(request: NextRequest) {
       });
     } catch (emailError) {
       // Log but don't fail the request
-      console.error('Error sending confirmation email:', emailError);
+      logger.error('Error sending confirmation email', emailError as Error);
     }
 
     // Track entry (analytics would go here)
-    console.log('Giveaway entry created:', {
+    logger.info('Giveaway entry created', {
       email: validatedData.email,
       giveaway_id: giveaway.id,
       entry_number: entry.entry_number,
@@ -217,7 +218,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('Giveaway entry error:', error);
+    logger.error('Giveaway entry error', error as Error);
 
     return NextResponse.json(
       {
@@ -273,7 +274,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Giveaway status error:', error);
+    logger.error('Giveaway status error', error as Error);
     return NextResponse.json(
       { error: 'Unable to fetch giveaway status' },
       { status: 500 }

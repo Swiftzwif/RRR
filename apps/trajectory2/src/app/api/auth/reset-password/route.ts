@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServiceRole } from '@/lib/supabase';
 import { sendPasswordResetEmail } from '@/lib/email';
 import { rateLimit, rateLimitConfigs, createRateLimitResponse } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 // Create rate limiter for password reset
 const resetLimiter = rateLimit(rateLimitConfigs.passwordReset);
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     // Always return success to prevent email enumeration
     if (resetError || !resetData) {
-      console.log('Password reset requested (always returning success to prevent enumeration):', email);
+      logger.info('Password reset requested (always returning success to prevent enumeration)', email);
       return NextResponse.json({
         message: 'If an account exists with this email, you will receive a password reset link.'
       });
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Don't reveal if email send failed to prevent enumeration
     if (!emailResult.success) {
-      console.error('Failed to send reset email:', emailResult.error);
+      logger.error('Failed to send reset email', emailResult.error);
     }
 
     // Try to log password reset attempt if user exists (but don't fail if it doesn't)
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
           })
           .select();
       } catch (err) {
-        console.error('Failed to log auth event:', err);
+        logger.error('Failed to log auth event', err as Error);
       }
     }
 
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
       message: 'If an account exists with this email, you will receive a password reset link.'
     });
   } catch (error) {
-    console.error('Password reset error:', error);
+    logger.error('Password reset error', error as Error);
     return NextResponse.json(
       { error: 'An error occurred processing your request' },
       { status: 500 }
@@ -128,7 +129,7 @@ export async function PUT(request: NextRequest) {
     });
 
     if (error) {
-      console.error('Token verification error:', error);
+      logger.error('Token verification error', error);
       return NextResponse.json(
         { error: 'Invalid or expired reset token' },
         { status: 400 }
@@ -149,7 +150,7 @@ export async function PUT(request: NextRequest) {
     );
 
     if (updateError) {
-      console.error('Password update error:', updateError);
+      logger.error('Password update error', updateError);
       return NextResponse.json(
         { error: 'Failed to update password' },
         { status: 500 }
@@ -176,7 +177,7 @@ export async function PUT(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Password update error:', error);
+    logger.error('Password update error', error as Error);
     return NextResponse.json(
       { error: 'An error occurred updating your password' },
       { status: 500 }
