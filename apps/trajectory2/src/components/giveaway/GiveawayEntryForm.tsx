@@ -140,7 +140,7 @@ export default function GiveawayEntryForm() {
         taggedFriend: false,
       });
     } catch (error) {
-      console.error('Error submitting giveaway entry:', error);
+      logger.error('Error submitting giveaway entry', error as Error);
       setErrors({
         general: 'An unexpected error occurred. Please try again.',
       });
