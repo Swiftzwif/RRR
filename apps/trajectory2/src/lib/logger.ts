@@ -25,14 +25,18 @@ const info = (message: string, ...args: unknown[]): void => {
 };
 
 /**
- * Log error messages and optionally send to Sentry in production
+ * Log error messages and send to Sentry in production
  */
 const error = (message: string, err?: Error, ...args: unknown[]): void => {
   if (process.env.NODE_ENV === 'development') {
     console.error(`[ERROR] ${message}`, err, ...args);
   } else {
-    // Production: Send to Sentry (when configured)
-    console.error(`[ERROR] ${message}`, err, ...args);
+    // Production: Send to Sentry
+    if (err) {
+      Sentry.captureException(err, { extra: { message, args } });
+    } else {
+      Sentry.captureMessage(message, { level: 'error', extra: { args } });
+    }
   }
 };
 
