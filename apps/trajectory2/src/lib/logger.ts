@@ -16,7 +16,9 @@ interface Logger {
 }
 
 /**
- * Log informational messages
+ * Log informational messages (development only)
+ * @param message - The message to log
+ * @param args - Additional arguments to log
  */
 const info = (message: string, ...args: unknown[]): void => {
   if (process.env.NODE_ENV === 'development') {
@@ -26,6 +28,9 @@ const info = (message: string, ...args: unknown[]): void => {
 
 /**
  * Log error messages and send to Sentry in production
+ * @param message - The error message
+ * @param err - Optional Error object to capture
+ * @param args - Additional context to log
  */
 const error = (message: string, err?: Error, ...args: unknown[]): void => {
   if (process.env.NODE_ENV === 'development') {
@@ -41,7 +46,9 @@ const error = (message: string, err?: Error, ...args: unknown[]): void => {
 };
 
 /**
- * Log warning messages
+ * Log warning messages (development only)
+ * @param message - The warning message
+ * @param args - Additional arguments to log
  */
 const warn = (message: string, ...args: unknown[]): void => {
   if (process.env.NODE_ENV === 'development') {
@@ -51,6 +58,8 @@ const warn = (message: string, ...args: unknown[]): void => {
 
 /**
  * Log debug messages (development only)
+ * @param message - The debug message
+ * @param args - Additional arguments to log
  */
 const debug = (message: string, ...args: unknown[]): void => {
   if (process.env.NODE_ENV === 'development') {
