@@ -37,42 +37,13 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-interface GiveawayEntry {
-  id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  entry_number: number;
-  transformation_goal: string | null;
-  is_winner: boolean;
-  prize_won: string | null;
-  created_at: string;
-  newsletter_subscribed: boolean;
-  verified: boolean;
-  convertkit_subscriber_id: string | null;
-  liked_post: boolean;
-  shared_post: boolean;
-  tagged_friend: boolean;
-}
-
-interface GiveawayConfig {
-  id: string;
-  name: string;
-  status: string;
-  start_date: string;
-  end_date: string;
-  prizes: any[];
-}
-
-interface GiveawayStats {
-  totalEntries: number;
-  verifiedEntries: number;
-  newsletterSubscribed: number;
-  averageGoalLength: number;
-  topGoalWords: string[];
-  entriesPerDay: Record<string, number>;
-}
+import type {
+  GiveawayEntry,
+  GiveawayConfig,
+  GiveawayStats,
+  Winner,
+  Prize,
+} from '@/types/giveaway';
 
 // Admin emails that have access
 const ADMIN_EMAILS = ['jean@killtheboy.com', 'admin@trajectory.com', 'jsanchez@trajectorygroup.org'];
@@ -147,9 +118,9 @@ export default function AdminGiveawayPage() {
           .order('created_at', { ascending: false });
 
         if (entriesData) {
-          setEntries(entriesData as any);
-          setFilteredEntries(entriesData as any);
-          calculateStats(entriesData as any);
+          setEntries(entriesData as GiveawayEntry[]);
+          setFilteredEntries(entriesData as GiveawayEntry[]);
+          calculateStats(entriesData as GiveawayEntry[]);
         }
       }
     } finally {
@@ -244,7 +215,7 @@ export default function AdminGiveawayPage() {
     }
 
     // Select winners based on prize configuration
-    const winners: Array<{ entry: GiveawayEntry; prize: any }> = [];
+    const winners: Winner[] = [];
     let currentIndex = 0;
 
     for (const prize of giveawayConfig.prizes) {
