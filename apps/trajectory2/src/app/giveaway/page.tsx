@@ -8,32 +8,26 @@ export const metadata: Metadata = {
 
 export default function GiveawayPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Hero that creates the moment of decision */}
-      <Suspense fallback={<div className="h-[600px] animate-pulse bg-gradient-to-b from-sky-100/50 to-white" />}>
-        <GiveawayHero />
-      </Suspense>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center py-20 px-6">
+      <div className="max-w-2xl mx-auto text-center">
+        <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
+          Giveaway Event Ended
+        </h1>
 
-      {/* Countdown creating urgency */}
-      <Suspense fallback={<div className="py-12 px-4"><div className="h-24 animate-pulse bg-gray-100 rounded-xl max-w-4xl mx-auto" /></div>}>
-        <GiveawayCountdown />
-      </Suspense>
+        <p className="text-xl md:text-2xl text-slate-600 mb-8 leading-relaxed">
+          Thank you for your interest in the Kill The Boy Grand Opening giveaway.
+        </p>
 
-      {/* Show the transformation tools they could win */}
-      <Suspense fallback={<div className="py-20"><div className="h-96 animate-pulse bg-gray-50" /></div>}>
-        <PrizeShowcase />
-      </Suspense>
+        <p className="text-lg text-slate-500 mb-10">
+          While this event has concluded, your transformation journey can start today. Explore our digital course and coaching options to begin your path from drift to dominion.
+        </p>
 
-      {/* Live feed of participants joining the movement */}
-      <Suspense fallback={<div className="py-20 bg-gradient-to-b from-white to-sky-50"><div className="h-96 animate-pulse" /></div>}>
-        <LiveParticipantFeed />
-      </Suspense>
-
-      {/* Entry Form */}
-      <div id="entry-form">
-        <Suspense fallback={<div className="py-24"><div className="h-96 animate-pulse bg-gradient-to-b from-white to-red-50" /></div>}>
-          <GiveawayEntryForm />
-        </Suspense>
+        <Link
+          href="/"
+          className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-sky-600 hover:bg-sky-700 rounded-lg transition-colors duration-200"
+        >
+          Return Home
+        </Link>
       </div>
     </div>
   );
