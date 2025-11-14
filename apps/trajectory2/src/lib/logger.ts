@@ -33,3 +33,12 @@ const error = (message: string, err?: Error, ...args: unknown[]): void => {
     console.error(`[ERROR] ${message}`, err, ...args);
   }
 };
+
+/**
+ * Log warning messages
+ */
+const warn = (message: string, ...args: unknown[]): void => {
+  if (process.env.NODE_ENV === 'development') {
+    console.warn(`[WARN] ${message}`, ...args);
+  }
+};
