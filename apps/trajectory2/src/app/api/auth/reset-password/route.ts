@@ -3,6 +3,7 @@ import { getSupabaseServiceRole } from '@/lib/supabase';
 import { sendPasswordResetEmail } from '@/lib/email';
 import { rateLimit, rateLimitConfigs, createRateLimitResponse } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
+import type { PasswordResetRequest, PasswordResetConfirmation, PasswordResetSuccessResponse, AuthErrorResponse, AuthSuccessResponse } from '@/types/auth';
 
 // Create rate limiter for password reset
 const resetLimiter = rateLimit(rateLimitConfigs.passwordReset);
@@ -15,10 +16,10 @@ export async function POST(request: NextRequest) {
     if (!isAllowed) {
       return createRateLimitResponse(reset);
     }
-    const { email } = await request.json();
+    const { email }: PasswordResetRequest = await request.json();
 
     if (!email) {
-      return NextResponse.json(
+      return NextResponse.json<AuthErrorResponse>(
         { error: 'Email is required' },
         { status: 400 }
       );
@@ -77,17 +78,17 @@ export async function POST(request: NextRequest) {
             }
           })
           .select();
-      } catch (err) {
-        logger.error('Failed to log auth event', err as Error);
+      } catch (err: unknown) {
+        logger.error('Failed to log auth event', err);
       }
     }
 
-    return NextResponse.json({
+    return NextResponse.json<AuthSuccessResponse>({
       message: 'If an account exists with this email, you will receive a password reset link.'
     });
-  } catch (error) {
-    logger.error('Password reset error', error as Error);
-    return NextResponse.json(
+  } catch (error: unknown) {
+    logger.error('Password reset error', error);
+    return NextResponse.json<AuthErrorResponse>(
       { error: 'An error occurred processing your request' },
       { status: 500 }
     );
@@ -97,10 +98,10 @@ export async function POST(request: NextRequest) {
 // PUT /api/auth/reset-password - Update password with reset token
 export async function PUT(request: NextRequest) {
   try {
-    const { token, password } = await request.json();
+    const { token, password }: PasswordResetConfirmation = await request.json();
 
     if (!token || !password) {
-      return NextResponse.json(
+      return NextResponse.json<AuthErrorResponse>(
         { error: 'Token and password are required' },
         { status: 400 }
       );
@@ -108,7 +109,7 @@ export async function PUT(request: NextRequest) {
 
     // Validate password strength
     if (password.length < 8) {
-      return NextResponse.json(
+      return NextResponse.json<AuthErrorResponse>(
         { error: 'Password must be at least 8 characters long' },
         { status: 400 }
       );
@@ -169,16 +170,16 @@ export async function PUT(request: NextRequest) {
       })
       .select();
 
-    return NextResponse.json({
+    return NextResponse.json<PasswordResetSuccessResponse>({
       message: 'Password successfully reset',
       user: {
         email: data.user.email,
         id: data.user.id
       }
     });
-  } catch (error) {
-    logger.error('Password update error', error as Error);
-    return NextResponse.json(
+  } catch (error: unknown) {
+    logger.error('Password update error', error);
+    return NextResponse.json<AuthErrorResponse>(
       { error: 'An error occurred updating your password' },
       { status: 500 }
     );
