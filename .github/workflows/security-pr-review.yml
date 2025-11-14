@@ -1,0 +1,204 @@
+name: Security Bot - Vulnerability Analysis
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  schedule:
+    # Weekly security scan on Sundays at 3 AM UTC
+    - cron: '0 3 * * 0'
+  issue_comment:
+    types: [created]
+
+jobs:
+  security-analysis:
+    if: |
+      (github.event_name == 'pull_request' && 
+       (contains(github.event.pull_request.title, 'security') || 
+        contains(github.event.pull_request.title, 'auth') ||
+        contains(github.event.pull_request.title, 'password') ||
+        contains(github.event.pull_request.title, 'token') ||
+        contains(github.event.pull_request.title, 'key'))) ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/security'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Security Scan
+        run: |
+          echo "## Security Analysis" > security-data.txt
+          echo "**Scan Time:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> security-data.txt
+          
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "**PR:** #${{ github.event.pull_request.number }}" >> security-data.txt
+            echo "**Branch:** ${{ github.event.pull_request.head.ref }}" >> security-data.txt
+            
+            # Analyze PR diff for security patterns
+            echo -e "\n### Code Analysis" >> security-data.txt
+            gh pr diff ${{ github.event.pull_request.number }} > pr-diff.txt
+            
+            # Check for hardcoded secrets
+            echo "#### Potential Security Issues:" >> security-data.txt
+            
+            # Look for API keys, passwords, tokens
+            if grep -iE "(api[_-]?key|password|secret|token|private[_-]?key)" pr-diff.txt | grep -v "^-"; then
+              echo "- ⚠️ Potential hardcoded secrets detected" >> security-data.txt
+            fi
+            
+            # Check for SQL injection vulnerabilities
+            if grep -E "(query\(|raw\(|exec\()" pr-diff.txt | grep -v "^-"; then
+              echo "- ⚠️ Potential SQL injection risk" >> security-data.txt
+            fi
+            
+            # Check for eval or exec usage
+            if grep -E "(eval\(|exec\()" pr-diff.txt | grep -v "^-"; then
+              echo "- ⚠️ Dangerous eval/exec usage detected" >> security-data.txt
+            fi
+          fi
+          
+          # Dependency vulnerabilities
+          echo -e "\n### Dependency Security" >> security-data.txt
+          if [ -f "package.json" ]; then
+            echo "Checking npm dependencies..." >> security-data.txt
+            npm audit --audit-level=low 2>&1 | tail -20 >> security-data.txt || echo "npm audit not available" >> security-data.txt
+          fi
+          
+          # Security issues in repo
+          echo -e "\n### Open Security Issues" >> security-data.txt
+          SECURITY_ISSUES=$(gh issue list --label "security,vulnerability" --state open --json number,title --jq 'length')
+          echo "- Open security issues: $SECURITY_ISSUES" >> security-data.txt
+          
+          gh issue list --label "security,vulnerability" --state open --json number,title --jq '.[:5] | .[] | "  - #\(.number): \(.title)"' >> security-data.txt 2>/dev/null || echo "  - None" >> security-data.txt
+          
+          # Recent security-related commits
+          echo -e "\n### Recent Security Updates" >> security-data.txt
+          git log --grep="security\|vulnerabil\|CVE\|auth" --oneline -10 >> security-data.txt 2>/dev/null || echo "No recent security commits" >> security-data.txt
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Generate Security Assessment
+        run: |
+          cd .github/ai-team
+          
+          PROMPT=$(cat <<'EOF'
+          You are the Security Lead conducting a security assessment.
+          
+          Security Data:
+          $(cat ../security-data.txt)
+          
+          Provide comprehensive security analysis:
+          
+          # 🔒 Security Assessment Report
+          
+          ## 🚨 Security Status
+          **Overall Risk Level**: [Critical/High/Medium/Low]
+          **Immediate Action Required**: [Yes/No]
+          
+          ## 🔍 Vulnerability Analysis
+          [Detailed analysis of any security issues found]
+          
+          ## 🛡️ Security Recommendations
+          
+          ### Critical (Fix Immediately)
+          1. [Security issue and fix]
+          
+          ### High Priority (Fix This Week)
+          1. [Security improvement]
+          
+          ### Best Practices
+          1. [Security enhancement]
+          
+          ## 🔐 Authentication & Authorization
+          [Analysis of auth-related code if present]
+          
+          ## 🌐 API Security
+          [API endpoint security assessment]
+          
+          ## 📊 Compliance Check
+          | Requirement | Status | Action Required |
+          |-------------|--------|-----------------|
+          | Data Encryption | ✅/❌ | [Action] |
+          | Access Control | ✅/❌ | [Action] |
+          | Audit Logging | ✅/❌ | [Action] |
+          
+          ## 🚦 Security Gates
+          [Automated checks that should be implemented]
+          
+          ## 🎯 Security Roadmap
+          [Long-term security improvements]
+          
+          ## 📋 Developer Security Checklist
+          - [ ] No hardcoded secrets
+          - [ ] Input validation implemented
+          - [ ] SQL injection prevention
+          - [ ] XSS protection
+          - [ ] CSRF tokens
+          - [ ] Proper error handling (no stack traces to users)
+          - [ ] Dependencies updated
+          - [ ] Security headers configured
+          
+          Remember: You're a security expert who thinks like an attacker but builds like a defender. Every recommendation should be actionable and specific.
+          EOF
+          )
+          
+          ANALYSIS=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                    ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                    OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                    TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                    GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                    node scripts/ai-api-handler.js "security_bot" "$PROMPT")
+          
+          echo "$ANALYSIS" > security-assessment.md
+      
+      - name: Post Security Report
+        run: |
+          cd .github/ai-team
+          
+          {
+            echo "# 🔒 Security Bot Analysis"
+            echo ""
+            cat security-assessment.md
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 🛡️ Security Resources"
+            echo "- [OWASP Top 10](https://owasp.org/www-project-top-ten/)"
+            echo "- [Security Best Practices](https://github.com/security)"
+            echo ""
+            echo "---"
+            echo "*Generated by Security Bot • Security is Architecture, Not an Afterthought*"
+          } > report.md
+          
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            gh pr comment ${{ github.event.pull_request.number }} --body-file report.md
+            
+            # Add security label if issues found
+            if grep -q "Critical\|High" security-assessment.md; then
+              gh pr edit ${{ github.event.pull_request.number }} --add-label "security-review-required"
+            fi
+          elif [ "${{ github.event_name }}" == "schedule" ]; then
+            # Weekly security report
+            gh issue create \
+              --title "🔒 Weekly Security Scan - $(date '+%B %d')" \
+              --body-file report.md \
+              --label "ai-team,security,audit"
+          else
+            gh issue comment ${{ github.event.issue.number }} --body-file report.md
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

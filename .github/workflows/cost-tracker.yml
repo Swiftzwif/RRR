@@ -1,0 +1,265 @@
+name: CFO Bot - Cost Tracking
+
+on:
+  schedule:
+    # Run daily at midnight UTC
+    - cron: '0 0 * * *'
+    # Run weekly report on Mondays at 1 AM UTC
+    - cron: '0 1 * * 1'
+    # Run monthly report on the 1st at 2 AM UTC
+    - cron: '0 2 1 * *'
+  workflow_dispatch:
+    inputs:
+      report_type:
+        description: 'Report type'
+        required: true
+        default: 'daily'
+        type: choice
+        options:
+          - daily
+          - weekly
+          - monthly
+  workflow_run:
+    workflows: ["*"]
+    types: [completed]
+
+jobs:
+  cost-tracking:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Determine Report Type
+        id: report_type
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            REPORT_TYPE="${{ github.event.inputs.report_type }}"
+          elif [ "${{ github.event_name }}" == "schedule" ]; then
+            # Check which schedule triggered this
+            HOUR=$(date -u +%H)
+            DAY_OF_WEEK=$(date -u +%u)
+            DAY_OF_MONTH=$(date -u +%d)
+            
+            if [ "$HOUR" == "02" ] && [ "$DAY_OF_MONTH" == "01" ]; then
+              REPORT_TYPE="monthly"
+            elif [ "$HOUR" == "01" ] && [ "$DAY_OF_WEEK" == "1" ]; then
+              REPORT_TYPE="weekly"
+            else
+              REPORT_TYPE="daily"
+            fi
+          else
+            # For workflow_run events, skip report generation
+            REPORT_TYPE="none"
+          fi
+          
+          echo "REPORT_TYPE=$REPORT_TYPE" >> $GITHUB_ENV
+      
+      - name: Generate Cost Report
+        if: env.REPORT_TYPE != 'none'
+        id: generate_report
+        run: |
+          cd .github/ai-team
+          
+          # Generate the report
+          REPORT=$(node scripts/cost-reporter.js ${{ env.REPORT_TYPE }})
+          
+          # Save report to file
+          echo "$REPORT" > cost-report.md
+          
+          # Extract key metrics for outputs
+          if [ "${{ env.REPORT_TYPE }}" == "monthly" ]; then
+            TOTAL=$(echo "$REPORT" | grep "Current Spend:" | sed -E 's/.*\$([0-9.]+).*/\1/')
+            PROJECTED=$(echo "$REPORT" | grep "Projected Total:" | sed -E 's/.*\$([0-9.]+).*/\1/')
+            STATUS=$(echo "$REPORT" | grep "Budget Status:" | sed -E 's/.*Status: (.*)/\1/')
+            
+            echo "total=$TOTAL" >> $GITHUB_OUTPUT
+            echo "projected=$PROJECTED" >> $GITHUB_OUTPUT
+            echo "status=$STATUS" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: CFO Analysis
+        if: env.REPORT_TYPE != 'none'
+        run: |
+          cd .github/ai-team
+          
+          # Create prompt for CFO bot
+          PROMPT=$(cat <<'EOF'
+          You are the CFO analyzing the AI team's cost report. Provide financial insights and recommendations.
+          
+          Cost Report:
+          $(cat cost-report.md)
+          
+          Analyze the report and provide:
+          
+          ## 💼 CFO Analysis
+          
+          ### 📊 Financial Health Assessment
+          [Evaluate current spending patterns and efficiency]
+          
+          ### 💰 ROI Analysis
+          [Assess value generated vs. cost incurred]
+          
+          ### ⚖️ Budget Optimization Strategies
+          [Specific recommendations to optimize spending]
+          
+          ### 🎯 Cost Allocation Recommendations
+          [How to better distribute budget across bots]
+          
+          ### 📈 Financial Projections
+          [30-day and 90-day projections with scenarios]
+          
+          ### 🚨 Risk Assessment
+          [Financial risks and mitigation strategies]
+          
+          ### ✅ Action Items
+          [Specific actions to take immediately]
+          
+          Remember: You're a seasoned CFO who's managed budgets from startup to IPO. Balance cost optimization with value delivery. Think in terms of unit economics and ROI.
+          EOF
+          )
+          
+          # Only generate CFO analysis for weekly and monthly reports
+          if [ "${{ env.REPORT_TYPE }}" != "daily" ]; then
+            ANALYSIS=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                      ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                      OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                      TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                      GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                      node scripts/ai-api-handler.js "cfo_bot" "$PROMPT")
+            
+            # Append CFO analysis to report
+            echo "" >> cost-report.md
+            echo "$ANALYSIS" >> cost-report.md
+          fi
+      
+      - name: Check Budget Alerts
+        if: env.REPORT_TYPE != 'none'
+        id: budget_check
+        run: |
+          cd .github/ai-team
+          
+          # Load cost data
+          if [ -f "cost-tracker.json" ]; then
+            MONTHLY_TOTAL=$(jq -r '.monthly["'$(date +%Y-%m)'"].total // 0' cost-tracker.json)
+            
+            # Check thresholds from config
+            WARNING_THRESHOLD=80
+            CRITICAL_THRESHOLD=95
+            
+            if (( $(echo "$MONTHLY_TOTAL > $CRITICAL_THRESHOLD" | bc -l) )); then
+              echo "alert_level=critical" >> $GITHUB_OUTPUT
+              echo "::error::CRITICAL: Monthly spend ($MONTHLY_TOTAL) exceeds $CRITICAL_THRESHOLD threshold!"
+            elif (( $(echo "$MONTHLY_TOTAL > $WARNING_THRESHOLD" | bc -l) )); then
+              echo "alert_level=warning" >> $GITHUB_OUTPUT
+              echo "::warning::WARNING: Monthly spend ($MONTHLY_TOTAL) exceeds $WARNING_THRESHOLD threshold!"
+            else
+              echo "alert_level=none" >> $GITHUB_OUTPUT
+            fi
+          fi
+      
+      - name: Create Issue for Alerts
+        if: steps.budget_check.outputs.alert_level == 'critical' || steps.budget_check.outputs.alert_level == 'warning'
+        run: |
+          cd .github/ai-team
+          
+          ALERT_LEVEL="${{ steps.budget_check.outputs.alert_level }}"
+          
+          # Create issue body
+          {
+            echo "# 🚨 Budget Alert: ${ALERT_LEVEL^^}"
+            echo ""
+            echo "The AI team has exceeded the ${ALERT_LEVEL} spending threshold."
+            echo ""
+            cat cost-report.md
+            echo ""
+            echo "## Immediate Actions Required"
+            echo ""
+            if [ "$ALERT_LEVEL" == "critical" ]; then
+              echo "1. **IMMEDIATE**: All bots switched to budget models"
+              echo "2. **REVIEW**: Analyze high-cost operations from the past 24 hours"
+              echo "3. **OPTIMIZE**: Implement cost reduction strategies"
+              echo "4. **MONITOR**: Check spending every 6 hours until under control"
+            else
+              echo "1. **REVIEW**: Current spending patterns"
+              echo "2. **OPTIMIZE**: Switch non-critical bots to cheaper models"
+              echo "3. **PLAN**: Prepare contingency if spending continues"
+            fi
+            echo ""
+            echo "cc @${{ github.repository_owner }}"
+          } > alert-issue.md
+          
+          # Create the issue
+          gh issue create \
+            --title "🚨 ${ALERT_LEVEL^^}: AI Team Budget Alert" \
+            --body-file alert-issue.md \
+            --label "ai-team,budget-alert,${ALERT_LEVEL}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Post Report
+        if: env.REPORT_TYPE != 'none' && (env.REPORT_TYPE == 'weekly' || env.REPORT_TYPE == 'monthly' || github.event_name == 'workflow_dispatch')
+        run: |
+          cd .github/ai-team
+          
+          # Create discussion for weekly/monthly reports
+          DISCUSSION_ID=$(gh api graphql -f query='
+            mutation($repositoryId: ID!, $categoryId: ID!, $title: String!, $body: String!) {
+              createDiscussion(input: {
+                repositoryId: $repositoryId,
+                categoryId: $categoryId,
+                title: $title,
+                body: $body
+              }) {
+                discussion {
+                  id
+                  url
+                }
+              }
+            }
+          ' -f repositoryId="${{ github.repository_id }}" \
+            -f categoryId="$(gh api repos/${{ github.repository }}/discussion-categories --jq '.[] | select(.name == "General") | .id')" \
+            -f title="💰 AI Team ${{ env.REPORT_TYPE }} Cost Report - $(date '+%B %d, %Y')" \
+            -f body="$(cat cost-report.md)" \
+            --jq '.createDiscussion.discussion.url')
+          
+          echo "Report posted: $DISCUSSION_ID"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Update Cost Tracker Badge
+        if: env.REPORT_TYPE == 'daily'
+        run: |
+          # This would update a badge in the README with current month spending
+          # Placeholder for future implementation
+          echo "::notice::Daily cost tracking complete"
+      
+      - name: Commit Cost Data
+        if: always()
+        run: |
+          # Configure git
+          git config --local user.email "ai-team[bot]@users.noreply.github.com"
+          git config --local user.name "AI Team Bot"
+          
+          # Check if cost-tracker.json has changes
+          if [ -f ".github/ai-team/cost-tracker.json" ]; then
+            git add .github/ai-team/cost-tracker.json
+            
+            if ! git diff --cached --quiet; then
+              git commit -m "chore: update cost tracking data [skip ci]"
+              git push
+            fi
+          fi

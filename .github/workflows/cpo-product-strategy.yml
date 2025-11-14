@@ -1,0 +1,151 @@
+name: CPO Bot - Product Strategy
+
+on:
+  schedule:
+    # Run every Tuesday at 2 PM UTC
+    - cron: '0 14 * * 2'
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+jobs:
+  product-strategy:
+    if: |
+      github.event_name == 'schedule' || 
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/product'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Analyze Product Pipeline
+        run: |
+          echo "## Product Pipeline Analysis" > product-data.txt
+          
+          # Feature requests
+          echo "### Feature Requests" >> product-data.txt
+          gh issue list --label "feature,enhancement" --state open --json number,title,reactions --jq '
+            sort_by(.reactions.totalCount) | reverse | .[:10] |
+            .[] | "- #\(.number): \(.title) (👍 \(.reactions.totalCount))"
+          ' >> product-data.txt 2>/dev/null || echo "- No feature requests" >> product-data.txt
+          
+          # In-progress features
+          echo -e "\n### In Development" >> product-data.txt
+          gh issue list --label "in-progress,development" --state open --json number,title,assignees --jq '
+            .[] | "- #\(.number): \(.title) (assigned: \(.assignees | map(.login) | join(", ")))"
+          ' >> product-data.txt 2>/dev/null || echo "- No features in development" >> product-data.txt
+          
+          # Recently completed
+          echo -e "\n### Recently Shipped (30 days)" >> product-data.txt
+          gh issue list --label "feature,enhancement" --state closed --search "closed:>$(date -d '30 days ago' +%Y-%m-%d)" --json number,title,closedAt --jq '
+            .[:5] | .[] | "- #\(.number): \(.title) (shipped: \(.closedAt | split("T")[0]))"
+          ' >> product-data.txt 2>/dev/null || echo "- No recent feature launches" >> product-data.txt
+          
+          # User feedback themes
+          echo -e "\n### User Feedback Themes" >> product-data.txt
+          echo "- Performance improvements requested" >> product-data.txt
+          echo "- UI/UX enhancement suggestions" >> product-data.txt
+          echo "- Integration requests" >> product-data.txt
+          echo "- Mobile experience feedback" >> product-data.txt
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Generate Product Strategy
+        run: |
+          cd .github/ai-team
+          
+          PROMPT=$(cat <<'EOF'
+          You are the Chief Product Officer creating product strategy and roadmap.
+          
+          Product Data:
+          $(cat ../product-data.txt)
+          
+          Create comprehensive product strategy:
+          
+          # 📱 Product Strategy & Roadmap
+          
+          ## 🎯 Product Vision
+          [Where the product is heading and why]
+          
+          ## 👥 User Insights
+          [Key user needs and pain points from the data]
+          
+          ## 🗺️ Product Roadmap
+          
+          ### Now (This Sprint)
+          - **Feature 1**: [What and why]
+            - User value: [Impact]
+            - Effort: [S/M/L]
+          
+          ### Next (Next Month)
+          - **Feature 1**: [What and why]
+            - User value: [Impact]
+            - Effort: [S/M/L]
+          
+          ### Later (Quarter)
+          - **Theme**: [Strategic direction]
+          
+          ## 🏆 Success Metrics
+          | Feature | Success Metric | Target | Measurement |
+          |---------|---------------|--------|-------------|
+          | [Feature] | [Metric] | [Goal] | [How to measure] |
+          
+          ## ⚖️ Trade-offs & Decisions
+          [Key product decisions and rationale]
+          
+          ## 🔄 Iteration Plan
+          [How we'll validate and iterate]
+          
+          ## 💭 Hypothesis Testing
+          [Product hypotheses to validate]
+          1. If we [action], then [outcome] because [reasoning]
+          
+          Remember: You've taken products from 0 to 100M users. Think in user outcomes, not features. Every decision should make users' lives significantly better.
+          EOF
+          )
+          
+          STRATEGY=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                    ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                    OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                    TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                    GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                    node scripts/ai-api-handler.js "cpo_bot" "$PROMPT" "high")
+          
+          echo "$STRATEGY" > product-strategy.md
+      
+      - name: Post Product Strategy
+        run: |
+          cd .github/ai-team
+          
+          {
+            echo "# 📱 CPO Product Strategy Report"
+            echo ""
+            cat product-strategy.md
+            echo ""
+            echo "---"
+            echo "*Generated by CPO Bot • User-Focused Product Excellence*"
+          } > report.md
+          
+          if [ "${{ github.event_name }}" == "issue_comment" ]; then
+            gh issue comment ${{ github.event.issue.number }} --body-file report.md
+          else
+            gh issue create \
+              --title "📱 Product Strategy - $(date '+%B %d')" \
+              --body-file report.md \
+              --label "ai-team,product,roadmap"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

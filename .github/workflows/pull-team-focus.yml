@@ -1,0 +1,306 @@
+name: Pull Team Focus - Executive Dashboard
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  team-focus:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/pull-team-focus')) ||
+      github.event_name == 'workflow_dispatch'
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Gather Team Status
+        id: gather
+        run: |
+          # Set context
+          if [ "${{ github.event_name }}" == "issue_comment" ]; then
+            CONTEXT_NUMBER=${{ github.event.issue.number }}
+            CONTEXT_TYPE="issue"
+          else
+            CONTEXT_NUMBER=""
+            CONTEXT_TYPE="workflow"
+          fi
+          
+          echo "CONTEXT_NUMBER=$CONTEXT_NUMBER" >> $GITHUB_ENV
+          echo "CONTEXT_TYPE=$CONTEXT_TYPE" >> $GITHUB_ENV
+          
+          # Initialize team status file
+          echo "# AI Team Status Report - $(date '+%Y-%m-%d %H:%M UTC')" > team-status.md
+          echo "" >> team-status.md
+          
+          # 1. Cost Status (CFO Bot perspective)
+          echo "## 💰 Financial Status (CFO Bot)" >> team-status.md
+          if [ -f ".github/ai-team/cost-tracker.json" ]; then
+            MONTH=$(date +%Y-%m)
+            MONTHLY_TOTAL=$(jq -r ".monthly[\"$MONTH\"].total // 0" .github/ai-team/cost-tracker.json)
+            MONTHLY_BUDGET=100
+            PERCENT_USED=$(echo "scale=1; $MONTHLY_TOTAL * 100 / $MONTHLY_BUDGET" | bc)
+            
+            echo "- **Monthly Spend:** \$$MONTHLY_TOTAL / \$$MONTHLY_BUDGET (${PERCENT_USED}%)" >> team-status.md
+            echo "- **Status:** $(if (( $(echo "$MONTHLY_TOTAL > 80" | bc -l) )); then echo "⚠️ Approaching limit"; elif (( $(echo "$MONTHLY_TOTAL > 95" | bc -l) )); then echo "🚨 Critical"; else echo "✅ Healthy"; fi)" >> team-status.md
+            
+            # Top spending bots
+            echo "- **Top Spenders:**" >> team-status.md
+            jq -r '.bots | to_entries | sort_by(.value.total) | reverse | .[:3] | .[] | "  - \(.key): $\(.value.total | tostring | .[0:5])"' .github/ai-team/cost-tracker.json >> team-status.md 2>/dev/null || echo "  - No data available" >> team-status.md
+          else
+            echo "- No cost data available yet" >> team-status.md
+          fi
+          echo "" >> team-status.md
+          
+          # 2. Development Status (CTO Bot perspective)
+          echo "## 💻 Development Status (CTO Bot)" >> team-status.md
+          
+          # Open PRs
+          OPEN_PRS=$(gh pr list --state open --json number,title,author,createdAt,labels --limit 10)
+          PR_COUNT=$(echo "$OPEN_PRS" | jq 'length')
+          echo "- **Open PRs:** $PR_COUNT" >> team-status.md
+          
+          if [ "$PR_COUNT" -gt 0 ]; then
+            echo "- **Recent PRs:**" >> team-status.md
+            echo "$OPEN_PRS" | jq -r '.[:3] | .[] | "  - #\(.number): \(.title)"' >> team-status.md
+          fi
+          
+          # PR review status
+          NEEDS_REVIEW=$(gh pr list --state open --json number,reviewRequests --jq 'map(select(.reviewRequests | length > 0)) | length')
+          echo "- **PRs Needing Review:** $NEEDS_REVIEW" >> team-status.md
+          echo "" >> team-status.md
+          
+          # 3. Strategic Priorities (CEO Bot perspective)
+          echo "## 🎯 Strategic Focus (CEO Bot)" >> team-status.md
+          
+          # Get latest strategy issue
+          STRATEGY_ISSUE=$(gh issue list --label "weekly-strategy" --state open --limit 1 --json number,title,createdAt,body)
+          
+          if [ -n "$STRATEGY_ISSUE" ] && [ "$STRATEGY_ISSUE" != "[]" ]; then
+            STRATEGY_NUMBER=$(echo "$STRATEGY_ISSUE" | jq -r '.[0].number')
+            STRATEGY_TITLE=$(echo "$STRATEGY_ISSUE" | jq -r '.[0].title')
+            echo "- **Current Strategy:** [#$STRATEGY_NUMBER](${{ github.server_url }}/${{ github.repository }}/issues/$STRATEGY_NUMBER) $STRATEGY_TITLE" >> team-status.md
+            
+            # Extract top priorities from strategy body if available
+            echo "- **This Week's Priorities:**" >> team-status.md
+            echo "$STRATEGY_ISSUE" | jq -r '.[0].body' | grep -A 5 "Strategic Priorities" | grep "^1\." | head -3 | sed 's/^/  /' >> team-status.md || echo "  - See strategy issue for details" >> team-status.md
+          else
+            echo "- No active strategy found. Run `/strategy` to generate one." >> team-status.md
+          fi
+          echo "" >> team-status.md
+          
+          # 4. Operations Status (COO Bot perspective)
+          echo "## 🔧 Operations Status (COO Bot)" >> team-status.md
+          
+          # Blockers
+          BLOCKERS=$(gh issue list --label "blocker,blocked" --state open --json number,title)
+          BLOCKER_COUNT=$(echo "$BLOCKERS" | jq 'length')
+          echo "- **Active Blockers:** $BLOCKER_COUNT" >> team-status.md
+          
+          if [ "$BLOCKER_COUNT" -gt 0 ]; then
+            echo "$BLOCKERS" | jq -r '.[] | "  - #\(.number): \(.title)"' >> team-status.md
+          fi
+          
+          # High priority issues
+          HIGH_PRI=$(gh issue list --label "priority:high,P0,P1" --state open --json number --jq 'length')
+          echo "- **High Priority Issues:** $HIGH_PRI" >> team-status.md
+          echo "" >> team-status.md
+          
+          # 5. Product Development (PRD Bot perspective)
+          echo "## 📋 Product Pipeline (PRD Bot)" >> team-status.md
+          
+          # Features needing PRD
+          NEEDS_PRD=$(gh issue list --label "feature,enhancement" --state open --json number,labels --jq 'map(select(.labels | map(.name) | contains(["has-prd"]) | not)) | length')
+          echo "- **Features Needing PRD:** $NEEDS_PRD" >> team-status.md
+          
+          # Recently approved PRDs
+          APPROVED_PRDS=$(gh issue list --label "prd-approved" --state open --limit 5 --json number,title)
+          APPROVED_COUNT=$(echo "$APPROVED_PRDS" | jq 'length')
+          echo "- **Approved PRDs Ready for Dev:** $APPROVED_COUNT" >> team-status.md
+          
+          if [ "$APPROVED_COUNT" -gt 0 ]; then
+            echo "$APPROVED_PRDS" | jq -r '.[:3] | .[] | "  - #\(.number): \(.title)"' >> team-status.md
+          fi
+          echo "" >> team-status.md
+          
+          # 6. Quality Status (QA Bot perspective)
+          echo "## 🧪 Quality Status (QA Bot)" >> team-status.md
+          
+          # Get recent workflow runs
+          FAILED_RUNS=$(gh run list --workflow "*" --status failure --limit 10 --json conclusion,workflowName,headBranch | jq 'length')
+          echo "- **Failed Workflows (Last 10):** $FAILED_RUNS" >> team-status.md
+          
+          # Bug count
+          BUG_COUNT=$(gh issue list --label "bug,defect" --state open --json number --jq 'length')
+          echo "- **Open Bugs:** $BUG_COUNT" >> team-status.md
+          echo "" >> team-status.md
+          
+          # 7. Security Status (Security Bot perspective)
+          echo "## 🔒 Security Status (Security Bot)" >> team-status.md
+          SECURITY_ISSUES=$(gh issue list --label "security,vulnerability" --state open --json number --jq 'length')
+          echo "- **Security Issues:** $SECURITY_ISSUES" >> team-status.md
+          
+          # Check for security workflow if exists
+          if gh workflow list | grep -q "security"; then
+            echo "- **Security Scans:** Active" >> team-status.md
+          else
+            echo "- **Security Scans:** Not configured" >> team-status.md
+          fi
+          echo "" >> team-status.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Generate Executive Summary
+        id: summary
+        run: |
+          cd .github/ai-team
+          
+          # Create a consolidated prompt for executive summary
+          PROMPT=$(cat <<'EOF'
+          You are the AI Team Coordinator creating an executive dashboard. Synthesize the team status into actionable insights.
+          
+          Team Status Data:
+          $(cat ../team-status.md)
+          
+          Create an executive summary in this format:
+          
+          # 🎮 AI Team Executive Dashboard
+          
+          ## 📊 Executive Summary
+          [2-3 sentence overview of current state and key focus areas]
+          
+          ## 🚨 Immediate Actions Required
+          [Top 3-5 actions the human CTO needs to take right now]
+          1. **[Action]** - [Why it's critical] (Owner: [Bot/Human])
+          2. **[Action]** - [Why it's critical] (Owner: [Bot/Human])
+          3. **[Action]** - [Why it's critical] (Owner: [Bot/Human])
+          
+          ## 💡 Key Decisions Needed
+          [Strategic decisions requiring human input]
+          - **[Decision Topic]**: [Context and options]
+          - **[Decision Topic]**: [Context and options]
+          
+          ## 📈 Performance Highlights
+          [What's going well]
+          - ✅ [Achievement or positive trend]
+          - ✅ [Achievement or positive trend]
+          
+          ## ⚠️ Risk Register
+          [What needs attention]
+          | Risk | Impact | Mitigation | Owner |
+          |------|--------|------------|-------|
+          | [Risk] | High/Med/Low | [Action] | [Bot] |
+          
+          ## 🎯 This Week's Focus
+          [Aligned priorities across all bots]
+          1. [Priority 1 - coordinated across teams]
+          2. [Priority 2 - coordinated across teams]
+          3. [Priority 3 - coordinated across teams]
+          
+          ## 🤖 Bot Recommendations
+          [Specific recommendations from each bot]
+          - **CEO Bot**: [Strategic recommendation]
+          - **CTO Bot**: [Technical recommendation]
+          - **CFO Bot**: [Financial recommendation]
+          - **COO Bot**: [Operational recommendation]
+          
+          ## 📅 Upcoming Milestones
+          [Key dates and deliverables]
+          - [Date]: [Milestone]
+          - [Date]: [Milestone]
+          
+          Remember: Synthesize information into clear, actionable insights. The human CTO should be able to make decisions quickly based on this dashboard.
+          EOF
+          )
+          
+          # Call AI API with coordinator personality
+          SUMMARY=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                   ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                   OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                   TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                   GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                   node scripts/ai-api-handler.js "coo_bot" "$PROMPT")
+          
+          echo "$SUMMARY" > executive-summary.md
+      
+      - name: Post Team Focus Report
+        run: |
+          cd .github/ai-team
+          
+          # Combine raw data and executive summary
+          {
+            cat executive-summary.md
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>📋 Detailed Team Status Data</summary>"
+            echo ""
+            cat ../team-status.md
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 🎯 Quick Actions"
+            echo ""
+            echo "**Team Commands:**"
+            echo "- \`/standup\` - Get daily standup summary"
+            echo "- \`/strategy\` - Generate weekly strategic plan"
+            echo "- \`/cost-report [daily|weekly|monthly]\` - Get cost analysis"
+            echo "- \`/emergency [issue]\` - Trigger all-hands response"
+            echo ""
+            echo "**Bot-Specific Commands:**"
+            echo "- \`/cto [question]\` - Technical guidance"
+            echo "- \`/ceo [topic]\` - Strategic direction"
+            echo "- \`/cfo [analysis]\` - Financial insights"
+            echo "- \`/prd [feature]\` - Requirements analysis"
+            echo ""
+            echo "---"
+            echo "*AI Team Executive Dashboard • Generated $(date '+%Y-%m-%d %H:%M UTC')*"
+          } > team-focus-report.md
+          
+          # Post based on context
+          if [ "${{ env.CONTEXT_TYPE }}" == "issue" ]; then
+            # Post as comment
+            gh issue comment ${{ env.CONTEXT_NUMBER }} --body-file team-focus-report.md
+          else
+            # Create new issue
+            gh issue create \
+              --title "🎮 AI Team Focus - $(date '+%B %d, %Y')" \
+              --body-file team-focus-report.md \
+              --label "ai-team,executive-dashboard" \
+              --assignee "${{ github.repository_owner }}"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Trigger Follow-up Actions
+        if: always()
+        run: |
+          # Check if any critical conditions require immediate action
+          
+          # If cost is critical, ensure we're in budget mode
+          if grep -q "🚨 Critical" team-status.md; then
+            echo "::warning::Critical budget status detected. All bots switching to economy mode."
+          fi
+          
+          # If blockers exist, consider triggering COO bot
+          if grep -q "Active Blockers: [1-9]" team-status.md; then
+            echo "::notice::Blockers detected. COO Bot will prioritize resolution."
+          fi
+          
+          echo "::notice::Team focus report complete. Check issue/comment for full dashboard."

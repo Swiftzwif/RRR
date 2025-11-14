@@ -1,0 +1,198 @@
+name: CTO Bot - PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+  issue_comment:
+    types: [created]
+
+jobs:
+  pr-review:
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'issue_comment' && 
+       github.event.issue.pull_request && 
+       contains(github.event.comment.body, '/review'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Get PR diff
+        id: diff
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            PR_NUMBER=${{ github.event.pull_request.number }}
+          else
+            PR_NUMBER=${{ github.event.issue.number }}
+          fi
+          
+          # Get PR information
+          gh pr view $PR_NUMBER --json title,body,files,additions,deletions,commits > pr-info.json
+          
+          # Get the diff
+          gh pr diff $PR_NUMBER > pr-diff.txt
+          
+          # Get changed files list
+          gh pr view $PR_NUMBER --json files --jq '.files[].path' > changed-files.txt
+          
+          # Create a summary for the AI
+          echo "## PR Summary" > pr-summary.txt
+          echo "**Title**: $(jq -r '.title' pr-info.json)" >> pr-summary.txt
+          echo "**Description**: $(jq -r '.body // "No description provided"' pr-info.json)" >> pr-summary.txt
+          echo "**Changes**: +$(jq -r '.additions' pr-info.json) -$(jq -r '.deletions' pr-info.json)" >> pr-summary.txt
+          echo "**Commits**: $(jq -r '.commits | length' pr-info.json)" >> pr-summary.txt
+          echo "" >> pr-summary.txt
+          echo "**Changed files**:" >> pr-summary.txt
+          cat changed-files.txt >> pr-summary.txt
+          echo "" >> pr-summary.txt
+          echo "**Diff**:" >> pr-summary.txt
+          # Limit diff size to avoid token limits
+          head -n 3000 pr-diff.txt >> pr-summary.txt
+          
+          # Store PR number for later use
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: CTO Review
+        id: review
+        run: |
+          cd .github/ai-team
+          
+          # Create prompt for CTO bot
+          PROMPT=$(cat <<'EOF'
+          You are reviewing a pull request. Analyze the code changes and provide a comprehensive technical review.
+          
+          Focus on:
+          1. **Architecture & Design**: Does this align with our system architecture? Are there better patterns?
+          2. **Code Quality**: Is the code clean, maintainable, and following best practices?
+          3. **Security**: Are there any security vulnerabilities or concerns?
+          4. **Performance**: Will this impact system performance? Are there optimization opportunities?
+          5. **Testing**: Is the code properly tested? Are edge cases covered?
+          6. **Technical Debt**: Does this add or reduce technical debt?
+          7. **Dependencies**: Are new dependencies necessary and well-maintained?
+          8. **Git Workflow**: Check for git worktree usage best practices
+          
+          PR Information:
+          $(cat ../pr-summary.txt)
+          
+          Provide your review in this format:
+          
+          ## 🏗️ Architecture Review
+          [Your architecture analysis]
+          
+          ## 💻 Code Quality
+          [Code quality assessment]
+          
+          ## 🔒 Security Assessment
+          [Security analysis]
+          
+          ## ⚡ Performance Considerations
+          [Performance impact analysis]
+          
+          ## 🧪 Testing Coverage
+          [Testing assessment]
+          
+          ## 📊 Technical Debt Impact
+          [Technical debt analysis]
+          
+          ## ✅ Approval Status
+          [One of: APPROVED, CHANGES_REQUESTED, COMMENT]
+          
+          ## 💡 Specific Suggestions
+          [Concrete improvement suggestions with code examples if applicable]
+          
+          Remember: You're a seasoned CTO who's shipped products at scale. Be constructive but thorough. Teach through your review.
+          EOF
+          )
+          
+          # Call the AI API
+          REVIEW=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                   ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                   OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                   TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                   GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                   node scripts/ai-api-handler.js "cto_bot" "$PROMPT" "high")
+          
+          # Save review to file
+          echo "$REVIEW" > review.md
+          
+          # Extract approval status
+          if grep -q "APPROVED" review.md; then
+            echo "APPROVAL_STATUS=APPROVE" >> $GITHUB_ENV
+            echo "review_status=approved" >> $GITHUB_OUTPUT
+          elif grep -q "CHANGES_REQUESTED" review.md; then
+            echo "APPROVAL_STATUS=REQUEST_CHANGES" >> $GITHUB_ENV
+            echo "review_status=changes_requested" >> $GITHUB_OUTPUT
+          else
+            echo "APPROVAL_STATUS=COMMENT" >> $GITHUB_ENV
+            echo "review_status=comment" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Post Review Comment
+        run: |
+          cd .github/ai-team
+          
+          # Add header to the review
+          (echo "# 🤖 CTO Bot Review"; echo ""; cat review.md) > final-review.md
+          
+          # Add footer with metadata
+          echo "" >> final-review.md
+          echo "---" >> final-review.md
+          echo "*Review generated by CTO Bot (AI-powered) • [View AI Team Dashboard](https://github.com/${{ github.repository }}/issues?q=label%3Aai-team)*" >> final-review.md
+          
+          # Create the review
+          if [ "${{ github.event_name }}" == "pull_request" ] || [ "$APPROVAL_STATUS" != "COMMENT" ]; then
+            gh pr review ${{ env.PR_NUMBER }} \
+              --body-file final-review.md \
+              --${{ env.APPROVAL_STATUS }}
+          else
+            gh pr comment ${{ env.PR_NUMBER }} \
+              --body-file final-review.md
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Add Labels
+        if: always()
+        run: |
+          # Add review status label
+          if [ "${{ steps.review.outputs.review_status }}" == "approved" ]; then
+            gh pr edit ${{ env.PR_NUMBER }} --add-label "cto-approved"
+            gh pr edit ${{ env.PR_NUMBER }} --remove-label "needs-cto-review,cto-changes-requested" 2>/dev/null || true
+          elif [ "${{ steps.review.outputs.review_status }}" == "changes_requested" ]; then
+            gh pr edit ${{ env.PR_NUMBER }} --add-label "cto-changes-requested"
+            gh pr edit ${{ env.PR_NUMBER }} --remove-label "needs-cto-review,cto-approved" 2>/dev/null || true
+          else
+            gh pr edit ${{ env.PR_NUMBER }} --add-label "needs-cto-review"
+          fi
+          
+          # Add AI team label
+          gh pr edit ${{ env.PR_NUMBER }} --add-label "ai-team-reviewed"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Trigger Security Review if Needed
+        if: |
+          contains(steps.review.outputs.review_status, 'security') ||
+          contains(github.event.pull_request.title, 'security') ||
+          contains(github.event.pull_request.title, 'auth')
+        run: |
+          gh workflow run security-pr-review.yml -f pr_number=${{ env.PR_NUMBER }}
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,188 @@
+name: DevOps Bot - Deployment Management
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+jobs:
+  deployment-analysis:
+    if: |
+      github.event_name == 'push' || 
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/deploy'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Analyze Deployment Context
+        run: |
+          echo "## Deployment Analysis" > deploy-data.txt
+          
+          # Current commit info
+          echo "### Deployment Candidate" >> deploy-data.txt
+          echo "- Commit: ${{ github.sha }}" >> deploy-data.txt
+          echo "- Branch: ${{ github.ref_name }}" >> deploy-data.txt
+          echo "- Author: ${{ github.actor }}" >> deploy-data.txt
+          echo "- Message: ${{ github.event.head_commit.message || 'Manual deployment' }}" >> deploy-data.txt
+          
+          # Recent deployments (using workflow runs as proxy)
+          echo -e "\n### Recent Deployments" >> deploy-data.txt
+          gh run list --workflow "deploy*" --limit 5 --json conclusion,createdAt,headBranch --jq '
+            .[] | "- \(.createdAt | split("T")[0]): \(.headBranch) (\(.conclusion // "in progress"))"
+          ' >> deploy-data.txt 2>/dev/null || echo "- No deployment history" >> deploy-data.txt
+          
+          # System health checks
+          echo -e "\n### Pre-Deployment Checks" >> deploy-data.txt
+          
+          # Check if tests are passing
+          TEST_STATUS=$(gh run list --workflow "*test*" --branch ${{ github.ref_name }} --limit 1 --json conclusion --jq '.[0].conclusion // "unknown"')
+          echo "- Test Status: $TEST_STATUS" >> deploy-data.txt
+          
+          # Check build status
+          BUILD_STATUS=$(gh run list --workflow "*build*" --branch ${{ github.ref_name }} --limit 1 --json conclusion --jq '.[0].conclusion // "unknown"')
+          echo "- Build Status: $BUILD_STATUS" >> deploy-data.txt
+          
+          # Open incidents
+          INCIDENTS=$(gh issue list --label "incident,production-issue" --state open --json number --jq 'length')
+          echo "- Open Incidents: $INCIDENTS" >> deploy-data.txt
+          
+          # Changes since last deployment
+          echo -e "\n### Changes in This Deployment" >> deploy-data.txt
+          LAST_DEPLOY_SHA=$(gh run list --workflow "deploy*" --status success --limit 1 --json headSha --jq '.[0].headSha // ""')
+          if [ -n "$LAST_DEPLOY_SHA" ]; then
+            echo "Changes since $LAST_DEPLOY_SHA:" >> deploy-data.txt
+            git log --oneline $LAST_DEPLOY_SHA..HEAD | head -10 >> deploy-data.txt
+          else
+            echo "First deployment or no history available" >> deploy-data.txt
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Generate Deployment Decision
+        run: |
+          cd .github/ai-team
+          
+          PROMPT=$(cat <<'EOF'
+          You are the DevOps Lead making deployment decisions and managing infrastructure.
+          
+          Deployment Context:
+          $(cat ../deploy-data.txt)
+          
+          Analyze and provide deployment recommendations:
+          
+          # 🚀 Deployment Decision Report
+          
+          ## 🎯 Deployment Recommendation
+          **Decision**: [DEPLOY / HOLD / ROLLBACK]
+          **Confidence**: [High/Medium/Low]
+          **Reasoning**: [Clear explanation]
+          
+          ## ✅ Pre-Deployment Checklist
+          - [ ] Tests passing
+          - [ ] Build successful
+          - [ ] No critical incidents
+          - [ ] Dependencies updated
+          - [ ] Database migrations reviewed
+          - [ ] Environment variables confirmed
+          - [ ] Rollback plan ready
+          
+          ## 🔍 Risk Assessment
+          | Risk Factor | Level | Mitigation |
+          |-------------|-------|------------|
+          | [Risk] | High/Med/Low | [Strategy] |
+          
+          ## 📋 Deployment Steps
+          1. [Pre-deployment action]
+          2. [Deployment action]
+          3. [Post-deployment verification]
+          
+          ## 🔄 Rollback Plan
+          [Clear steps to rollback if issues arise]
+          
+          ## 📊 Post-Deployment Monitoring
+          - **Key Metrics to Watch**:
+            - [Metric 1]: Expected range
+            - [Metric 2]: Alert threshold
+          - **Alert Conditions**: [What triggers rollback]
+          
+          ## 🛡️ Infrastructure Recommendations
+          [Scaling, performance, security considerations]
+          
+          Remember: You've survived enough 3am incidents to know prevention beats heroics. Zero-downtime deployments are the standard, not the exception.
+          EOF
+          )
+          
+          ANALYSIS=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                    ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                    OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                    TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                    GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                    node scripts/ai-api-handler.js "devops_bot" "$PROMPT" "high")
+          
+          echo "$ANALYSIS" > deployment-decision.md
+      
+      - name: Post Deployment Decision
+        run: |
+          cd .github/ai-team
+          
+          {
+            echo "# 🚀 DevOps Deployment Analysis"
+            echo ""
+            echo "**Commit**: \`${{ github.sha }}\`"
+            echo "**Triggered by**: @${{ github.actor }}"
+            echo ""
+            cat deployment-decision.md
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 🎬 Deployment Actions"
+            echo ""
+            if grep -q "Decision.*DEPLOY" deployment-decision.md; then
+              echo "✅ **Approved for deployment**"
+              echo ""
+              echo "To proceed:"
+              echo "1. Review the checklist above"
+              echo "2. Run \`/deploy-production\` to initiate"
+              echo "3. Monitor the metrics listed"
+            elif grep -q "Decision.*HOLD" deployment-decision.md; then
+              echo "⏸️ **Deployment on hold**"
+              echo ""
+              echo "Address the issues listed above before proceeding."
+            else
+              echo "🚫 **Deployment not recommended**"
+              echo ""
+              echo "Critical issues detected. See risk assessment above."
+            fi
+            echo ""
+            echo "---"
+            echo "*Generated by DevOps Bot • Zero-Downtime Deployment Excellence*"
+          } > report.md
+          
+          if [ "${{ github.event_name }}" == "push" ]; then
+            # Create deployment issue for push events
+            gh issue create \
+              --title "🚀 Deployment Decision - ${{ github.sha }}" \
+              --body-file report.md \
+              --label "ai-team,deployment,devops"
+          else
+            # Comment on existing issue
+            gh issue comment ${{ github.event.issue.number }} --body-file report.md
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
