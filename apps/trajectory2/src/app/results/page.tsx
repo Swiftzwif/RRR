@@ -6,6 +6,7 @@ import ResultCard from "@/components/ResultCard";
 import { getCopy } from "@/lib/copy";
 import { Domain, getSuggestedActions } from "@/lib/scoring";
 import { supabase } from "@/lib/supabase";
+import { logger } from "@/lib/logger";
 import { THINKIFIC_COURSE_URL } from "@/lib/config";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
