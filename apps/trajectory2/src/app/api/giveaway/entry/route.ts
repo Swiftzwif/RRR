@@ -274,7 +274,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Giveaway status error:', error);
+    logger.error('Giveaway status error', error as Error);
     return NextResponse.json(
       { error: 'Unable to fetch giveaway status' },
       { status: 500 }
