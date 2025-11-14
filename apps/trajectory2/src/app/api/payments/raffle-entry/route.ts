@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('Raffle entry error:', error);
+    logger.error('Raffle entry error', error as Error);
 
     return NextResponse.json(
       {
