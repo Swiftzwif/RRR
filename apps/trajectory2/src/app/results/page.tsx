@@ -87,7 +87,7 @@ export default function ResultsPage() {
           }
         }
       } catch (error) {
-        console.error("Error loading results:", error);
+        logger.error("Error loading results", error as Error);
         router.push("/assessment");
       } finally {
         setLoading(false);
