@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (error || !data.user) {
-      console.error('Token verification error:', error);
+      logger.error('Token verification error', error);
       return NextResponse.json(
         { error: 'Invalid or expired verification token' },
         { status: 400 }
