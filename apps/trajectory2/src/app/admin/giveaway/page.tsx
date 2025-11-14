@@ -210,7 +210,7 @@ export default function AdminGiveawayPage() {
 
     if (error) {
       alert('Failed to update verification status');
-      console.error('Verification update error:', error);
+      logger.error('Verification update error', error);
     } else {
       // Refresh data
       await fetchGiveawayData();
