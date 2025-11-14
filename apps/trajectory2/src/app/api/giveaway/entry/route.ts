@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
         logger.error('ConvertKit subscription failed', subscriptionResult.error);
       }
     } else {
-      console.warn('CONVERTKIT_FORM_ID is not configured');
+      logger.warn('CONVERTKIT_FORM_ID is not configured');
     }
 
     // Create giveaway entry
