@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
     
     if (!cronSecret) {
-      console.error('CRON_SECRET not configured');
+      logger.error('CRON_SECRET not configured');
       return NextResponse.json({ error: 'Cron secret not configured' }, { status: 500 });
     }
 
