@@ -4,6 +4,7 @@ import { sendPasswordResetEmail } from '@/lib/email';
 import { rateLimit, rateLimitConfigs, createRateLimitResponse } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import type { PasswordResetRequest, PasswordResetConfirmation, PasswordResetSuccessResponse, AuthErrorResponse, AuthSuccessResponse } from '@/types/auth';
+import { passwordResetRequestSchema, passwordResetConfirmationSchema } from '@/types/auth';
 
 // Create rate limiter for password reset
 const resetLimiter = rateLimit(rateLimitConfigs.passwordReset);
@@ -16,14 +17,19 @@ export async function POST(request: NextRequest) {
     if (!isAllowed) {
       return createRateLimitResponse(reset);
     }
-    const { email }: PasswordResetRequest = await request.json();
 
-    if (!email) {
+    // Parse and validate request body
+    const body = await request.json();
+    const validation = passwordResetRequestSchema.safeParse(body);
+
+    if (!validation.success) {
       return NextResponse.json<AuthErrorResponse>(
-        { error: 'Email is required' },
+        { error: validation.error.errors[0]?.message || 'Invalid request data' },
         { status: 400 }
       );
     }
+
+    const { email } = validation.data;
 
     const supabase = getSupabaseServiceRole();
     if (!supabase) {
@@ -98,22 +104,18 @@ export async function POST(request: NextRequest) {
 // PUT /api/auth/reset-password - Update password with reset token
 export async function PUT(request: NextRequest) {
   try {
-    const { token, password }: PasswordResetConfirmation = await request.json();
+    // Parse and validate request body
+    const body = await request.json();
+    const validation = passwordResetConfirmationSchema.safeParse(body);
 
-    if (!token || !password) {
+    if (!validation.success) {
       return NextResponse.json<AuthErrorResponse>(
-        { error: 'Token and password are required' },
+        { error: validation.error.errors[0]?.message || 'Invalid request data' },
         { status: 400 }
       );
     }
 
-    // Validate password strength
-    if (password.length < 8) {
-      return NextResponse.json<AuthErrorResponse>(
-        { error: 'Password must be at least 8 characters long' },
-        { status: 400 }
-      );
-    }
+    const { token, password } = validation.data;
 
     const supabase = getSupabaseServiceRole();
     if (!supabase) {

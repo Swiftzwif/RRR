@@ -3,19 +3,24 @@ import { getSupabaseServiceRole } from '@/lib/supabase';
 import { sendEmailVerification } from '@/lib/email';
 import { logger } from '@/lib/logger';
 import type { EmailVerificationRequest, EmailVerificationResponse, AuthErrorResponse } from '@/types/auth';
+import { emailVerificationRequestSchema } from '@/types/auth';
 import type { User } from '@supabase/supabase-js';
 
 // POST /api/auth/verify-email - Send verification email
 export async function POST(request: NextRequest) {
   try {
-    const { email, userId }: EmailVerificationRequest = await request.json();
+    // Parse and validate request body
+    const body = await request.json();
+    const validation = emailVerificationRequestSchema.safeParse(body);
 
-    if (!email && !userId) {
+    if (!validation.success) {
       return NextResponse.json<AuthErrorResponse>(
-        { error: 'Email or user ID is required' },
+        { error: validation.error.errors[0]?.message || 'Invalid request data' },
         { status: 400 }
       );
     }
+
+    const { email, userId } = validation.data;
 
     const supabase = getSupabaseServiceRole();
     if (!supabase) {
