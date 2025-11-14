@@ -127,8 +127,8 @@ export default function RaffleAuthCTA() {
       } else {
         throw new Error(data.error || 'Failed to create payment');
       }
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setIsProcessingPayment(false);
     }
   };
