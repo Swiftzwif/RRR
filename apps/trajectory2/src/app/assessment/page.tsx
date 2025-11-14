@@ -70,7 +70,7 @@ export default function AssessmentPage() {
         .single();
 
       if (error) {
-        console.error('Error saving assessment:', error);
+        logger.error('Error saving assessment', error);
         // Still proceed to results even if save fails
       }
 
