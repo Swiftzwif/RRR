@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('Course checkout error:', error);
+    logger.error('Course checkout error', error as Error);
 
     return NextResponse.json(
       {
