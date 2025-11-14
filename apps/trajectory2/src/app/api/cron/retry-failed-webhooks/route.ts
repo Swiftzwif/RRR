@@ -3,6 +3,15 @@ import { getSupabaseServiceRole } from '@/lib/supabase';
 import { logger } from '@/lib/logger';
 
 /**
+ * Webhook event payload structure
+ * TODO: Import from Square SDK when re-enabling Square integration
+ */
+interface WebhookPayload {
+  type: string;
+  [key: string]: unknown;
+}
+
+/**
  * Cron job to retry failed webhook events
  * Runs every 5 minutes to process webhook events that need retrying
  */
@@ -161,7 +170,7 @@ function calculateNextRetryTime(attempt: number): string {
  * In production, this should reuse the actual webhook processing logic
  */
 async function processWebhookPayload(
-  payload: any,
+  payload: WebhookPayload,
   supabase: ReturnType<typeof getSupabaseServiceRole>
 ): Promise<{ success: boolean; error?: string }> {
   try {

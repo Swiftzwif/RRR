@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server';
+import type { VercelKV } from '@vercel/kv';
 
 // Lazy import kv to avoid errors when KV is not configured
-let kv: any = null;
+let kv: VercelKV | null = null;
 
 async function getKV() {
   if (kv) return kv;
