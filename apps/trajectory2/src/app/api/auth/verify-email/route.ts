@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       email: user.email
     });
   } catch (error) {
-    console.error('Email verification error:', error);
+    logger.error('Email verification error', error as Error);
     return NextResponse.json(
       { error: 'An error occurred processing your request' },
       { status: 500 }
