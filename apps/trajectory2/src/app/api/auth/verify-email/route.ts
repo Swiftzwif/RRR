@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     } else if (email) {
       // For email-only requests, generate link directly (will fail silently if user doesn't exist)
       // We can't easily get user by email in admin API, so we'll generate link and handle gracefully
-      user = { email, email_confirmed_at: null };
+      user = { email, email_confirmed_at: undefined };
     } else {
       return NextResponse.json<AuthErrorResponse>(
         { error: 'Email or user ID is required' },
