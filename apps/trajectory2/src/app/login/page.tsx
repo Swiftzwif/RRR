@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from 'next/navigation'
 import { login, signup } from "./actions";
 import { createClient } from '@/utils/supabase/client';
+import { logger } from '@/lib/logger';
 
 function LoginContent() {
   const [isLoading, setIsLoading] = useState(false)
