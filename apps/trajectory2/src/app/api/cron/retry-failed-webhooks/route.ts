@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServiceRole } from '@/lib/supabase';
+import { logger } from '@/lib/logger';
 
 /**
  * Cron job to retry failed webhook events
