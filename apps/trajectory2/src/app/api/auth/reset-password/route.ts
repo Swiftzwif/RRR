@@ -60,7 +60,10 @@ export async function POST(request: NextRequest) {
 
     // Don't reveal if email send failed to prevent enumeration
     if (!emailResult.success) {
-      logger.error('Failed to send reset email', emailResult.error);
+      const errorMessage = typeof emailResult.error === 'string'
+        ? emailResult.error
+        : 'Failed to send reset email';
+      logger.error('Failed to send reset email', new Error(errorMessage));
     }
 
     // Try to log password reset attempt if user exists (but don't fail if it doesn't)
