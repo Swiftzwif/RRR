@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     const supabase = getSupabaseServiceRole();
     if (!supabase) {
-      return NextResponse.json(
+      return NextResponse.json<AuthErrorResponse>(
         { error: 'Auth service not configured' },
         { status: 500 }
       );
@@ -119,7 +119,7 @@ export async function PUT(request: NextRequest) {
 
     const supabase = getSupabaseServiceRole();
     if (!supabase) {
-      return NextResponse.json(
+      return NextResponse.json<AuthErrorResponse>(
         { error: 'Auth service not configured' },
         { status: 500 }
       );
