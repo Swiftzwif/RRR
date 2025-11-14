@@ -177,7 +177,7 @@ export async function PUT(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Password update error:', error);
+    logger.error('Password update error', error as Error);
     return NextResponse.json(
       { error: 'An error occurred updating your password' },
       { status: 500 }
