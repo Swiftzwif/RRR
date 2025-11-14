@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     // Always return success to prevent email enumeration
     if (resetError || !resetData) {
-      console.log('Password reset requested (always returning success to prevent enumeration):', email);
+      logger.info('Password reset requested (always returning success to prevent enumeration)', email);
       return NextResponse.json({
         message: 'If an account exists with this email, you will receive a password reset link.'
       });
