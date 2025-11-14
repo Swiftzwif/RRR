@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
       });
     } catch (emailError) {
       // Log but don't fail the request
-      console.error('Error sending confirmation email:', emailError);
+      logger.error('Error sending confirmation email', emailError as Error);
     }
 
     // Track entry (analytics would go here)
