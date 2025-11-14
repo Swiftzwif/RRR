@@ -7,17 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
-interface Question {
-  id: string;
-  domain: string;
-  prompt: string;
-}
-
-interface QuestionsData {
-  scored: Question[];
-  reflective: Question[];
-}
+import type { Question, QuestionsData, AssessmentAnswers, AssessmentResults } from '@/types/assessment';
 
 export default function AssessmentPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -34,7 +24,7 @@ export default function AssessmentPage() {
         }
         const data: QuestionsData = await response.json();
         setQuestions(data.scored);
-      } catch (err) {
+      } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Failed to load questions');
       } finally {
         setLoading(false);
@@ -44,18 +34,18 @@ export default function AssessmentPage() {
     loadQuestions();
   }, []);
 
-  const handleComplete = async (answers: Record<string, number>) => {
+  const handleComplete = async (answers: AssessmentAnswers) => {
     try {
       // Calculate scores
       const result = scoreDomains(answers);
-      
+
       // Get current user
       if (!supabase) {
         throw new Error('Database connection not available');
       }
-      
+
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       // Save assessment to database
       const { data, error } = await supabase
         .from('assessments')
@@ -75,15 +65,16 @@ export default function AssessmentPage() {
       }
 
       // Store results in session storage for results page
-      sessionStorage.setItem('assessmentResults', JSON.stringify({
+      const assessmentResults: AssessmentResults = {
         ...result,
         assessmentId: data?.id,
-      }));
+      };
+      sessionStorage.setItem('assessmentResults', JSON.stringify(assessmentResults));
 
       // Redirect to results
       router.push('/results');
     } catch (err) {
-      logger.error('Error processing assessment', err as Error);
+      logger.error('Error processing assessment', err);
       setError('Failed to process assessment. Please try again.');
     }
   };
