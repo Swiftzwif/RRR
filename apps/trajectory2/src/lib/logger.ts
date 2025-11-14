@@ -10,7 +10,7 @@ import * as Sentry from '@sentry/nextjs';
  */
 interface Logger {
   info: (message: string, ...args: unknown[]) => void;
-  error: (message: string, error?: Error, ...args: unknown[]) => void;
+  error: (message: string, error?: Error | unknown, ...args: unknown[]) => void;
   warn: (message: string, ...args: unknown[]) => void;
   debug: (message: string, ...args: unknown[]) => void;
 }
@@ -29,16 +29,24 @@ const info = (message: string, ...args: unknown[]): void => {
 /**
  * Log error messages and send to Sentry in production
  * @param message - The error message
- * @param err - Optional Error object to capture
+ * @param err - Optional Error object or unknown error to capture
  * @param args - Additional context to log
  */
-const error = (message: string, err?: Error, ...args: unknown[]): void => {
+const error = (message: string, err?: Error | unknown, ...args: unknown[]): void => {
   if (process.env.NODE_ENV === 'development') {
     console.error(`[ERROR] ${message}`, err, ...args);
   } else {
     // Production: Send to Sentry
     if (err) {
-      Sentry.captureException(err, { extra: { message, args } });
+      const errorToCapture = err instanceof Error
+        ? err
+        : new Error(typeof err === 'object' && err !== null && 'message' in err
+          ? String(err.message)
+          : String(err));
+
+      Sentry.captureException(errorToCapture, {
+        extra: { message, args, originalError: err }
+      });
     } else {
       Sentry.captureMessage(message, { level: 'error', extra: { args } });
     }
