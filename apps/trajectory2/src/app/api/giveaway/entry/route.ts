@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (entryError || !entry) {
-      console.error('Error creating giveaway entry:', entryError);
+      logger.error('Error creating giveaway entry', entryError);
       return NextResponse.json(
         { error: 'Failed to process your entry. Please try again.' },
         { status: 500 }
