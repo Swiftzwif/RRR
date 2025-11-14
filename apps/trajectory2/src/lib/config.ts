@@ -2,6 +2,13 @@
  * Application-wide configuration constants
  */
 
+/**
+ * Feature flags interface for runtime feature control
+ */
+export interface FeatureFlags {
+  GIVEAWAY_ENABLED: boolean;
+}
+
 export const THINKIFIC_COURSE_URL = 
   process.env.NEXT_PUBLIC_THINKIFIC_COURSE_URL || 
   'https://jean-s-site-8b39.thinkific.com/products/courses/trajectory';
