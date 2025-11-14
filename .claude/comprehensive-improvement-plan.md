@@ -348,6 +348,54 @@ This document is the **single source of truth** for the comprehensive improvemen
 - **TypeScript Issues:** Multiple `any` types need proper interfaces (next priority)
 - **Branch Strategy:** Using feature/* → master with squash merge (no develop branch)
 
+### Found During Security Audit (2025-11-14) 🚨
+**CRITICAL SECURITY FINDINGS** - Repository made public with exposed secrets:
+
+**Exposed API Keys (IMMEDIATE ACTION REQUIRED):**
+1. **Resend API Key:** `re_jaK9ejza_L5cNqfeRsZmd7TN1oWEfyoLb`
+   - Found in: `env.template`, `DEPLOYMENT_FIX.md`
+   - Impact: Email quota abuse, spam sending
+   - Action: Rotate immediately in Resend dashboard
+
+2. **ConvertKit API Key:** `kit_cb18ffdfde4e1b340d6e5bcdc35bd8cf`
+   - Found in: 4 documentation files
+   - Impact: Newsletter subscriber data access, form manipulation
+   - Action: Revoke and regenerate in ConvertKit settings
+
+**Safe Public Data (No Action Needed):**
+- ✅ Supabase Anon Keys (designed for public use with RLS)
+- ✅ Public URLs (Thinkific, Supabase project URL)
+- ✅ Business email addresses
+
+**Root Cause:** API keys were committed to documentation files for "convenience" during development
+
+**Prevention Strategy:**
+- Never commit real API keys to any file
+- Use placeholder values in documentation: `your_api_key_here`
+- Add pre-commit hooks to detect API key patterns
+- Regular security audits before making repos public
+
+### Found in PR Reviews (2025-11-14)
+**From claude[bot] automated reviews on PRs #36-39:**
+
+1. **Missing Sentry Configuration** (CRITICAL)
+   - Logger imports `@sentry/nextjs` but no config files exist
+   - May cause runtime errors in production
+   - Need: `sentry.client.config.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`
+
+2. **PostgrestError Type Handling** (HIGH)
+   - Supabase errors are `PostgrestError` type, not `Error`
+   - Logger expects `Error` objects for Sentry
+   - Causes: Malformed error objects in Sentry, missing stack traces
+   - Fix: Convert to Error: `new Error(error.message)` or update logger interface
+
+3. **Missing Test Coverage** (MEDIUM)
+   - No tests for logger utility
+   - No tests for error handling paths in components
+   - CLAUDE.md requires coverage on critical flows
+
+**Lesson Learned:** Check PR comments immediately after creation, not after merging all PRs
+
 ### To Be Added
 (This section will be updated as new issues/improvements are discovered)
 
@@ -370,8 +418,37 @@ This document is the **single source of truth** for the comprehensive improvemen
 2. Make micro-commits (1-10 lines per commit)
 3. Push to origin
 4. Create PR to master
-5. Squash merge to master
-6. Delete feature branch
+5. **Check PR comments periodically** (see PR Review Process below)
+6. Squash merge to master
+7. Delete feature branch
+
+### PR Review Process ⚠️ CRITICAL
+**ALWAYS check PR comments before continuing work** - Automated bots (Vercel, claude[bot]) provide critical feedback.
+
+**Standard Practice:**
+1. After creating a PR, wait 2-5 minutes for automated reviews
+2. Check for comments using GitHub MCP tools:
+   ```
+   mcp__github__get_pull_request_comments(owner, repo, pullNumber)
+   ```
+3. Address critical issues (marked with CRITICAL, HIGH PRIORITY)
+4. Track feedback items in todo list
+5. Before starting next PR, review previous PR comments
+
+**What to Look For:**
+- **Vercel Bot:** Build failures, deployment issues
+- **claude[bot]:** Code quality issues, security concerns, type safety problems
+- **User Comments:** Direct feedback or questions
+
+**Lessons Learned (2025-11-14):**
+- PRs #36-39 had critical feedback about:
+  - Missing Sentry configuration files
+  - PostgrestError type handling issues
+  - Need for test coverage
+- These issues were only discovered after all 4 PRs were merged
+- Earlier detection would have prevented accumulation of technical debt
+
+**Best Practice:** Check comments after EACH PR, not after a series of PRs
 
 ### Merge Strategy
 - **Feature → Master:** Squash merge (clean history, single commit per PR)
