@@ -138,7 +138,7 @@ export async function GET(request: NextRequest) {
       message: `Processed ${processed} webhook events (${succeeded} succeeded, ${failed} failed)`
     });
   } catch (error) {
-    console.error('Error in retry-failed-webhooks cron:', error);
+    logger.error('Error in retry-failed-webhooks cron', error as Error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
