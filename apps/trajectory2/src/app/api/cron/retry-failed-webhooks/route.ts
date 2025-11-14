@@ -108,8 +108,8 @@ export async function GET(request: NextRequest) {
         
         processed++;
       } catch (error) {
-        console.error(`Error processing webhook event ${event.id}:`, error);
-        
+        logger.error(`Error processing webhook event ${event.id}`, error as Error);
+
         // Update with error
         const nextAttempt = (event.attempts || 0) + 1;
         const nextRetryAt = calculateNextRetryTime(nextAttempt);
