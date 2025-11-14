@@ -83,7 +83,7 @@ export default function AssessmentPage() {
       // Redirect to results
       router.push('/results');
     } catch (err) {
-      console.error('Error processing assessment:', err);
+      logger.error('Error processing assessment', err as Error);
       setError('Failed to process assessment. Please try again.');
     }
   };
