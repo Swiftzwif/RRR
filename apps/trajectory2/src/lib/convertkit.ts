@@ -3,6 +3,11 @@
  * Handles newsletter subscription for giveaway entries
  */
 
+/**
+ * ConvertKit custom field value types
+ */
+type ConvertKitFieldValue = string | number | boolean | null;
+
 interface ConvertKitSubscriber {
   id: string;
   email: string;
@@ -10,7 +15,7 @@ interface ConvertKitSubscriber {
   last_name: string | null;
   state: 'active' | 'unsubscribed' | 'bounced' | 'unconfirmed';
   created_at: string;
-  fields: Record<string, any>;
+  fields: Record<string, ConvertKitFieldValue>;
 }
 
 interface ConvertKitSubscriptionResponse {
@@ -28,6 +33,15 @@ interface SubscribeToFormParams {
   last_name: string;
   form_id: string;
   tags?: string[];
+}
+
+/**
+ * ConvertKit API subscription request body
+ */
+interface ConvertKitSubscribeRequest {
+  email: string;
+  first_name: string;
+  last_name?: string;
 }
 
 import { CONVERTKIT_API_KEY } from './constants';
@@ -58,15 +72,11 @@ export async function subscribeToForm({
 
   try {
     // ConvertKit V4 API format
-    const subscribeData: any = {
+    const subscribeData: ConvertKitSubscribeRequest = {
       email,
       first_name,
+      ...(last_name && { last_name }),
     };
-
-    // Add last_name if provided
-    if (last_name) {
-      subscribeData.last_name = last_name;
-    }
 
     // Add tags if provided (tags need to be created first in ConvertKit)
     // Tags are added separately after subscription for V4
