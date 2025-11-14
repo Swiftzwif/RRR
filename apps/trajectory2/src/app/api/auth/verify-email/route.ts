@@ -80,7 +80,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!emailResult.success) {
-      logger.error('Failed to send verification email', emailResult.error);
+      const errorMessage = typeof emailResult.error === 'string'
+        ? emailResult.error
+        : 'Failed to send verification email';
+      logger.error('Failed to send verification email', new Error(errorMessage));
       return NextResponse.json(
         { error: 'Failed to send verification email' },
         { status: 500 }
