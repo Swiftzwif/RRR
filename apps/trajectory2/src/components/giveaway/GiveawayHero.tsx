@@ -5,11 +5,7 @@ import { createClient } from '@/utils/supabase/client';
 import { motion } from "framer-motion";
 import { Clock, Gift, TrendingUp, Users, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
-
-interface GiveawayConfig {
-  id: string;
-  prizes: any[];
-}
+import type { GiveawayConfig } from '@/types/giveaway';
 
 export default function GiveawayHero() {
   const [giveawayConfig, setGiveawayConfig] = useState<GiveawayConfig | null>(null);
