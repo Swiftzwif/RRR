@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (verifyError || !verifyData) {
-      logger.error('Error generating verification link', verifyError);
+      logger.error('Error generating verification link', verifyError || new Error('No verification data returned'));
       return NextResponse.json(
         { error: 'Failed to generate verification link' },
         { status: 500 }
@@ -80,7 +80,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!emailResult.success) {
-      logger.error('Failed to send verification email', emailResult.error);
+      const errorMessage = typeof emailResult.error === 'string'
+        ? emailResult.error
+        : 'Failed to send verification email';
+      logger.error('Failed to send verification email', new Error(errorMessage));
       return NextResponse.json(
         { error: 'Failed to send verification email' },
         { status: 500 }
@@ -129,7 +132,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (error || !data.user) {
-      logger.error('Token verification error', error);
+      logger.error('Token verification error', error || new Error('Invalid or expired token'));
       return NextResponse.json(
         { error: 'Invalid or expired verification token' },
         { status: 400 }
