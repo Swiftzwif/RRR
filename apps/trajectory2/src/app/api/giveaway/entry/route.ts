@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
         convertkitSubscriberId = subscriptionResult.subscriber_id;
       } else {
         // Log error but don't block entry
-        console.error('ConvertKit subscription failed:', subscriptionResult.error);
+        logger.error('ConvertKit subscription failed', subscriptionResult.error);
       }
     } else {
       console.warn('CONVERTKIT_FORM_ID is not configured');
