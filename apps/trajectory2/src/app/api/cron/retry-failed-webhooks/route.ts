@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       .limit(50); // Process up to 50 events per run to avoid timeout
 
     if (fetchError) {
-      console.error('Error fetching webhook events to retry:', fetchError);
+      logger.error('Error fetching webhook events to retry', fetchError);
       return NextResponse.json({ error: 'Failed to fetch events' }, { status: 500 });
     }
 
