@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
 
     // Track the commitment moment (if analytics available)
     // This would integrate with your analytics system
-    console.log('Raffle entry initiated:', {
+    logger.info('Raffle entry initiated', {
       email: validatedData.email,
       raffle_id: raffle.id,
       goal_preview: validatedData.transformationGoal.substring(0, 50),
