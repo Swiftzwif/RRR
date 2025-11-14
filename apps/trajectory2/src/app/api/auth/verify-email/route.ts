@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServiceRole } from '@/lib/supabase';
 import { sendEmailVerification } from '@/lib/email';
+import { logger } from '@/lib/logger';
 
 // POST /api/auth/verify-email - Send verification email
 export async function POST(request: NextRequest) {
