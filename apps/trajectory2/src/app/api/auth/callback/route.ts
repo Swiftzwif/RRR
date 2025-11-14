@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
     if (exchangeError) {
-      console.error('Error exchanging code for session:', exchangeError);
+      logger.error('Error exchanging code for session', exchangeError);
       return NextResponse.redirect(
         new URL('/login?error=' + encodeURIComponent('Authentication failed. Please try again.'), requestUrl.origin)
       );
