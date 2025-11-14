@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
+import { logger } from '@/lib/logger';
 import { motion } from 'framer-motion';
 import {
   Trophy,
