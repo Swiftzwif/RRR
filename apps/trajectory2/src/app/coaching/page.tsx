@@ -32,7 +32,7 @@ export default function CoachingPage() {
           setHasAccess(!!purchase);
         }
       } catch (error) {
-        console.error('Error checking access:', error);
+        logger.error('Error checking access', error as Error);
       } finally {
         setLoading(false);
       }
