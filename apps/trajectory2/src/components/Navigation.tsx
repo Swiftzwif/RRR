@@ -25,7 +25,7 @@ export default function Navigation() {
 
   useEffect(() => {
     const supabase = createClient();
-    
+
     // Get initial user
     supabase.auth.getUser().then((response) => {
       setUser(response.data.user);
@@ -41,6 +41,18 @@ export default function Navigation() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Handle Escape key to close mobile menu
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isMenuOpen]);
 
   const handleSignOut = async () => {
     // Create a form and submit it to sign out
@@ -167,17 +179,20 @@ export default function Navigation() {
           <button
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation-menu"
           >
             {isMenuOpen ? (
-              <X size={24} className={isDarkPage ? "text-secondary" : "text-gray-600"} />
+              <X size={24} className={isDarkPage ? "text-secondary" : "text-gray-600"} aria-hidden="true" />
             ) : (
-              <Menu size={24} className={isDarkPage ? "text-secondary" : "text-gray-600"} />
+              <Menu size={24} className={isDarkPage ? "text-secondary" : "text-gray-600"} aria-hidden="true" />
             )}
           </button>
         </div>
 
         {isMenuOpen && (
-          <div className="md:hidden">
+          <div className="md:hidden" id="mobile-navigation-menu">
             <div className={`px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t ${
               isDarkPage
                 ? "bg-elev-2 border-[var(--border-default)]"

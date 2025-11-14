@@ -164,9 +164,9 @@ export default function AuthModal({
                 className="w-full bg-white hover:bg-gray-50 text-gray-900 border border-gray-300"
               >
                 {loading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
                 ) : (
-                  <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                  <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                       fill="#4285F4"
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -281,6 +281,7 @@ export default function AuthModal({
                     setMode(mode === 'signin' ? 'signup' : 'signin');
                     setError(null);
                   }}
+                  aria-label={mode === 'signin' ? "Switch to sign up mode" : "Switch to sign in mode"}
                   className="text-orange-600 hover:text-orange-500"
                 >
                   {mode === 'signin'

@@ -128,7 +128,11 @@ export default function RaffleButton() {
           damping: 20
         }}
       >
-        <Link href="/raffle" className="block max-w-7xl mx-auto">
+        <Link
+          href="/raffle"
+          className="block max-w-7xl mx-auto"
+          aria-label={`Grand Opening Raffle: ${discountPercentage}% off digital course, $${(raffleConfig.entry_price / 100).toFixed(0)} entry fee, ${warriorCount} warriors entered, ${timeLeft} remaining`}
+        >
           <motion.div
             className="relative group"
             whileHover={{ scale: 1.02 }}

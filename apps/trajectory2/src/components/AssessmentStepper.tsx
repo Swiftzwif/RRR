@@ -75,15 +75,15 @@ export default function AssessmentStepper({
   };
 
   return (
-    <div className={`max-w-3xl mx-auto px-6 ${className}`}>
+    <div className={`max-w-3xl mx-auto px-6 ${className}`} role="form" aria-label="Life assessment questionnaire">
       {/* Progress bar */}
       <div className="mb-12">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-sm font-semibold text-slate-600">
+          <span className="text-sm font-semibold text-slate-600" aria-live="polite" aria-atomic="true">
             Question {currentIndex + 1} of {questions.length}
           </span>
-          <span className="text-sm font-semibold text-slate-600">
-            {Math.round(progress)}%
+          <span className="text-sm font-semibold text-slate-600" aria-live="polite">
+            {Math.round(progress)}% complete
           </span>
         </div>
         <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
@@ -122,6 +122,8 @@ export default function AssessmentStepper({
           <motion.button
             key={value}
             onClick={() => handleAnswer(value)}
+            aria-label={`Select rating ${value}: ${scaleLabels[value as keyof typeof scaleLabels]}`}
+            aria-pressed={answers[currentQuestion.id] === value}
             className={`w-full p-6 rounded-2xl border-2 transition-all duration-300 text-left group ${
               answers[currentQuestion.id] === value
                 ? "border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 text-slate-800 shadow-lg"
@@ -167,6 +169,8 @@ export default function AssessmentStepper({
         <motion.button
           onClick={handlePrevious}
           disabled={currentIndex === 0}
+          aria-label="Go to previous question"
+          aria-disabled={currentIndex === 0}
           className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 ${
             currentIndex === 0
               ? "text-slate-400 cursor-not-allowed"
@@ -182,6 +186,8 @@ export default function AssessmentStepper({
         <motion.button
           onClick={handleNext}
           disabled={!answers[currentQuestion.id]}
+          aria-label={currentIndex === questions.length - 1 ? "Complete assessment and view results" : "Go to next question"}
+          aria-disabled={!answers[currentQuestion.id]}
           className={`flex items-center gap-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
             answers[currentQuestion.id]
               ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl"

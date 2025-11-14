@@ -256,14 +256,17 @@ export default function Home() {
                   {/* AUTO-CYCLING SHOWCASE - LARGE SECTION */}
                   <div className="relative">
                     {/* Indicator dots - subtle animations */}
-                    <div className="flex justify-center gap-3 mb-6">
+                    <div className="flex justify-center gap-3 mb-6" role="tablist" aria-label="What is Trajectory sections">
                       {["story", "assessment", "resources"].map((tab) => (
                         <button
                           key={tab}
                           onClick={() => setActiveTab(tab)}
+                          role="tab"
+                          aria-selected={activeTab === tab}
+                          aria-label={`View ${tab} section`}
                           className={`rounded-full transition-all duration-500 ease-out ${
-                            activeTab === tab 
-                              ? 'w-8 h-3 bg-gradient-to-r from-orange-500 to-red-500' 
+                            activeTab === tab
+                              ? 'w-8 h-3 bg-gradient-to-r from-orange-500 to-red-500'
                               : 'w-3 h-3 bg-orange-500/30 hover:bg-orange-500/50'
                           }`}
                         />
@@ -274,6 +277,8 @@ export default function Home() {
                     {activeTab === "story" && (
                       <motion.div
                         key="story"
+                        role="tabpanel"
+                        aria-label="Story section"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
@@ -320,6 +325,8 @@ export default function Home() {
                     {activeTab === "assessment" && (
                       <motion.div
                         key="assessment"
+                        role="tabpanel"
+                        aria-label="Assessment section"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
@@ -366,6 +373,8 @@ export default function Home() {
                     {activeTab === "resources" && (
                       <motion.div
                         key="resources"
+                        role="tabpanel"
+                        aria-label="Resources section"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
