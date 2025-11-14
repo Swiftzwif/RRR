@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
             });
           }
         } catch (emailError) {
-          console.error('Failed to send welcome/verification emails:', emailError);
+          logger.error('Failed to send welcome/verification emails', emailError as Error);
           // Don't fail the auth process if email fails
         }
       }
