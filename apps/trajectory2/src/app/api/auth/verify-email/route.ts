@@ -149,7 +149,7 @@ export async function GET(request: NextRequest) {
     );
 
     if (updateError) {
-      console.error('Failed to update user verification status:', updateError);
+      logger.error('Failed to update user verification status', updateError);
     }
 
     // Log verification
