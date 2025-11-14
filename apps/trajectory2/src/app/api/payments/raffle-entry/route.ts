@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
 
     if (!paymentLinkResponse.ok) {
       const error = await paymentLinkResponse.json();
-      console.error('Square API Error:', error);
+      logger.error('Square API Error', error);
 
       // Handle specific Square errors
       if (error.errors?.[0]?.code === 'INVALID_EMAIL_ADDRESS') {
