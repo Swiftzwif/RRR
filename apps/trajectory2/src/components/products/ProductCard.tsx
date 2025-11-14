@@ -34,13 +34,13 @@ export default function ProductCard({
 }: ProductCardProps) {
   const badgeStyles = {
     default: 'bg-slate-700 text-white border-slate-600',
-    gold: 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black border-[#FFD700]',
+    gold: 'bg-gradient-to-r from-gold-400 to-gold-500 text-black border-gold-400',
     silver: 'bg-gradient-to-r from-slate-400 to-slate-500 text-white border-slate-400'
   };
 
   const borderStyles = {
     default: 'border-slate-700',
-    gold: 'border-[#FFD700]',
+    gold: 'border-gold-400',
     silver: 'border-slate-400'
   };
 
@@ -51,7 +51,7 @@ export default function ProductCard({
       transition={{ duration: 0.5 }}
       className="h-full"
     >
-      <Card className={`h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 ${borderStyles[badgeVariant]} border-2 shadow-2xl hover:shadow-[0_0_30px_rgba(255,215,0,0.3)] transition-all duration-300 ${className}`}>
+      <Card className={`h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 ${borderStyles[badgeVariant]} border-2 shadow-2xl hover:shadow-glow-orange transition-all duration-300 ${className}`}>
         <CardHeader className="text-center pb-6">
           {badge && (
             <Badge className={`${badgeStyles[badgeVariant]} mb-4 mx-auto text-sm font-bold px-4 py-1`}>
@@ -73,7 +73,7 @@ export default function ProductCard({
           <div className="space-y-4">
             {features.map((feature, index) => (
               <div key={index} className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-[#FFD700] flex-shrink-0 mt-0.5" />
+                <CheckCircle className="w-6 h-6 text-gold-400 flex-shrink-0 mt-0.5" />
                 <span className="text-slate-200 leading-relaxed">{feature}</span>
               </div>
             ))}
@@ -84,7 +84,7 @@ export default function ProductCard({
             {cta.external ? (
               <Button
                 onClick={() => window.location.href = cta.href}
-                className="w-full h-14 text-lg font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFA500] hover:to-[#FFD700] text-black shadow-xl hover:shadow-2xl transition-all duration-300 group"
+                className="w-full h-14 text-lg font-bold bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-black shadow-xl hover:shadow-2xl transition-all duration-300 group"
               >
                 {cta.text}
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
@@ -92,7 +92,7 @@ export default function ProductCard({
             ) : (
               <Button
                 asChild
-                className="w-full h-14 text-lg font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFA500] hover:to-[#FFD700] text-black shadow-xl hover:shadow-2xl transition-all duration-300 group"
+                className="w-full h-14 text-lg font-bold bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-black shadow-xl hover:shadow-2xl transition-all duration-300 group"
               >
                 <Link href={cta.href}>
                   {cta.text}
