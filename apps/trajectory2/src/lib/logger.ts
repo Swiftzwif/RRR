@@ -3,6 +3,8 @@
  * Provides environment-aware logging with Sentry integration
  */
 
+import * as Sentry from '@sentry/nextjs';
+
 /**
  * Logger interface defining available logging methods
  */
