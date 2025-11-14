@@ -177,8 +177,8 @@ async function processWebhookPayload(
     
     // For now, return success to avoid infinite retry loops
     // In production, implement the full retry logic
-    console.log('Processing webhook payload retry:', payload.type);
-    
+    logger.info('Processing webhook payload retry', payload.type);
+
     return { success: true };
   } catch (error) {
     return {
