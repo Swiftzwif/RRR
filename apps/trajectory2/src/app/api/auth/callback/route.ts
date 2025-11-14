@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
                 welcome_email_sent_at: new Date().toISOString()
               }
             }).catch(err => {
-              console.error('Failed to update welcome_email_sent flag:', err);
+              logger.error('Failed to update welcome_email_sent flag', err as Error);
               // Don't fail - email was sent
             });
           }
