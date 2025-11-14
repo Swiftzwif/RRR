@@ -66,3 +66,13 @@ const debug = (message: string, ...args: unknown[]): void => {
     console.debug(`[DEBUG] ${message}`, ...args);
   }
 };
+
+/**
+ * Exported logger object with all logging methods
+ */
+export const logger: Logger = {
+  info,
+  error,
+  warn,
+  debug,
+};
