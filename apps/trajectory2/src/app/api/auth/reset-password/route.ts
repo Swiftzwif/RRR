@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
           })
           .select();
       } catch (err) {
-        console.error('Failed to log auth event:', err);
+        logger.error('Failed to log auth event', err as Error);
       }
     }
 
