@@ -170,7 +170,7 @@ export async function GET(request: NextRequest) {
       new URL('/auth/verify-success', process.env.NEXT_PUBLIC_APP_URL || request.url)
     );
   } catch (error) {
-    console.error('Email verification error:', error);
+    logger.error('Email verification error', error as Error);
     return NextResponse.json(
       { error: 'An error occurred verifying your email' },
       { status: 500 }
