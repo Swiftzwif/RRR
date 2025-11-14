@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Track entry (analytics would go here)
-    console.log('Giveaway entry created:', {
+    logger.info('Giveaway entry created', {
       email: validatedData.email,
       giveaway_id: giveaway.id,
       entry_number: entry.entry_number,
