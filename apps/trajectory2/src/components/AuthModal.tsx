@@ -54,8 +54,8 @@ export default function AuthModal({
       });
 
       if (error) throw error;
-    } catch (err: any) {
-      setError(err.message || 'Failed to authenticate with Google');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to authenticate with Google');
       setLoading(false);
     }
   };
@@ -108,8 +108,8 @@ export default function AuthModal({
           }, 1500);
         }
       }
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Authentication failed');
     } finally {
       setLoading(false);
     }

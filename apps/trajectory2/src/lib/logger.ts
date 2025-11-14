@@ -38,6 +38,7 @@ const error = (message: string, err?: Error | unknown, ...args: unknown[]): void
   } else {
     // Production: Send to Sentry
     if (err) {
+      // Convert unknown errors to Error objects for Sentry
       const errorToCapture = err instanceof Error
         ? err
         : new Error(typeof err === 'object' && err !== null && 'message' in err
