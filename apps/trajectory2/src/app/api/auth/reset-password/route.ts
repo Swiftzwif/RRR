@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       message: 'If an account exists with this email, you will receive a password reset link.'
     });
   } catch (error) {
-    console.error('Password reset error:', error);
+    logger.error('Password reset error', error as Error);
     return NextResponse.json(
       { error: 'An error occurred processing your request' },
       { status: 500 }
