@@ -4,6 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 import { subscribeToForm } from '@/lib/convertkit';
 import { sendGiveawayConfirmationEmail } from '@/lib/email';
 import { rateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 // Validation schema for giveaway entry
 const GiveawayEntrySchema = z.object({
