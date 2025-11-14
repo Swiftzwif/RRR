@@ -150,7 +150,7 @@ export async function PUT(request: NextRequest) {
     );
 
     if (updateError) {
-      console.error('Password update error:', updateError);
+      logger.error('Password update error', updateError);
       return NextResponse.json(
         { error: 'Failed to update password' },
         { status: 500 }
