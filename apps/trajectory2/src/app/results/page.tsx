@@ -137,7 +137,7 @@ export default function ResultsPage() {
 
       setShowEmailCapture(false);
     } catch (error) {
-      console.error("Error saving email:", error);
+      logger.error("Error saving email", error as Error);
     } finally {
       setIsSubmittingEmail(false);
     }
