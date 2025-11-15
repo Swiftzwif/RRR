@@ -4,6 +4,15 @@ import { Resend } from 'resend';
 
 let resend: Resend | null = null;
 
+/**
+ * Lazy-loads and caches the Resend email client.
+ *
+ * Initializes Resend client only once using RESEND_API_KEY environment variable.
+ * Returns null if API key is not configured. This allows graceful degradation
+ * if email service is not available.
+ *
+ * @returns Resend client instance or null if not configured
+ */
 const getResendClient = () => {
   if (!resend) {
     const apiKey = process.env.RESEND_API_KEY;
@@ -16,8 +25,18 @@ const getResendClient = () => {
   return resend;
 };
 
+/**
+ * Default sender email address for all transactional emails.
+ * Uses RESEND_FROM_EMAIL env var or falls back to Trajectory support email.
+ */
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'Trajectory <hello@trajectory.com>';
 
+/**
+ * Data for assessment completion emails sent immediately after assessment submission.
+ *
+ * Includes user avatar, domain scores, and lowest domains to personalize
+ * the email content and direct users to their experience journey.
+ */
 export interface AssessmentEmailData {
   to: string;
   userName?: string;
@@ -27,6 +46,12 @@ export interface AssessmentEmailData {
   assessmentUrl: string;
 }
 
+/**
+ * Data for daily experience emails sent over 7-day transformation journey.
+ *
+ * Each day includes curated book summaries, actionable tasks, and links to
+ * the full experience content. Sent daily at 11 AM UTC.
+ */
 export interface DailyExperienceEmailData {
   to: string;
   userName?: string;
@@ -89,6 +114,28 @@ export interface PaymentReceiptEmailData {
   invoiceUrl?: string;
 }
 
+/**
+ * Sends assessment completion email immediately after assessment submission.
+ *
+ * Dispatches a personalized React Email template containing the user's avatar,
+ * overall score, domain breakdown, and lowest domains. Includes CTA to view
+ * full results and start the 7-day experience.
+ *
+ * @param data - Assessment email data including recipient and results
+ * @returns Success/failure response with Resend result or error
+ *
+ * @example
+ * ```typescript
+ * await sendAssessmentCompleteEmail({
+ *   to: 'user@example.com',
+ *   userName: 'John',
+ *   avatar: 'Drifter',
+ *   overallScore: 2.8,
+ *   lowestDomains: ['finances', 'focus'],
+ *   assessmentUrl: 'https://app.trajectory.com/results'
+ * });
+ * ```
+ */
 export async function sendAssessmentCompleteEmail(data: AssessmentEmailData) {
   try {
     const resendClient = getResendClient();
@@ -96,9 +143,9 @@ export async function sendAssessmentCompleteEmail(data: AssessmentEmailData) {
       console.warn('Email service not configured');
       return { success: false, error: 'Email service not configured' };
     }
-    
+
     const { to, ...emailProps } = data;
-    
+
     const result = await resendClient.emails.send({
       from: FROM_EMAIL,
       to,
@@ -113,6 +160,16 @@ export async function sendAssessmentCompleteEmail(data: AssessmentEmailData) {
   }
 }
 
+/**
+ * Sends daily experience email for 7-day transformation journey.
+ *
+ * Part of the post-assessment engagement sequence. Each email includes curated
+ * book summaries, actionable daily tasks, and links to full experience content.
+ * Typically sent at 11 AM UTC.
+ *
+ * @param data - Daily experience email data including day, content, and recipient
+ * @returns Success/failure response with Resend result or error
+ */
 export async function sendDailyExperienceEmail(data: DailyExperienceEmailData) {
   try {
     const resendClient = getResendClient();
@@ -120,9 +177,9 @@ export async function sendDailyExperienceEmail(data: DailyExperienceEmailData) {
       console.warn('Email service not configured');
       return { success: false, error: 'Email service not configured' };
     }
-    
+
     const { to, ...emailProps } = data;
-    
+
     const result = await resendClient.emails.send({
       from: FROM_EMAIL,
       to,
@@ -251,7 +308,27 @@ export async function sendGiveawayConfirmationEmail(data: GiveawayConfirmationEm
   }
 }
 
-// Schedule daily emails for the 7-day experience
+/**
+ * Orchestrates the 7-day email experience sequence.
+ *
+ * Sends Day 1 email immediately upon assessment completion, then schedules
+ * Days 2-7 to be delivered daily at 11 AM UTC via the email_schedule table.
+ * A cron job (`/api/cron/send-scheduled-emails`) processes pending scheduled emails.
+ *
+ * This function is typically called right after assessment completion to kickstart
+ * the post-assessment engagement journey.
+ *
+ * @param email - Recipient email address
+ * @param userName - Optional user name for personalization
+ * @returns Success response indicating emails have been scheduled
+ *
+ * @example
+ * ```typescript
+ * await scheduleDailyEmails('user@example.com', 'John');
+ * // Day 1 sent immediately
+ * // Days 2-7 queued for automated delivery
+ * ```
+ */
 export async function scheduleDailyEmails(email: string, userName?: string) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trajectory.com';
 

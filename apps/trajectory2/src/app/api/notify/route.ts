@@ -4,7 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 
-// Validation schema
+/**
+ * Validation schema for notification API payload.
+ *
+ * Validates email, notification topic, and optional metadata for personalization.
+ */
 const notifySchema = z.object({
   email: z.string().email(),
   topic: z.enum(["course", "assessment", "experience"]),
@@ -18,6 +22,40 @@ const notifySchema = z.object({
     .optional(),
 });
 
+/**
+ * POST /api/notify
+ *
+ * Handles notification and engagement email requests for the platform.
+ *
+ * Main responsibilities:
+ * 1. Stores email subscription to email_notifications table for future campaigns
+ * 2. For assessment topic: Sends immediate assessment completion email
+ * 3. Schedules 7-day experience email sequence for ongoing engagement
+ *
+ * Request body must include email and topic. Metadata is used for personalization
+ * when sending emails (userName, avatar, scores, lowest domains).
+ *
+ * @param request - POST request containing email, topic, and optional metadata
+ * @returns 200 with success on completion, 400 for validation errors, 500 for server errors
+ *
+ * @example
+ * ```typescript
+ * const response = await fetch('/api/notify', {
+ *   method: 'POST',
+ *   body: JSON.stringify({
+ *     email: 'user@example.com',
+ *     topic: 'assessment',
+ *     metadata: {
+ *       userName: 'John',
+ *       avatar: 'Drifter',
+ *       overallScore: 2.8,
+ *       lowestDomains: ['finances', 'focus']
+ *     }
+ *   })
+ * });
+ * // => { "success": true }
+ * ```
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

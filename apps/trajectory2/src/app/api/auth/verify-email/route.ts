@@ -6,7 +6,31 @@ import type { EmailVerificationRequest, EmailVerificationResponse, AuthErrorResp
 import { emailVerificationRequestSchema } from '@/types/auth';
 import type { User } from '@supabase/supabase-js';
 
-// POST /api/auth/verify-email - Send verification email
+/**
+ * POST /api/auth/verify-email
+ *
+ * Sends a verification email with magic link to user's registered email address.
+ *
+ * Generates a secure magic link token and sends email containing the verification URL.
+ * User clicks link in email to confirm email ownership.
+ *
+ * Request body:
+ * - email: User's email address (required if userId not provided)
+ * - userId: Supabase auth user ID (optional, preferred if available)
+ *
+ * @returns 200 with success message, 400 for validation errors, 404 if user not found, 500 for server errors
+ *
+ * @example
+ * ```typescript
+ * const response = await fetch('/api/auth/verify-email', {
+ *   method: 'POST',
+ *   body: JSON.stringify({
+ *     email: 'user@example.com'
+ *   })
+ * });
+ * // => { "message": "Verification email sent", "email": "user@example.com" }
+ * ```
+ */
 export async function POST(request: NextRequest) {
   try {
     // Parse and validate request body
@@ -114,7 +138,20 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET /api/auth/verify-email - Verify email with token
+/**
+ * GET /api/auth/verify-email
+ *
+ * Verifies email ownership by validating the magic link token from email.
+ *
+ * Query parameters:
+ * - token: Magic link token from email (required)
+ * - type: Token type, "email" or "signup" (optional, defaults to "signup")
+ *
+ * Confirms the token, marks user's email as verified, and logs the event.
+ * Redirects to success page upon verification.
+ *
+ * @returns Redirect to /auth/verify-success on success, 400/500 errors return JSON response
+ */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;

@@ -3,7 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { logger } from '@/lib/logger';
 
-// Lazy initialize Resend to avoid errors when API key is not configured
+/**
+ * Lazy-initializes and caches Resend email client.
+ * Only instantiates if RESEND_API_KEY is configured.
+ *
+ * @returns Resend client instance or null if not configured
+ */
 let resendInstance: Resend | null = null;
 
 function getResend() {
@@ -13,7 +18,16 @@ function getResend() {
   return resendInstance;
 }
 
-// Email content for each day
+/**
+ * Curated email content for Days 2-7 of the transformation journey.
+ *
+ * Each day includes a subject line and HTML content with:
+ * - Book summary or principle
+ * - Key takeaways
+ * - Actionable daily challenge or task
+ *
+ * Day 1 is sent immediately by scheduleDailyEmails(), so begins with Day 2.
+ */
 const emailContent: Record<number, { subject: string; content: string }> = {
   2: {
     subject: "Day 2: Kill the Boy - Book Summary 📚",
@@ -142,6 +156,41 @@ const emailContent: Record<number, { subject: string; content: string }> = {
   }
 };
 
+/**
+ * GET /api/cron/send-scheduled-emails
+ *
+ * Cron job that sends queued daily experience emails (Days 2-7).
+ *
+ * Execution flow:
+ * 1. Validates CRON_SECRET header for authentication
+ * 2. Fetches emails scheduled for today from email_schedule table
+ * 3. Sends each email with Day N content and book summary
+ * 4. Updates email_schedule status to "sent" or "failed"
+ * 5. Returns summary of sent/failed emails
+ *
+ * Security:
+ * - Requires Bearer token matching CRON_SECRET env var
+ * - Should be called only by Vercel Cron or authenticated service
+ *
+ * Scheduling:
+ * - Called daily, typically via Vercel Cron Jobs
+ * - Sends all emails scheduled for the current date
+ *
+ * @param request - GET request with Authorization header
+ * @returns 200 with send summary, 401 for auth failure, 500 for errors
+ *
+ * @example Response:
+ * ```json
+ * {
+ *   "message": "Email sending complete",
+ *   "sent": 5,
+ *   "failed": 0,
+ *   "results": [
+ *     { "email": "user@example.com", "day": 2, "status": "sent", "id": "..." }
+ *   ]
+ * }
+ * ```
+ */
 export async function GET(request: NextRequest) {
   try {
     // Verify cron secret for security
