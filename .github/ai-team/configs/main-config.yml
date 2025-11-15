@@ -2,6 +2,33 @@
 # Budget: $100/month with intelligent routing
 # Created by: CTO Jaymison Sanchez
 
+# Project Context: Trajectory Platform
+project:
+  name: "Trajectory"
+  type: "SaaS Platform - Life Transformation Assessment"
+  stack:
+    - "Next.js 15 (App Router, Turbopack)"
+    - "TypeScript (strict mode)"
+    - "Tailwind CSS 4"
+    - "Supabase (PostgreSQL with RLS)"
+    - "Stripe (Payments)"
+    - "Resend (Email)"
+  key_features:
+    - "Assessment System: 15+2 question diagnostic with domain scoring"
+    - "Course Platform: $99.99 course with modular content"
+    - "Coaching Program: $24.99 application fee for $400/month coaching"
+    - "Payment Integration: Stripe checkout with webhook-based access gating"
+  architecture:
+    - "Monorepo with npm workspaces"
+    - "Main app: trajectory2"
+    - "Server components for performance"
+    - "RLS for user-level access control"
+  business_model:
+    - "Target: High-value men 18-35 seeking financial transformation"
+    - "Framework: FastLane/SideLane/SlowLane (Millionaire Fastlane by MJ DeMarco)"
+    - "Avatars: Drifter, Balancer, Architect"
+    - "Conversion funnel: Assessment → Course → Coaching"
+
 # Model Routing Configuration
 models:
   strategic:

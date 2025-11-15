@@ -20,11 +20,29 @@ on:
           - weekly
           - monthly
   workflow_run:
-    workflows: ["*"]
+    workflows: 
+      - "CTO Bot - PR Review"
+      - "Standup Bot - Daily Summary"
+      - "CEO Bot - Weekly Strategy"
+      - "PRD Bot - Requirement Analysis"
+      - "DevOps Bot - Deployment Management"
+      - "QA Bot - Test Analysis"
+      - "Security Bot - Vulnerability Analysis"
+      - "COO Bot - Operational Efficiency"
+      - "CMO Bot - Growth Strategy"
+      - "CPO Bot - Product Strategy"
+      - "Analytics Bot - Data Insights"
+      - "Emergency All-Hands Response"
     types: [completed]
+    branches: [main, master]
 
 jobs:
   cost-tracking:
+    # Prevent recursive triggering
+    if: |
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.name != 'CFO Bot - Cost Tracking'
+    
     runs-on: ubuntu-latest
     
     steps:

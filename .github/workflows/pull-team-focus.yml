@@ -5,10 +5,19 @@ on:
     types: [created]
   workflow_dispatch:
 
+# Security: Restrict workflow permissions
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+  actions: read
+
 jobs:
   team-focus:
     if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/pull-team-focus')) ||
+      (github.event_name == 'issue_comment' && 
+       contains(github.event.comment.body, '/pull-team-focus') &&
+       github.event.comment.author_association != 'NONE') ||
       github.event_name == 'workflow_dispatch'
     
     runs-on: ubuntu-latest
@@ -165,6 +174,12 @@ jobs:
       
       - name: Generate Executive Summary
         id: summary
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           cd .github/ai-team
           
@@ -226,13 +241,8 @@ jobs:
           EOF
           )
           
-          # Call AI API with coordinator personality
-          SUMMARY=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-                   ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
-                   OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
-                   TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
-                   GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
-                   node scripts/ai-api-handler.js "coo_bot" "$PROMPT")
+          # Call AI API (secrets are now in env block, not inline)
+          SUMMARY=$(node scripts/ai-api-handler.js "coo_bot" "$PROMPT")
           
           echo "$SUMMARY" > executive-summary.md
       
