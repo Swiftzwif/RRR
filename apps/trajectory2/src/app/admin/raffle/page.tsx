@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
+import { isAdminEmail } from '@/lib/env-validation';
+import { sanitizeTransformationGoal } from '@/lib/sanitize';
 import { motion } from 'framer-motion';
 import {
   Trophy,
@@ -71,9 +73,6 @@ interface RaffleStats {
   entriesPerDay: Record<string, number>;
 }
 
-// Admin emails that have access (you can move this to env or database)
-const ADMIN_EMAILS = ['jean@killtheboy.com', 'admin@trajectory.com'];
-
 export default function AdminRafflePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -108,7 +107,7 @@ export default function AdminRafflePage() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user || !ADMIN_EMAILS.includes(user.email || '')) {
+    if (!user || !isAdminEmail(user.email)) {
       alert('Unauthorized access. Admin only.');
       router.push('/');
       return;
@@ -438,9 +437,12 @@ export default function AdminRafflePage() {
                           <TableCell>{entry.email}</TableCell>
                           <TableCell className="max-w-xs">
                             <div>
-                              <p className={expandedGoals.has(entry.id) ? '' : 'truncate'}>
-                                {entry.transformation_goal}
-                              </p>
+                              <p
+                                className={expandedGoals.has(entry.id) ? '' : 'truncate'}
+                                dangerouslySetInnerHTML={{
+                                  __html: sanitizeTransformationGoal(entry.transformation_goal)
+                                }}
+                              />
                               {entry.transformation_goal.length > 50 && (
                                 <button
                                   onClick={() => toggleGoal(entry.id)}
@@ -510,7 +512,11 @@ export default function AdminRafflePage() {
                               <Badge className="bg-yellow-500">{entry.prize_won}</Badge>
                             </TableCell>
                             <TableCell className="max-w-xs truncate">
-                              {entry.transformation_goal}
+                              <span
+                                dangerouslySetInnerHTML={{
+                                  __html: sanitizeTransformationGoal(entry.transformation_goal)
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
                               <Button
