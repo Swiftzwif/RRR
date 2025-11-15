@@ -1,6 +1,6 @@
 /**
  * ConvertKit V4 API Client
- * Handles newsletter subscription for giveaway entries
+ * Handles newsletter subscriptions
  */
 
 /**
