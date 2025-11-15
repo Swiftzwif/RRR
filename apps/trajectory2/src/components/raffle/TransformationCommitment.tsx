@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatedDiv, AnimatedP } from '@/components/animation/AnimatedComponents';
 import { Heart, Target, Zap, CheckCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -87,14 +87,14 @@ export default function TransformationCommitment() {
   return (
     <section id="commitment" className="py-20 px-4 bg-gradient-to-b from-sky-50 to-white">
       <div className="max-w-4xl mx-auto">
-        <motion.div
+        <AnimatedDiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           <Card className="border-2 border-sunset/20 shadow-2xl bg-white">
             <CardHeader className="text-center pb-8 pt-10">
-              <motion.div
+              <AnimatedDiv
                 className="w-20 h-20 bg-gradient-to-br from-sunset to-sunset-dark rounded-full flex items-center justify-center mx-auto mb-4"
                 animate={{
                   scale: [1, 1.1, 1],
@@ -106,7 +106,7 @@ export default function TransformationCommitment() {
                 }}
               >
                 <Heart className="w-10 h-10 text-white" />
-              </motion.div>
+              </AnimatedDiv>
 
               <CardTitle className="text-3xl md:text-4xl font-black text-sky-800 mb-4">
                 Ready to Kill The Boy?
@@ -235,7 +235,7 @@ export default function TransformationCommitment() {
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">
-                      <motion.div
+                      <AnimatedDiv
                         className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full"
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -259,10 +259,10 @@ export default function TransformationCommitment() {
               </form>
             </CardContent>
           </Card>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Final urgency message */}
-        <motion.p
+        <AnimatedP
           className="text-center mt-8 text-sky-600"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -272,7 +272,7 @@ export default function TransformationCommitment() {
           Every transformation starts with a single decision.
           <br />
           <span className="font-bold text-orange-500 text-lg">This is yours.</span>
-        </motion.p>
+        </AnimatedP>
       </div>
     </section>
   );

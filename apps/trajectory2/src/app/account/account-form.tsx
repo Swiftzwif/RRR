@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { User } from '@supabase/supabase-js'
-import { motion } from 'framer-motion'
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents'
 import { LogOut, Mail, User as UserIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -28,7 +28,7 @@ export default function AccountForm({ user }: { user: User }) {
   }
 
   return (
-    <motion.div
+    <AnimatedDiv
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -124,6 +124,6 @@ export default function AccountForm({ user }: { user: User }) {
           </Button>
         </CardContent>
       </Card>
-    </motion.div>
+    </AnimatedDiv>
   )
 }

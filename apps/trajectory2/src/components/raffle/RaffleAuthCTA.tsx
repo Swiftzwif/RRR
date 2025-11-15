@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/utils/supabase/client';
 import AuthModal from '@/components/AuthModal';
@@ -146,7 +146,7 @@ export default function RaffleAuthCTA() {
       <section className="py-24 px-4 bg-gradient-to-b from-white via-orange-50 to-red-50">
         <div className="max-w-4xl mx-auto">
           {/* Hero CTA */}
-          <motion.div
+          <AnimatedDiv
             className="text-center mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -158,10 +158,10 @@ export default function RaffleAuthCTA() {
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
               Join the grand opening raffle. Get instant access to the Trajectory course at 35% off and enter to win life-changing prizes.
             </p>
-          </motion.div>
+          </AnimatedDiv>
 
           {/* Benefits */}
-          <motion.div
+          <AnimatedDiv
             className="grid md:grid-cols-3 gap-6 mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -182,10 +182,10 @@ export default function RaffleAuthCTA() {
               <h3 className="font-bold text-gray-900 mb-2">Limited Time</h3>
               <p className="text-sm text-gray-600">Grand opening offer ends soon</p>
             </div>
-          </motion.div>
+          </AnimatedDiv>
 
           {/* Main CTA */}
-          <motion.div
+          <AnimatedDiv
             className="text-center p-8 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 rounded-2xl shadow-2xl"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -243,10 +243,10 @@ export default function RaffleAuthCTA() {
                 </p>
               )}
             </div>
-          </motion.div>
+          </AnimatedDiv>
 
           {/* Trust Signals */}
-          <motion.div
+          <AnimatedDiv
             className="text-center mt-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -258,7 +258,7 @@ export default function RaffleAuthCTA() {
             <p className="text-sm text-gray-500">
               By entering, you agree to our terms and confirm you are 18+
             </p>
-          </motion.div>
+          </AnimatedDiv>
         </div>
       </section>
 

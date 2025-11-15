@@ -2,7 +2,7 @@
 
 import { getCopy } from '@/lib/copy';
 import { Domain } from '@/lib/scoring';
-import { motion } from 'framer-motion';
+import { AnimatedDiv, AnimatedLi } from '@/components/animation/AnimatedComponents';
 
 interface ResultCardProps {
   domain: Domain;
@@ -45,7 +45,7 @@ export default function ResultCard({
   };
 
   return (
-    <motion.div
+    <AnimatedDiv
       className={`bg-gradient-to-br ${getCardGradient(score)} p-8 rounded-3xl border ${getBorderColor(score)} shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -65,7 +65,7 @@ export default function ResultCard({
 
       <div className="mb-6">
         <div className="w-full bg-white/50 rounded-full h-3 mb-3 shadow-inner">
-          <motion.div
+          <AnimatedDiv
             className="h-full bg-gradient-to-r from-slate-600 to-slate-800 rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${(score / 5) * 100}%` }}
@@ -85,7 +85,7 @@ export default function ResultCard({
           </h4>
           <ul className="space-y-3">
             {actions.map((action, index) => (
-              <motion.li
+              <AnimatedLi
                 key={index}
                 className="text-slate-600 flex items-start gap-3"
                 initial={{ opacity: 0, x: -10 }}
@@ -94,11 +94,11 @@ export default function ResultCard({
               >
                 <div className="w-2 h-2 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
                 <span className="leading-relaxed">{action}</span>
-              </motion.li>
+              </AnimatedLi>
             ))}
           </ul>
         </div>
       )}
-    </motion.div>
+    </AnimatedDiv>
   );
 }

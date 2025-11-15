@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { Clock, Zap } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 
@@ -84,7 +84,7 @@ export default function RaffleCountdown() {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto">
-        <motion.div
+        <AnimatedDiv
           className="flex flex-col md:flex-row items-center justify-between gap-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -114,7 +114,7 @@ export default function RaffleCountdown() {
               { value: timeLeft.minutes, label: 'Mins' },
               { value: timeLeft.seconds, label: 'Secs' },
             ].map((item, index) => (
-              <motion.div
+              <AnimatedDiv
                 key={item.label}
                 className="relative"
                 initial={{ scale: 0, rotate: -180 }}
@@ -126,7 +126,7 @@ export default function RaffleCountdown() {
                 }}
               >
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-white/20">
-                  <motion.div
+                  <AnimatedDiv
                     className="text-3xl md:text-4xl font-black text-white"
                     key={`${item.label}-${item.value}`}
                     initial={{ scale: 1.2 }}
@@ -134,7 +134,7 @@ export default function RaffleCountdown() {
                     transition={{ duration: 0.3 }}
                   >
                     {String(item.value).padStart(2, '0')}
-                  </motion.div>
+                  </AnimatedDiv>
                   <div className="text-xs text-sky-200 uppercase tracking-wider mt-1">
                     {item.label}
                   </div>
@@ -142,7 +142,7 @@ export default function RaffleCountdown() {
 
                 {/* Pulse effect on seconds */}
                 {item.label === 'Secs' && (
-                  <motion.div
+                  <AnimatedDiv
                     className="absolute inset-0 bg-yellow-400 rounded-xl opacity-20"
                     animate={{
                       scale: [1, 1.1, 1],
@@ -154,12 +154,12 @@ export default function RaffleCountdown() {
                     }}
                   />
                 )}
-              </motion.div>
+              </AnimatedDiv>
             ))}
           </div>
 
           {/* Urgency indicator */}
-          <motion.div
+          <AnimatedDiv
             className="absolute top-2 right-2 md:top-4 md:right-4"
             animate={{
               rotate: [0, 5, -5, 0],
@@ -174,8 +174,8 @@ export default function RaffleCountdown() {
               <Zap className="w-3 h-3" />
               <span>LIVE</span>
             </div>
-          </motion.div>
-        </motion.div>
+          </AnimatedDiv>
+        </AnimatedDiv>
       </div>
     </section>
   );
