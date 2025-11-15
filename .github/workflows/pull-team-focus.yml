@@ -17,15 +17,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          node-version: '18'
+          python-version: '3.11'
+          cache: 'pip'
       
       - name: Install dependencies
         run: |
           cd .github/ai-team
-          npm install
+          pip install -r requirements.txt
       
       - name: Gather Team Status
         id: gather
@@ -165,6 +166,12 @@ jobs:
       
       - name: Generate Executive Summary
         id: summary
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           cd .github/ai-team
           
@@ -226,13 +233,8 @@ jobs:
           EOF
           )
           
-          # Call AI API with coordinator personality
-          SUMMARY=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-                   ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
-                   OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
-                   TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
-                   GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
-                   node scripts/ai-api-handler.js "coo_bot" "$PROMPT")
+          # Call AI API (secrets are now in env block, not inline)
+          SUMMARY=$(python scripts/ai_api_handler.py "coo_bot" "$PROMPT")
           
           echo "$SUMMARY" > executive-summary.md
       

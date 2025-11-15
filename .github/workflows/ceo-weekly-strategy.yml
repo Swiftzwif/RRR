@@ -21,15 +21,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          node-version: '18'
+          python-version: '3.11'
+          cache: 'pip'
       
       - name: Install dependencies
         run: |
           cd .github/ai-team
-          npm install
+          pip install -r requirements.txt
       
       - name: Gather Strategic Data
         id: gather
@@ -121,6 +122,12 @@ jobs:
       
       - name: CEO Strategic Analysis
         id: strategy
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           cd .github/ai-team
           
@@ -176,13 +183,8 @@ jobs:
           EOF
           )
           
-          # Call the AI API
-          STRATEGY=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-                    ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
-                    OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
-                    TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
-                    GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
-                    node scripts/ai-api-handler.js "ceo_bot" "$PROMPT" "high")
+          # Call the AI API (secrets are now in env block, not inline)
+          STRATEGY=$(python scripts/ai_api_handler.py "ceo_bot" "$PROMPT" "high")
           
           # Save strategy
           echo "$STRATEGY" > weekly-strategy.md
