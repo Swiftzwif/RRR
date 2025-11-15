@@ -70,7 +70,13 @@ jobs:
           
           # Get milestone progress
           echo -e "\n## Milestone Progress" >> strategic-data.txt
-          gh api repos/${{ github.repository }}/milestones --jq '.[] | "- \(.title): \(.open_issues)/\(.closed_issues + .open_issues) issues (\((.closed_issues * 100 / (.closed_issues + .open_issues)) | floor)% complete)"' >> strategic-data.txt || echo "No active milestones" >> strategic-data.txt
+          gh api repos/${{ github.repository }}/milestones --jq '.[] | 
+            .total_issues = (.open_issues + .closed_issues) |
+            if .total_issues == 0 then
+              "- \(.title): 0/0 issues (0% complete)"
+            else
+              "- \(.title): \(.open_issues)/\(.total_issues) issues (\(((.closed_issues * 100 / .total_issues) | floor))% complete)"
+            end' >> strategic-data.txt || echo "No active milestones" >> strategic-data.txt
           
           # Get top contributors this week
           echo -e "\n## Top Contributors This Week" >> strategic-data.txt

@@ -113,10 +113,17 @@ class CostReporter {
   }
   
   getTopSpenders(bots, limit) {
+    const total = Object.values(bots).reduce((a, b) => a + b, 0);
+    
+    // Guard against division by zero when bots object is empty
+    if (total === 0) {
+      return [];
+    }
+    
     return Object.entries(bots)
       .sort(([, a], [, b]) => b - a)
       .slice(0, limit)
-      .map(([bot, cost]) => ({ bot, cost, percentage: (cost / Object.values(bots).reduce((a, b) => a + b, 0) * 100).toFixed(1) }));
+      .map(([bot, cost]) => ({ bot, cost, percentage: (cost / total * 100).toFixed(1) }));
   }
   
   checkDailyAlerts(dailyData) {

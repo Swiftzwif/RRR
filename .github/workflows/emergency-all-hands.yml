@@ -21,11 +21,23 @@ on:
           - high
           - medium
 
+# Security: Restrict workflow permissions
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+  actions: read
+
 jobs:
   emergency-response:
     if: |
-      (github.event_name == 'issues' && contains(github.event.label.name, 'emergency')) ||
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/emergency')) ||
+      (github.event_name == 'issues' && 
+       contains(github.event.label.name, 'emergency') &&
+       github.event.sender.type != 'Bot' &&
+       (github.event.sender.type == 'User' || github.event.sender.type == 'Organization')) ||
+      (github.event_name == 'issue_comment' && 
+       contains(github.event.comment.body, '/emergency') &&
+       github.event.comment.author_association != 'NONE') ||
       github.event_name == 'workflow_dispatch'
     
     runs-on: ubuntu-latest

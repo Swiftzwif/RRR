@@ -68,7 +68,7 @@ class AIAPIHandler {
       // Track costs
       const tokensUsed = response.usage?.total_tokens || 0;
       const cost = this.calculateCost(modelConfig.model, tokensUsed);
-      this.updateCostTracking(botName, modelConfig.model, tokensUsed, cost);
+      await this.updateCostTracking(botName, modelConfig.model, tokensUsed, cost);
       
       // Log performance
       const duration = Date.now() - startTime;
@@ -99,32 +99,30 @@ class AIAPIHandler {
     
     const modelClass = mainConfig.models[botConfig.model_class];
     
-    // Determine budget level
-    let selectedModel;
-    let reason;
-    
-    if (currentSpend >= budget.optimization.level_3) {
-      // Emergency mode
-      selectedModel = modelClass.budget;
-      reason = 'emergency budget mode';
-    } else if (currentSpend >= budget.optimization.level_2) {
-      // Budget mode
-      selectedModel = modelClass.budget;
-      reason = 'budget optimization';
-    } else if (currentSpend >= budget.optimization.level_1) {
-      // Fallback mode
-      selectedModel = modelClass.fallback;
-      reason = 'cost optimization';
-    } else {
-      // Normal mode
-      selectedModel = modelClass.primary;
-      reason = 'normal operation';
-    }
-    
-    // Override for priority tasks
-    if (config.priority === 'high' && currentSpend < budget.optimization.level_2) {
+    // Check for high priority override first - should work regardless of budget tier
+    // High priority requests are critical and should use primary model even in emergency mode
+    if (config.priority === 'high') {
       selectedModel = modelClass.primary;
       reason = 'high priority override';
+    } else {
+      // Determine budget level for normal priority requests
+      if (currentSpend >= budget.optimization.level_3) {
+        // Emergency mode
+        selectedModel = modelClass.budget;
+        reason = 'emergency budget mode';
+      } else if (currentSpend >= budget.optimization.level_2) {
+        // Budget mode
+        selectedModel = modelClass.budget;
+        reason = 'budget optimization';
+      } else if (currentSpend >= budget.optimization.level_1) {
+        // Fallback mode
+        selectedModel = modelClass.fallback;
+        reason = 'cost optimization';
+      } else {
+        // Normal mode
+        selectedModel = modelClass.primary;
+        reason = 'normal operation';
+      }
     }
     
     // Find provider for the selected model
@@ -287,38 +285,78 @@ class AIAPIHandler {
     return costData.monthly[currentMonth]?.total || 0;
   }
 
-  updateCostTracking(botName, model, tokens, cost) {
-    const costData = this.loadCostData();
-    const now = new Date();
-    const today = now.toISOString().slice(0, 10);
-    const month = now.toISOString().slice(0, 7);
+  async sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async updateCostTracking(botName, model, tokens, cost) {
+    // Retry logic for file operations to handle race conditions
+    const maxRetries = 5;
+    let retries = 0;
     
-    // Update daily tracking
-    if (!costData.daily[today]) {
-      costData.daily[today] = { total: 0, bots: {} };
+    while (retries < maxRetries) {
+      try {
+        // Load current cost data (fresh read each attempt to avoid stale data)
+        const costData = this.loadCostData();
+        const now = new Date();
+        const today = now.toISOString().slice(0, 10);
+        const month = now.toISOString().slice(0, 7);
+        
+        // Update daily tracking
+        if (!costData.daily[today]) {
+          costData.daily[today] = { total: 0, bots: {} };
+        }
+        costData.daily[today].total += cost;
+        costData.daily[today].bots[botName] = (costData.daily[today].bots[botName] || 0) + cost;
+        
+        // Update monthly tracking
+        if (!costData.monthly[month]) {
+          costData.monthly[month] = { total: 0, bots: {} };
+        }
+        costData.monthly[month].total += cost;
+        costData.monthly[month].bots[botName] = (costData.monthly[month].bots[botName] || 0) + cost;
+        
+        // Update bot tracking
+        if (!costData.bots[botName]) {
+          costData.bots[botName] = { total: 0, models: {} };
+        }
+        costData.bots[botName].total += cost;
+        costData.bots[botName].models[model] = (costData.bots[botName].models[model] || 0) + cost;
+        
+        // Atomic write: write to temp file then rename (atomic on most filesystems)
+        // This prevents partial writes but we still need retry logic for read-modify-write races
+        const tempPath = `${this.costTrackerPath}.tmp.${Date.now()}.${process.pid}`;
+        const dir = path.dirname(this.costTrackerPath);
+        
+        // Ensure directory exists
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        
+        // Write to temp file
+        fs.writeFileSync(tempPath, JSON.stringify(costData, null, 2), 'utf8');
+        
+        // Atomic rename (replaces existing file atomically)
+        fs.renameSync(tempPath, this.costTrackerPath);
+        
+        // Success - break out of retry loop
+        console.log(`::notice::AI Cost Update - Bot: ${botName}, Model: ${model}, Cost: $${cost.toFixed(4)}, Monthly Total: $${costData.monthly[month].total.toFixed(2)}`);
+        return;
+        
+      } catch (error) {
+        retries++;
+        if (retries >= maxRetries) {
+          console.error(`[${botName}] Failed to update cost tracking after ${maxRetries} attempts:`, error.message);
+          // Don't throw - cost tracking failure shouldn't break the workflow
+          // Log to GitHub Actions output instead
+          console.log(`::warning::Cost tracking update failed for ${botName}: ${error.message}`);
+          return;
+        }
+        
+        // Exponential backoff for retries
+        await this.sleep(50 * Math.pow(2, retries));
+      }
     }
-    costData.daily[today].total += cost;
-    costData.daily[today].bots[botName] = (costData.daily[today].bots[botName] || 0) + cost;
-    
-    // Update monthly tracking
-    if (!costData.monthly[month]) {
-      costData.monthly[month] = { total: 0, bots: {} };
-    }
-    costData.monthly[month].total += cost;
-    costData.monthly[month].bots[botName] = (costData.monthly[month].bots[botName] || 0) + cost;
-    
-    // Update bot tracking
-    if (!costData.bots[botName]) {
-      costData.bots[botName] = { total: 0, models: {} };
-    }
-    costData.bots[botName].total += cost;
-    costData.bots[botName].models[model] = (costData.bots[botName].models[model] || 0) + cost;
-    
-    // Save updated data
-    fs.writeFileSync(this.costTrackerPath, JSON.stringify(costData, null, 2));
-    
-    // Output for GitHub Actions
-    console.log(`::notice::AI Cost Update - Bot: ${botName}, Model: ${model}, Cost: $${cost.toFixed(4)}, Monthly Total: $${costData.monthly[month].total.toFixed(2)}`);
   }
 }
 
