@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { Zap, Clock, Gift, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -120,7 +120,7 @@ export default function RaffleHeroSection() {
   const savings = raffleConfig.savings_amount / 100;
 
   return (
-    <motion.div
+    <AnimatedDiv
       className="relative mb-8"
       data-raffle-hero-section
       initial={{ opacity: 0, y: -20 }}
@@ -129,14 +129,14 @@ export default function RaffleHeroSection() {
     >
       {/* Main raffle container with gradient background */}
       <Link href="/raffle" className="block">
-        <motion.div
+        <AnimatedDiv
           className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 p-6 shadow-2xl"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}
         >
           {/* Animated glow effect */}
-          <motion.div
+          <AnimatedDiv
             className="absolute inset-0 bg-gradient-to-r from-yellow-400/30 via-orange-500/30 to-red-500/30"
             animate={{
               opacity: [0.3, 0.6, 0.3],
@@ -153,7 +153,7 @@ export default function RaffleHeroSection() {
             {/* Top section with badge and timer */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
               <div className="flex items-center gap-3">
-                <motion.div
+                <AnimatedDiv
                   className="flex items-center gap-2 bg-yellow-400/20 backdrop-blur-sm px-3 py-1.5 rounded-full"
                   animate={{
                     scale: [1, 1.05, 1],
@@ -167,7 +167,7 @@ export default function RaffleHeroSection() {
                   <span className="text-xs font-bold uppercase tracking-wider text-yellow-200">
                     Grand Opening Raffle
                   </span>
-                </motion.div>
+                </AnimatedDiv>
 
                 <div className="flex items-center gap-2 text-white/90">
                   <Clock className="w-4 h-4" />
@@ -176,7 +176,7 @@ export default function RaffleHeroSection() {
               </div>
 
               {/* Live pulse indicator */}
-              <motion.div
+              <AnimatedDiv
                 className="w-3 h-3 bg-green-400 rounded-full"
                 animate={{
                   scale: [1, 1.5, 1],
@@ -225,13 +225,13 @@ export default function RaffleHeroSection() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
       </Link>
 
       {/* Bottom text */}
       <p className="text-center text-sm text-secondary mt-2">
         Limited time offer • 16 winners will be selected
       </p>
-    </motion.div>
+    </AnimatedDiv>
   );
 }

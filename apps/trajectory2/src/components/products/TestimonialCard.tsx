@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { Quote } from 'lucide-react';
 
 interface TestimonialCardProps {
@@ -12,7 +12,7 @@ interface TestimonialCardProps {
 
 export default function TestimonialCard({ name, location, quote, index = 0 }: TestimonialCardProps) {
   return (
-    <motion.div
+    <AnimatedDiv
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -38,6 +38,6 @@ export default function TestimonialCard({ name, location, quote, index = 0 }: Te
           </div>
         </div>
       </div>
-    </motion.div>
+    </AnimatedDiv>
   );
 }

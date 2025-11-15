@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { ArrowRight, CheckCircle, Clock, Target, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
 
@@ -9,7 +9,7 @@ export default function AssessmentLandingPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
       <div className="max-w-6xl mx-auto px-6">
         {/* Hero Section */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -41,10 +41,10 @@ export default function AssessmentLandingPage() {
               Learn More
             </Link>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* What You'll Discover */}
-        <motion.div
+        <AnimatedDiv
           className="mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -96,10 +96,10 @@ export default function AssessmentLandingPage() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* How It Works */}
-        <motion.div
+        <AnimatedDiv
           className="mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -151,10 +151,10 @@ export default function AssessmentLandingPage() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Why Take This Assessment */}
-        <motion.div
+        <AnimatedDiv
           className="mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -237,10 +237,10 @@ export default function AssessmentLandingPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Final CTA */}
-        <motion.div
+        <AnimatedDiv
           className="text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -280,7 +280,7 @@ export default function AssessmentLandingPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
       </div>
     </div>
   );

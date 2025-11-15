@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { ArrowRight, BookOpen, Download, Mail } from 'lucide-react';
 import Link from 'next/link';
 
@@ -9,7 +9,7 @@ export default function ResourcesPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
       <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -25,10 +25,10 @@ export default function ResourcesPage() {
           <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
             Start your transformation journey with our free assessment and discover the story that changed everything.
           </p>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Kill the Boy Story */}
-        <motion.div
+        <AnimatedDiv
           className="mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -124,10 +124,10 @@ export default function ResourcesPage() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Free Resources */}
-        <motion.div
+        <AnimatedDiv
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -206,10 +206,10 @@ export default function ResourcesPage() {
               <ArrowRight className="ml-2 w-4 h-4" />
             </Link>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* CTA */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mt-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -230,7 +230,7 @@ export default function ResourcesPage() {
               <ArrowRight className="ml-3 w-6 h-6" />
             </Link>
           </div>
-        </motion.div>
+        </AnimatedDiv>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import {
   Trophy,
   Users,
@@ -283,13 +283,13 @@ export default function AdminRafflePage() {
   if (!isAuthorized || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <motion.div
+        <AnimatedDiv
           className="text-center"
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
         >
           <RefreshCw className="w-8 h-8 text-sky-600" />
-        </motion.div>
+        </AnimatedDiv>
       </div>
     );
   }

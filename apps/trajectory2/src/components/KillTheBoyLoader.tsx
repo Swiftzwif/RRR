@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { useEffect, useState } from "react";
 
 interface KillTheBoyLoaderProps {
@@ -35,7 +35,7 @@ export default function KillTheBoyLoader({ isLoading, onComplete }: KillTheBoyLo
       {isLoading && (
         <>
           {/* Left half - background only */}
-          <motion.div
+          <AnimatedDiv
             className="fixed top-0 left-0 w-1/2 h-screen bg-gradient-to-br from-slate-900 via-red-900 to-orange-900 z-[100] overflow-hidden"
             initial={{ x: 0 }}
             animate={{ x: startSplit ? "-100%" : 0 }}
@@ -44,7 +44,7 @@ export default function KillTheBoyLoader({ isLoading, onComplete }: KillTheBoyLo
           />
 
           {/* Right half - background only */}
-          <motion.div
+          <AnimatedDiv
             className="fixed top-0 right-0 w-1/2 h-screen bg-gradient-to-bl from-slate-900 via-red-900 to-orange-900 z-[100] overflow-hidden"
             initial={{ x: 0 }}
             animate={{ x: startSplit ? "100%" : 0 }}
@@ -53,7 +53,7 @@ export default function KillTheBoyLoader({ isLoading, onComplete }: KillTheBoyLo
           />
 
           {/* Centered text overlay */}
-          <motion.div
+          <AnimatedDiv
             className="fixed inset-0 z-[101] flex items-center justify-center pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: showText && !startSplit ? 1 : 0 }}
@@ -64,11 +64,11 @@ export default function KillTheBoyLoader({ isLoading, onComplete }: KillTheBoyLo
                 KILL THE BOY
               </h1>
             </div>
-          </motion.div>
+          </AnimatedDiv>
 
           {/* Center line (appears before split) */}
           {showText && !startSplit && (
-            <motion.div
+            <AnimatedDiv
               className="fixed top-0 left-1/2 -translate-x-1/2 w-[2px] h-screen bg-gradient-to-b from-transparent via-gold to-transparent z-[102]"
               initial={{ scaleY: 0 }}
               animate={{ scaleY: 1 }}

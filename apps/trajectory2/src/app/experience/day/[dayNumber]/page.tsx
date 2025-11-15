@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import {
   ArrowLeft,
   ArrowRight,
@@ -40,7 +40,7 @@ export default function DayPage() {
   if (isLocked) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center py-12">
-        <motion.div
+        <AnimatedDiv
           className="max-w-2xl mx-auto px-6 text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -73,7 +73,7 @@ export default function DayPage() {
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Overview
           </Link>
-        </motion.div>
+        </AnimatedDiv>
       </div>
     );
   }
@@ -85,7 +85,7 @@ export default function DayPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
       <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
-        <motion.div
+        <AnimatedDiv
           className="mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -116,10 +116,10 @@ export default function DayPage() {
           <p className="text-xl text-slate-600 leading-relaxed max-w-3xl">
             {dayData.description}
           </p>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Progress */}
-        <motion.div
+        <AnimatedDiv
           className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 shadow-lg mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -134,17 +134,17 @@ export default function DayPage() {
             </span>
           </div>
           <div className="w-full bg-slate-200 rounded-full h-3">
-            <motion.div
+            <AnimatedDiv
               className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 1 }}
             />
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Book Summaries */}
-        <motion.div
+        <AnimatedDiv
           className="mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -157,7 +157,7 @@ export default function DayPage() {
 
           <div className="space-y-6">
             {dayData.bookSummaries.map((book, index) => (
-              <motion.div
+              <AnimatedDiv
                 key={index}
                 className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300"
                 initial={{ opacity: 0, x: -20 }}
@@ -196,13 +196,13 @@ export default function DayPage() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </AnimatedDiv>
             ))}
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Daily Tasks */}
-        <motion.div
+        <AnimatedDiv
           className="mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -215,7 +215,7 @@ export default function DayPage() {
 
           <div className="space-y-4">
             {dayData.tasks.map((task, index) => (
-              <motion.div
+              <AnimatedDiv
                 key={index}
                 className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300"
                 initial={{ opacity: 0, x: -20 }}
@@ -257,13 +257,13 @@ export default function DayPage() {
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </AnimatedDiv>
             ))}
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Printable Worksheets */}
-        <motion.div
+        <AnimatedDiv
           className="mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -293,10 +293,10 @@ export default function DayPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Navigation */}
-        <motion.div
+        <AnimatedDiv
           className="flex items-center justify-between"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -321,7 +321,7 @@ export default function DayPage() {
               <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
           )}
-        </motion.div>
+        </AnimatedDiv>
       </div>
     </div>
   );

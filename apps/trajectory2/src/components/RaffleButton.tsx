@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
@@ -117,7 +117,7 @@ export default function RaffleButton() {
 
   return (
     <AnimatePresence>
-      <motion.div
+      <AnimatedDiv
         className="fixed top-16 left-0 right-0 z-40 px-4 md:px-8 lg:px-12"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -129,13 +129,13 @@ export default function RaffleButton() {
         }}
       >
         <Link href="/raffle" className="block max-w-7xl mx-auto">
-          <motion.div
+          <AnimatedDiv
             className="relative group"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             {/* Animated glow effect */}
-            <motion.div
+            <AnimatedDiv
               className="absolute inset-0 bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 rounded-xl blur-xl opacity-50 group-hover:opacity-70"
               animate={{
                 opacity: [0.5, 0.7, 0.5],
@@ -197,7 +197,7 @@ export default function RaffleButton() {
               </div>
 
               {/* Live pulse indicator */}
-              <motion.div
+              <AnimatedDiv
                 className="absolute -top-2 -right-2 w-5 h-5 bg-green-400 rounded-full"
                 animate={{
                   scale: [1, 1.3, 1],
@@ -212,9 +212,9 @@ export default function RaffleButton() {
 
             {/* Mobile optimized tap area */}
             <div className="absolute inset-0 -m-2 rounded-2xl" />
-          </motion.div>
+          </AnimatedDiv>
         </Link>
-      </motion.div>
+      </AnimatedDiv>
     </AnimatePresence>
   );
 }

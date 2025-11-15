@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { motion } from 'framer-motion'
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents'
 import { AlertCircle, ArrowLeft, Home } from "lucide-react";
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -14,7 +14,7 @@ function ErrorContent() {
 
   return (
     <div className="min-h-screen bg-base flex items-center justify-center py-12 px-4">
-      <motion.div
+      <AnimatedDiv
         className="max-w-md w-full"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -48,7 +48,7 @@ function ErrorContent() {
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </AnimatedDiv>
     </div>
   )
 }

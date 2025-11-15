@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { createClient } from '@/utils/supabase/client';
-import { motion } from "framer-motion";
+import { AnimatedDiv, AnimatedH1, AnimatedH2, AnimatedP } from '@/components/animation/AnimatedComponents';
 import { Clock, TrendingUp, Users, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -62,7 +62,7 @@ export default function RaffleHero() {
         <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-white to-sunset/10" />
 
         {/* Floating orbs for depth */}
-        <motion.div
+        <AnimatedDiv
           className="absolute top-20 left-10 w-72 h-72 bg-slate-300/20 rounded-full blur-3xl"
           animate={{
             x: [0, 30, 0],
@@ -74,7 +74,7 @@ export default function RaffleHero() {
             ease: "easeInOut"
           }}
         />
-        <motion.div
+        <AnimatedDiv
           className="absolute bottom-20 right-10 w-96 h-96 bg-sunset/20 rounded-full blur-3xl"
           animate={{
             x: [0, -30, 0],
@@ -89,14 +89,14 @@ export default function RaffleHero() {
       </div>
 
       {/* Main content */}
-      <motion.div
+      <AnimatedDiv
         className="relative z-10 max-w-5xl mx-auto text-center"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
         {/* Badge */}
-        <motion.div
+        <AnimatedDiv
           className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full text-sm font-bold mb-8"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -105,10 +105,10 @@ export default function RaffleHero() {
           <Zap className="w-4 h-4" />
           <span>GRAND OPENING SPECIAL</span>
           <Zap className="w-4 h-4" />
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Main headline */}
-        <motion.h1
+        <AnimatedH1
           className="text-5xl md:text-7xl font-black text-slate-900 mb-6 leading-tight"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -119,10 +119,10 @@ export default function RaffleHero() {
           <span className="text-orange-600 bg-gradient-to-r from-orange-500 to-red-600 gradient-text-fallback">
             Win The War.
           </span>
-        </motion.h1>
+        </AnimatedH1>
 
         {/* Sub-headline */}
-        <motion.p
+        <AnimatedP
           className="text-xl md:text-2xl text-slate-700 mb-8 max-w-3xl mx-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -131,10 +131,10 @@ export default function RaffleHero() {
           Get the Trajectory Digital Course at {discountPercentage}% OFF
           <br />
           <span className="font-bold text-orange-500">+ Enter to win transformation prizes</span>
-        </motion.p>
+        </AnimatedP>
 
         {/* Value props */}
-        <motion.div
+        <AnimatedDiv
           className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -167,10 +167,10 @@ export default function RaffleHero() {
               <div className="text-sm text-slate-600">Worth $2,500+</div>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Main CTA */}
-        <motion.div
+        <AnimatedDiv
           className="space-y-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -192,10 +192,10 @@ export default function RaffleHero() {
               : <>Be the <span className="font-bold text-slate-900">first warrior</span> to commit to transformation</>
             }
           </p>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Trust indicators */}
-        <motion.div
+        <AnimatedDiv
           className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-slate-600"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -213,8 +213,8 @@ export default function RaffleHero() {
             <TrendingUp className="w-5 h-5 text-slate-700" />
             <span>31-Day Journey</span>
           </div>
-        </motion.div>
-      </motion.div>
+        </AnimatedDiv>
+      </AnimatedDiv>
     </section>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { User, Target, TrendingUp, Clock } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { Badge } from '@/components/ui/badge';
@@ -132,7 +132,7 @@ export default function LiveWarriorFeed() {
     <section className="py-20 px-4 bg-gradient-to-b from-white to-sky-50">
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -153,11 +153,11 @@ export default function LiveWarriorFeed() {
               <span>{isUsingExamples ? 'Be Next To Join' : 'Growing Every Hour'}</span>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Latest entry highlight */}
         {displayLatest && (
-          <motion.div
+          <AnimatedDiv
             className="mb-8 p-6 bg-gradient-to-r from-orange-500/10 to-sky-100 rounded-2xl border-2 border-orange-500/30"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -184,14 +184,14 @@ export default function LiveWarriorFeed() {
                 Entry #{displayLatest.entry_number}
               </Badge>
             </div>
-          </motion.div>
+          </AnimatedDiv>
         )}
 
         {/* Recent entries */}
         <div className="grid gap-4">
           <AnimatePresence mode="popLayout">
             {displayWarriors.slice(1).map((warrior, index) => (
-              <motion.div
+              <AnimatedDiv
                 key={warrior.id}
                 className="p-4 bg-white rounded-xl border border-sky-200 hover:border-orange-500/50 transition-colors"
                 initial={{ opacity: 0, x: -50 }}
@@ -221,13 +221,13 @@ export default function LiveWarriorFeed() {
                     Entry #{warrior.entry_number}
                   </span>
                 </div>
-              </motion.div>
+              </AnimatedDiv>
             ))}
           </AnimatePresence>
         </div>
 
         {/* Join message */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mt-12"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -238,7 +238,7 @@ export default function LiveWarriorFeed() {
             <br />
             <span className="font-bold text-orange-500">Will you be next?</span>
           </p>
-        </motion.div>
+        </AnimatedDiv>
       </div>
     </section>
   );

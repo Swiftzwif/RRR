@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { THINKIFIC_COURSE_URL, COURSE_CONFIG } from '@/lib/config';
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import {
     ArrowRight,
     BookOpen,
@@ -109,7 +109,7 @@ function CourseContent() {
     <div className="min-h-screen bg-base py-12">
       <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -125,10 +125,10 @@ function CourseContent() {
             A comprehensive course designed to help you shift from good little
             soldier to commander of your life.
           </p>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Stats */}
-        <motion.div
+        <AnimatedDiv
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -155,10 +155,10 @@ function CourseContent() {
               <p className="text-secondary">Transformational</p>
             </CardContent>
           </Card>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Modules */}
-        <motion.div
+        <AnimatedDiv
           className="space-y-6 mb-16"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -169,7 +169,7 @@ function CourseContent() {
           </h2>
 
           {modules.map((module, index) => (
-            <motion.div
+            <AnimatedDiv
               key={module.title}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -199,12 +199,12 @@ function CourseContent() {
                   </div>
                 </CardHeader>
               </Card>
-            </motion.div>
+            </AnimatedDiv>
           ))}
-        </motion.div>
+        </AnimatedDiv>
 
         {/* CTA */}
-        <motion.div
+        <AnimatedDiv
           className="bg-elev-2 rounded-3xl p-12 text-center border border-[var(--border-gold)] gold-glow-sm"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -237,7 +237,7 @@ function CourseContent() {
               Secure payment via Thinkific
             </span>
           </div>
-        </motion.div>
+        </AnimatedDiv>
       </div>
     </div>
   );
