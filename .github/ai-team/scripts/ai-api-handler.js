@@ -11,6 +11,14 @@ const fs = require('fs');
 const path = require('path');
 
 class AIAPIHandler {
+  // Configuration constants (moved from magic numbers)
+  static MAX_COST_TRACKING_RETRIES = 5;
+  static COST_TRACKING_RETRY_DELAY_BASE_MS = 50;
+  static MAX_RETRIES = 3;
+  static RETRY_DELAY_BASE_MS = 1000;
+  static MAX_PROMPT_LENGTH = 50000;
+  static MAX_BOT_NAME_LENGTH = 50;
+
   constructor() {
     this.providers = {
       openai: {
@@ -98,6 +106,10 @@ class AIAPIHandler {
     }
     
     const modelClass = mainConfig.models[botConfig.model_class];
+    
+    // Declare variables for model selection
+    let selectedModel;
+    let reason;
     
     // Check for high priority override first - should work regardless of budget tier
     // High priority requests are critical and should use primary model even in emergency mode
@@ -291,7 +303,7 @@ class AIAPIHandler {
 
   async updateCostTracking(botName, model, tokens, cost) {
     // Retry logic for file operations to handle race conditions
-    const maxRetries = 5;
+    const maxRetries = AIAPIHandler.MAX_COST_TRACKING_RETRIES;
     let retries = 0;
     
     while (retries < maxRetries) {
@@ -354,7 +366,7 @@ class AIAPIHandler {
         }
         
         // Exponential backoff for retries
-        await this.sleep(50 * Math.pow(2, retries));
+        await this.sleep(AIAPIHandler.COST_TRACKING_RETRY_DELAY_BASE_MS * Math.pow(2, retries));
       }
     }
   }

@@ -35,20 +35,43 @@ jobs:
       - name: Get PR diff
         id: diff
         run: |
+          set -euo pipefail  # Exit on error, undefined vars, pipe failures
+          
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             PR_NUMBER=${{ github.event.pull_request.number }}
           else
             PR_NUMBER=${{ github.event.issue.number }}
           fi
           
-          # Get PR information
-          gh pr view $PR_NUMBER --json title,body,files,additions,deletions,commits > pr-info.json
+          # Validate PR number exists
+          if [ -z "$PR_NUMBER" ]; then
+            echo "Error: PR number is empty"
+            exit 1
+          fi
+          
+          # Get PR information with error handling
+          if ! gh pr view $PR_NUMBER --json title,body,files,additions,deletions,commits > pr-info.json 2>&1; then
+            echo "Error: Failed to fetch PR information for #$PR_NUMBER"
+            exit 1
+          fi
+          
+          # Validate PR exists
+          if ! jq -e '.title' pr-info.json > /dev/null 2>&1; then
+            echo "Error: PR #$PR_NUMBER not found or inaccessible"
+            exit 1
+          fi
           
           # Get the diff
-          gh pr diff $PR_NUMBER > pr-diff.txt
+          if ! gh pr diff $PR_NUMBER > pr-diff.txt 2>&1; then
+            echo "Warning: Failed to fetch PR diff, continuing with empty diff"
+            echo "" > pr-diff.txt
+          fi
           
           # Get changed files list
-          gh pr view $PR_NUMBER --json files --jq '.files[].path' > changed-files.txt
+          if ! gh pr view $PR_NUMBER --json files --jq '.files[].path' > changed-files.txt 2>&1; then
+            echo "Warning: Failed to fetch changed files, continuing with empty list"
+            echo "" > changed-files.txt
+          fi
           
           # Create a summary for the AI
           echo "## PR Summary" > pr-summary.txt

@@ -59,10 +59,29 @@ jobs:
       - name: Identify Emergency Context
         id: context
         run: |
+          set -euo pipefail  # Exit on error, undefined vars, pipe failures
+          
           # Determine issue number and context
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             ISSUE_NUMBER=${{ github.event.inputs.issue_number }}
             SEVERITY=${{ github.event.inputs.severity }}
+            
+            # Validate inputs
+            if [ -z "$ISSUE_NUMBER" ] || ! [[ "$ISSUE_NUMBER" =~ ^[0-9]+$ ]]; then
+              echo "Error: Invalid issue number: $ISSUE_NUMBER"
+              exit 1
+            fi
+            
+            if [ -z "$SEVERITY" ] || ! [[ "$SEVERITY" =~ ^(critical|high|medium)$ ]]; then
+              echo "Error: Invalid severity level: $SEVERITY (must be critical, high, or medium)"
+              exit 1
+            fi
+            
+            # Validate issue exists
+            if ! gh issue view $ISSUE_NUMBER > /dev/null 2>&1; then
+              echo "Error: Issue #$ISSUE_NUMBER not found or inaccessible"
+              exit 1
+            fi
           elif [ "${{ github.event_name }}" == "issues" ]; then
             ISSUE_NUMBER=${{ github.event.issue.number }}
             SEVERITY="high"
