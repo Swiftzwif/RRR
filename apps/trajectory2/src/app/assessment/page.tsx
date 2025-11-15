@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import type { Question, QuestionsData, AssessmentAnswers, AssessmentResults } from '@/types/assessment';
 
 export default function AssessmentPage() {
@@ -46,35 +47,67 @@ export default function AssessmentPage() {
 
       const { data: { user } } = await supabase.auth.getUser();
 
-      // Save assessment to database
-      const { data, error } = await supabase
-        .from('assessments')
-        .insert({
-          user_id: user?.id || null,
-          answers,
-          domain_scores: result.domainScores,
-          avatar: result.avatar,
-          score: result.overall,
-        })
-        .select()
-        .single();
+      // Save assessment to database with retry logic
+      let saveAttempts = 0;
+      let saveSuccess = false;
+      let assessmentData = null;
 
-      if (error) {
-        logger.error('Error saving assessment', error);
-        // Still proceed to results even if save fails
+      while (saveAttempts < 3 && !saveSuccess) {
+        const { data, error } = await supabase
+          .from('assessments')
+          .insert({
+            user_id: user?.id || null,
+            answers,
+            domain_scores: result.domainScores,
+            avatar: result.avatar,
+            score: result.overall,
+          })
+          .select()
+          .single();
+
+        if (error) {
+          saveAttempts++;
+          logger.error(`Error saving assessment (attempt ${saveAttempts})`, error);
+
+          if (saveAttempts >= 3) {
+            // After 3 failed attempts, show error to user and don't proceed
+            toast.error('Failed to save your assessment', {
+              description: 'Please check your connection and try again.',
+              duration: 5000,
+            });
+            setError('Failed to save assessment. Please try again.');
+            return; // Don't proceed to results if save fails
+          }
+
+          // Wait a bit before retrying
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } else {
+          saveSuccess = true;
+          assessmentData = data;
+        }
       }
 
       // Store results in session storage for results page
       const assessmentResults: AssessmentResults = {
         ...result,
-        assessmentId: data?.id,
+        assessmentId: assessmentData?.id,
       };
       sessionStorage.setItem('assessmentResults', JSON.stringify(assessmentResults));
+
+      // Show success toast
+      toast.success('Assessment completed!', {
+        description: 'Analyzing your results...',
+        duration: 2000,
+      });
 
       // Redirect to results
       router.push('/results');
     } catch (err) {
       logger.error('Error processing assessment', err);
+      toast.error('Failed to process assessment', {
+        description: 'Please try again or contact support if the issue persists.',
+        duration: 5000,
+      });
       setError('Failed to process assessment. Please try again.');
     }
   };
