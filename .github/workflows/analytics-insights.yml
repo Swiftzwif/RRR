@@ -16,6 +16,7 @@ jobs:
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/analytics'))
     
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
       - name: Checkout code

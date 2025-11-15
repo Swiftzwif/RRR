@@ -10,6 +10,7 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
+      timeout-minutes: 15
 
     strategy:
       matrix:
@@ -67,6 +68,7 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
+      timeout-minutes: 15
 
     steps:
       - name: Checkout repository
@@ -80,6 +82,7 @@ jobs:
   code-quality:
     name: Code Quality Check
     runs-on: ubuntu-latest
+      timeout-minutes: 15
 
     steps:
       - name: Checkout repository
@@ -111,6 +114,7 @@ jobs:
   dependency-check:
     name: Dependency Check
     runs-on: ubuntu-latest
+      timeout-minutes: 15
 
     steps:
       - name: Checkout repository
@@ -125,6 +129,7 @@ jobs:
   pr-validation:
     name: PR Validation
     runs-on: ubuntu-latest
+      timeout-minutes: 15
     if: github.event_name == 'pull_request'
 
     steps:

@@ -15,6 +15,7 @@ jobs:
        contains(github.event.comment.body, '/review'))
     
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
       - name: Checkout code

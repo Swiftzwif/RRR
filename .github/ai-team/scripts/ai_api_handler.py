@@ -64,13 +64,21 @@ class AIAPIHandler:
             }
         }
         
-        # Determine cost tracker path
+        # Determine cost tracker path with path traversal protection
         workspace = os.environ.get('GITHUB_WORKSPACE')
         if workspace:
-            self.cost_tracker_path = Path(workspace) / '.github' / 'ai-team' / 'cost-tracker.json'
+            base_path = Path(workspace).resolve()
+            # Ensure we're within the workspace (path traversal protection)
+            cost_tracker_path = base_path / '.github' / 'ai-team' / 'cost-tracker.json'
+            if not str(cost_tracker_path.resolve()).startswith(str(base_path)):
+                raise ValueError('Path traversal detected in cost tracker path')
+            self.cost_tracker_path = cost_tracker_path
         else:
-            script_dir = Path(__file__).parent
+            script_dir = Path(__file__).parent.resolve()
             self.cost_tracker_path = script_dir.parent / 'cost-tracker.json'
+            # Ensure we're within the script directory tree
+            if not str(self.cost_tracker_path.resolve()).startswith(str(script_dir.parent.resolve())):
+                raise ValueError('Path traversal detected in cost tracker path')
         
         # Initialize API clients (lazy loading)
         self._openai_client: Optional[AsyncOpenAI] = None
@@ -132,8 +140,15 @@ class AIAPIHandler:
                 logger.warning(f'[{bot_name}] Warning: Potential prompt injection detected')
     
     def load_main_config(self) -> Dict[str, Any]:
-        """Load main configuration from YAML file."""
-        config_path = Path(__file__).parent.parent / 'configs' / 'main-config.yml'
+        """Load main configuration from YAML file with path traversal protection."""
+        script_dir = Path(__file__).parent.resolve()
+        config_path = (script_dir.parent / 'configs' / 'main-config.yml').resolve()
+        
+        # Path traversal protection: ensure config is within expected directory
+        expected_base = script_dir.parent.resolve()
+        if not str(config_path).startswith(str(expected_base)):
+            raise ValueError('Path traversal detected in config path')
+        
         with open(config_path, 'r', encoding='utf-8') as f:
             return yaml.safe_load(f)
     
@@ -449,6 +464,18 @@ When making recommendations, consider this specific project context and architec
             # Load current cost data
             cost_data = self.load_cost_data()
             current_month_spend = self.get_current_month_spend(cost_data)
+            
+            # Budget enforcement: Hard stop at monthly limit
+            main_config = self.load_main_config()
+            budget_limit = main_config['budget']['monthly_limit']
+            if current_month_spend >= budget_limit:
+                error_msg = f'Budget limit of ${budget_limit} exceeded (current: ${current_month_spend:.2f}). Request blocked.'
+                logger.error(f'[{bot_name}] {error_msg}')
+                # Only allow high-priority requests in emergency
+                if config.get('priority') != 'high':
+                    raise RuntimeError(error_msg)
+                else:
+                    logger.warning(f'[{bot_name}] High-priority request allowed despite budget limit')
             
             # Determine which model to use based on budget
             model_config = self.select_model(bot_name, current_month_spend, config)
