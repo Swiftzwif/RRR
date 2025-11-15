@@ -164,21 +164,27 @@ class AIAPIHandler:
         model_class = main_config['models'][bot_config['model_class']]
         
         # Check for high priority override first
+        # High priority requests use primary model even in emergency mode
         if config.get('priority') == 'high':
             selected_model = model_class['primary']
             reason = 'high priority override'
         else:
             # Determine budget level for normal priority requests
             if current_spend >= budget['optimization']['level_3']:
-                selected_model = model_class['budget']
-                reason = 'emergency budget mode'
+                # Emergency mode (95%+): Use emergency tier model if available, otherwise budget
+                # Emergency mode should be more restrictive than level_2
+                selected_model = model_class.get('emergency', model_class['budget'])
+                reason = 'emergency budget mode (95%+ threshold) - using cheapest available model'
             elif current_spend >= budget['optimization']['level_2']:
+                # Budget optimization (80%+): Use budget tier model
                 selected_model = model_class['budget']
-                reason = 'budget optimization'
+                reason = 'budget optimization (80%+ threshold)'
             elif current_spend >= budget['optimization']['level_1']:
+                # Cost optimization (60%+): Use fallback tier model
                 selected_model = model_class['fallback']
-                reason = 'cost optimization'
+                reason = 'cost optimization (60%+ threshold)'
             else:
+                # Normal operation (<60%): Use primary tier model
                 selected_model = model_class['primary']
                 reason = 'normal operation'
         
@@ -322,6 +328,14 @@ When making recommendations, consider this specific project context and architec
         messages = self.build_messages(model_config, prompt, config)
         max_tokens = bot_config.get('max_tokens', 1500)
         temperature = bot_config.get('temperature', 0.7)
+        
+        # Reduce max_tokens in emergency mode (95%+ budget) to further reduce costs
+        # Emergency mode should be more restrictive than level_2
+        current_spend = self.get_current_monthly_spend()
+        budget = main_config['budget']
+        if current_spend >= budget['optimization']['level_3'] and config.get('priority') != 'high':
+            # Emergency mode: reduce max_tokens by 50% to minimize costs
+            max_tokens = max(500, int(max_tokens * 0.5))  # Minimum 500 tokens
         
         provider = model_config['provider']
         model = model_config['model']

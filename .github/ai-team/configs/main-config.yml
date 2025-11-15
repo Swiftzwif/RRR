@@ -8,21 +8,25 @@ models:
     primary: gpt-4o
     fallback: gpt-4o-mini
     budget: gpt-3.5-turbo
+    emergency: gpt-3.5-turbo  # Cheapest OpenAI model for emergency
     
   technical:
     primary: claude-3-5-sonnet-20241022
     fallback: claude-3-sonnet-20240229
     budget: claude-3-haiku-20240307
+    emergency: claude-3-haiku-20240307  # Cheapest Anthropic model for emergency
     
   operational:
     primary: gpt-3.5-turbo
     fallback: claude-3-haiku-20240307
     budget: mixtral-8x7b-instruct
+    emergency: claude-3-haiku-20240307  # Use cheapest available for emergency
     
   analytical:
     primary: gpt-4o-mini
     fallback: gpt-3.5-turbo
     budget: llama-3-70b-instruct
+    emergency: gpt-3.5-turbo  # Cheapest reliable model for emergency
 
 # Cost Management
 budget:
