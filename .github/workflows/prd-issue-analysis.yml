@@ -1,0 +1,255 @@
+name: PRD Bot - Requirement Analysis
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+  issue_comment:
+    types: [created]
+
+jobs:
+  requirement-analysis:
+    if: |
+      (github.event_name == 'issues' && 
+       (contains(github.event.issue.labels.*.name, 'feature') || 
+        contains(github.event.issue.labels.*.name, 'enhancement') ||
+        contains(github.event.issue.labels.*.name, 'needs-prd'))) ||
+      (github.event_name == 'issue_comment' && 
+       contains(github.event.comment.body, '/prd'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Analyze Issue Content
+        id: analyze
+        run: |
+          # Get issue details
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          echo "ISSUE_NUMBER=$ISSUE_NUMBER" >> $GITHUB_ENV
+          
+          # Get issue information
+          gh issue view $ISSUE_NUMBER --json title,body,author,labels,milestone,assignees,comments > issue-data.json
+          
+          # Extract key information
+          TITLE=$(jq -r '.title' issue-data.json)
+          BODY=$(jq -r '.body // "No description provided"' issue-data.json)
+          AUTHOR=$(jq -r '.author.login' issue-data.json)
+          LABELS=$(jq -r '.labels[].name' issue-data.json | paste -sd "," -)
+          MILESTONE=$(jq -r '.milestone.title // "No milestone"' issue-data.json)
+          
+          # Get related issues/PRs
+          echo "## Issue Context" > issue-context.txt
+          echo "**Title:** $TITLE" >> issue-context.txt
+          echo "**Author:** @$AUTHOR" >> issue-context.txt
+          echo "**Labels:** $LABELS" >> issue-context.txt
+          echo "**Milestone:** $MILESTONE" >> issue-context.txt
+          echo "" >> issue-context.txt
+          echo "**Description:**" >> issue-context.txt
+          echo "$BODY" >> issue-context.txt
+          echo "" >> issue-context.txt
+          
+          # Find related issues by searching for similar titles
+          echo "**Potentially Related Issues:**" >> issue-context.txt
+          KEYWORDS=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | grep -oE '\b\w{4,}\b' | head -5 | paste -sd " " -)
+          if [ -n "$KEYWORDS" ]; then
+            gh issue list --state all --search "$KEYWORDS" --limit 5 --json number,title,state --jq '.[] | "- #\(.number) \(.title) (\(.state))"' >> issue-context.txt || echo "None found" >> issue-context.txt
+          else
+            echo "None found" >> issue-context.txt
+          fi
+          
+          # Get recent comments for context
+          echo "" >> issue-context.txt
+          echo "**Recent Comments:**" >> issue-context.txt
+          jq -r '.comments[:3] | .[] | "- @\(.author.login): \(.body | split("\n")[0])"' issue-data.json >> issue-context.txt || echo "No comments yet" >> issue-context.txt
+          
+          # Analyze technical context if code is mentioned
+          if echo "$BODY" | grep -qE '(\.js|\.ts|\.jsx|\.tsx|\.yml|\.yaml|\.json|function|class|component)'; then
+            echo "" >> issue-context.txt
+            echo "**Technical Context Detected:**" >> issue-context.txt
+            echo "Code references found in issue description" >> issue-context.txt
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Generate PRD Analysis
+        id: prd
+        run: |
+          cd .github/ai-team
+          
+          # Create prompt for PRD bot
+          PROMPT=$(cat <<'EOF'
+          You are the Principal Requirements Designer analyzing a feature request. Create comprehensive requirements documentation.
+          
+          Issue Context:
+          $(cat ../issue-context.txt)
+          
+          Analyze this request and provide:
+          
+          # 📋 Product Requirements Document
+          
+          ## 📝 Executive Summary
+          [One paragraph overview of what's being requested and why it matters]
+          
+          ## 🎯 Problem Statement
+          [Clear articulation of the problem being solved]
+          - **User Problem:** [What pain point does this address?]
+          - **Business Problem:** [How does this impact the business?]
+          - **Technical Problem:** [What technical challenge does this solve?]
+          
+          ## 👥 User Personas
+          [Who will use this feature?]
+          1. **Primary User:** [Description and needs]
+          2. **Secondary Users:** [If applicable]
+          
+          ## ✅ Success Criteria
+          [How do we know this is successful?]
+          - [ ] Metric 1: [Specific, measurable outcome]
+          - [ ] Metric 2: [Specific, measurable outcome]
+          - [ ] Metric 3: [Specific, measurable outcome]
+          
+          ## 📖 User Stories
+          [Break down into actionable stories]
+          
+          ### Story 1: [Title]
+          **As a** [user type]  
+          **I want to** [action]  
+          **So that** [benefit]  
+          
+          **Acceptance Criteria:**
+          - Given [context], when [action], then [outcome]
+          - Given [context], when [action], then [outcome]
+          
+          ### Story 2: [Title]
+          [Continue pattern...]
+          
+          ## 🔧 Technical Requirements
+          [High-level technical needs]
+          - **Architecture:** [How this fits into existing system]
+          - **Dependencies:** [What this relies on]
+          - **Performance:** [Expected performance requirements]
+          - **Security:** [Security considerations]
+          - **Data:** [Data requirements and flow]
+          
+          ## 🚫 Out of Scope
+          [What this does NOT include]
+          - [Explicitly excluded feature 1]
+          - [Explicitly excluded feature 2]
+          
+          ## 🗓️ Effort Estimation
+          - **Complexity:** [Low/Medium/High]
+          - **Estimated Points:** [Story points or time]
+          - **Dependencies Risk:** [Low/Medium/High]
+          
+          ## 🤔 Open Questions
+          [Questions that need answers before implementation]
+          1. [Question needing stakeholder input]
+          2. [Technical question needing investigation]
+          
+          ## 🔄 Implementation Phases
+          [If this should be built incrementally]
+          1. **Phase 1 (MVP):** [Core functionality]
+          2. **Phase 2:** [Enhanced features]
+          3. **Phase 3:** [Nice-to-haves]
+          
+          ## ⚠️ Risks & Mitigations
+          | Risk | Impact | Probability | Mitigation |
+          |------|--------|-------------|------------|
+          | [Risk 1] | High/Med/Low | High/Med/Low | [Strategy] |
+          
+          ## 🎨 Mockup Requirements
+          [What mockups/designs are needed]
+          - [ ] [Screen/component 1]
+          - [ ] [Screen/component 2]
+          
+          Remember: You're a seasoned product requirements expert who's shipped features at scale. Be specific, actionable, and thorough. Turn vague requests into crystal-clear specifications that engineers love.
+          EOF
+          )
+          
+          # Call the AI API
+          PRD=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+               ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+               OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+               TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+               GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+               node scripts/ai-api-handler.js "prd_bot" "$PROMPT" "high")
+          
+          # Save PRD
+          echo "$PRD" > prd-analysis.md
+      
+      - name: Post PRD Comment
+        run: |
+          cd .github/ai-team
+          
+          # Add header and footer
+          {
+            echo "# 🤖 PRD Bot Analysis"
+            echo ""
+            cat prd-analysis.md
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 📋 Next Steps"
+            echo ""
+            echo "1. **Review** this PRD with stakeholders"
+            echo "2. **Clarify** any open questions"
+            echo "3. **Approve** by adding 👍 reaction"
+            echo "4. **Request changes** by commenting below"
+            echo ""
+            echo "**Quick Actions:**"
+            echo "- Add label \`prd-approved\` when ready to implement"
+            echo "- Reply with \`/estimate\` for detailed effort breakdown"
+            echo "- Reply with \`/design\` to request mockups"
+            echo "- Reply with \`/break-down\` to create sub-issues for each user story"
+            echo ""
+            echo "---"
+            echo "*Generated by PRD Bot • [View AI Team Guidelines](https://github.com/${{ github.repository }}/blob/main/docs/GITHUB_SECRETS_SETUP.md)*"
+          } > prd-comment.md
+          
+          # Post the comment
+          gh issue comment ${{ env.ISSUE_NUMBER }} --body-file prd-comment.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Update Issue Labels and Metadata
+        run: |
+          # Add PRD label
+          gh issue edit ${{ env.ISSUE_NUMBER }} --add-label "has-prd,needs-review"
+          
+          # If the PRD identifies this as high complexity, add label
+          if grep -q "Complexity:.*High" prd-analysis.md; then
+            gh issue edit ${{ env.ISSUE_NUMBER }} --add-label "complexity:high"
+          elif grep -q "Complexity:.*Medium" prd-analysis.md; then
+            gh issue edit ${{ env.ISSUE_NUMBER }} --add-label "complexity:medium"
+          else
+            gh issue edit ${{ env.ISSUE_NUMBER }} --add-label "complexity:low"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Create Sub-Issues if Requested
+        if: contains(github.event.comment.body, '/break-down')
+        run: |
+          cd .github/ai-team
+          
+          # Extract user stories and create sub-issues
+          # This is a placeholder - in reality, we'd parse the PRD and create issues
+          
+          echo "::notice::Sub-issue creation requested. This feature will be implemented in a future update."
+          
+          # Example of what this would do:
+          # 1. Parse user stories from PRD
+          # 2. Create sub-issue for each story
+          # 3. Link them to parent issue
+          # 4. Add appropriate labels and assignments

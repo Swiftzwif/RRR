@@ -1,0 +1,146 @@
+name: CMO Bot - Growth Strategy
+
+on:
+  schedule:
+    # Run every Thursday at 11 AM UTC
+    - cron: '0 11 * * 4'
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+jobs:
+  growth-analysis:
+    if: |
+      github.event_name == 'schedule' || 
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/marketing'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Gather Growth Metrics
+        run: |
+          echo "## Growth & Marketing Metrics" > growth-data.txt
+          
+          # Repository growth metrics
+          gh api repos/${{ github.repository }} --jq '. | {
+            stars: .stargazers_count,
+            watchers: .watchers_count,
+            forks: .forks_count
+          }' | jq -r 'to_entries | .[] | "- \(.key|ascii_upcase): \(.value)"' >> growth-data.txt
+          
+          # Community engagement (issues, PRs, discussions)
+          echo -e "\n### Community Engagement (30 days)" >> growth-data.txt
+          ISSUES_30D=$(gh issue list --state all --search "created:>$(date -d '30 days ago' +%Y-%m-%d)" --json number --jq 'length')
+          PRS_30D=$(gh pr list --state all --search "created:>$(date -d '30 days ago' +%Y-%m-%d)" --json number --jq 'length')
+          echo "- Issues created: $ISSUES_30D" >> growth-data.txt
+          echo "- PRs created: $PRS_30D" >> growth-data.txt
+          
+          # Release activity
+          echo -e "\n### Release Momentum" >> growth-data.txt
+          gh release list --limit 5 --json tagName,publishedAt,downloadCount --jq '.[] | "- \(.tagName): \(.downloadCount // 0) downloads"' >> growth-data.txt 2>/dev/null || echo "- No releases yet" >> growth-data.txt
+          
+          # Top referrers (traffic data requires API token with repo scope)
+          echo -e "\n### Growth Opportunities" >> growth-data.txt
+          echo "- SEO optimization potential" >> growth-data.txt
+          echo "- Community building initiatives" >> growth-data.txt
+          echo "- Content marketing opportunities" >> growth-data.txt
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Generate Marketing Strategy
+        run: |
+          cd .github/ai-team
+          
+          PROMPT=$(cat <<'EOF'
+          You are the Chief Marketing Officer analyzing growth and creating marketing strategy.
+          
+          Growth Data:
+          $(cat ../growth-data.txt)
+          
+          Create a comprehensive marketing analysis:
+          
+          # 🚀 Growth & Marketing Strategy
+          
+          ## 📈 Growth Analysis
+          [Current growth trajectory and market position]
+          
+          ## 🎯 Target Audience Insights
+          [Who we're reaching and who we should reach]
+          
+          ## 📢 Brand Positioning
+          [How to position the product in the market]
+          
+          ## 🌟 Growth Initiatives
+          
+          ### Quick Wins (This Week)
+          1. [Immediate growth tactic]
+          2. [Immediate growth tactic]
+          
+          ### Growth Campaigns (This Month)
+          1. [Campaign idea with expected impact]
+          2. [Campaign idea with expected impact]
+          
+          ## 📊 Marketing Metrics & KPIs
+          | Metric | Current | Target | Strategy |
+          |--------|---------|--------|----------|
+          | [Metric] | [Value] | [Goal] | [How to achieve] |
+          
+          ## 💡 Content Strategy
+          [Content pillars and distribution plan]
+          
+          ## 🤝 Community Building
+          [How to grow and engage the community]
+          
+          ## 🎨 Brand Voice Guidelines
+          [Key messaging and tone]
+          
+          Remember: You're a growth expert who's scaled B2B SaaS from zero to millions. Think in funnels, speak in stories, and measure everything.
+          EOF
+          )
+          
+          STRATEGY=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                    ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                    OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                    TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                    GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                    node scripts/ai-api-handler.js "cmo_bot" "$PROMPT")
+          
+          echo "$STRATEGY" > marketing-strategy.md
+      
+      - name: Post Marketing Report
+        run: |
+          cd .github/ai-team
+          
+          {
+            echo "# 🚀 CMO Growth Strategy Report"
+            echo ""
+            cat marketing-strategy.md
+            echo ""
+            echo "---"
+            echo "*Generated by CMO Bot • Growth Through Strategic Marketing*"
+          } > report.md
+          
+          if [ "${{ github.event_name }}" == "issue_comment" ]; then
+            gh issue comment ${{ github.event.issue.number }} --body-file report.md
+          else
+            gh issue create \
+              --title "🚀 Marketing Strategy - $(date '+%B %d')" \
+              --body-file report.md \
+              --label "ai-team,marketing,growth"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,176 @@
+name: QA Bot - Test Analysis
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  workflow_run:
+    workflows: ["*"]
+    types: [completed]
+    branches: [main, master]
+  issue_comment:
+    types: [created]
+
+jobs:
+  test-analysis:
+    if: |
+      (github.event_name == 'pull_request') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure') ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/qa'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Analyze Test Results
+        run: |
+          echo "## QA Analysis Report" > qa-data.txt
+          
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            # Failed workflow analysis
+            echo "### Failed Workflow Analysis" >> qa-data.txt
+            echo "- Workflow: ${{ github.event.workflow_run.name }}" >> qa-data.txt
+            echo "- Branch: ${{ github.event.workflow_run.head_branch }}" >> qa-data.txt
+            echo "- Commit: ${{ github.event.workflow_run.head_sha }}" >> qa-data.txt
+            echo "- Failure Time: ${{ github.event.workflow_run.created_at }}" >> qa-data.txt
+            
+            # Get failure logs (if available)
+            echo -e "\n### Failure Context" >> qa-data.txt
+            echo "Analyzing workflow failure..." >> qa-data.txt
+          else
+            # PR or manual QA analysis
+            echo "### Quality Metrics" >> qa-data.txt
+            
+            # Test coverage trends
+            echo -e "\n#### Test Coverage" >> qa-data.txt
+            echo "- Current Coverage: [Integration needed]" >> qa-data.txt
+            echo "- Coverage Trend: [Integration needed]" >> qa-data.txt
+            
+            # Bug metrics
+            echo -e "\n#### Bug Statistics (30 days)" >> qa-data.txt
+            BUG_OPENED=$(gh issue list --label "bug,defect" --state all --search "created:>$(date -d '30 days ago' +%Y-%m-%d)" --json number --jq 'length')
+            BUG_CLOSED=$(gh issue list --label "bug,defect" --state closed --search "closed:>$(date -d '30 days ago' +%Y-%m-%d)" --json number --jq 'length')
+            BUG_OPEN=$(gh issue list --label "bug,defect" --state open --json number --jq 'length')
+            echo "- Bugs reported: $BUG_OPENED" >> qa-data.txt
+            echo "- Bugs fixed: $BUG_CLOSED" >> qa-data.txt
+            echo "- Open bugs: $BUG_OPEN" >> qa-data.txt
+            
+            # Test execution history
+            echo -e "\n#### Test Execution (Last 10 runs)" >> qa-data.txt
+            gh run list --workflow "*test*" --limit 10 --json conclusion,durationMs --jq '
+              {
+                success: (map(select(.conclusion == "success")) | length),
+                failure: (map(select(.conclusion == "failure")) | length),
+                avg_duration: (map(.durationMs) | add / length / 60000 | floor)
+              } |
+              "- Success rate: \(.success)/\(.success + .failure) (\(.success * 100 / (.success + .failure) | floor)%)\n- Avg duration: \(.avg_duration) minutes"
+            ' >> qa-data.txt 2>/dev/null || echo "- No test data available" >> qa-data.txt
+          fi
+          
+          # Critical bugs
+          echo -e "\n### Critical Quality Issues" >> qa-data.txt
+          gh issue list --label "bug,critical,P0" --state open --json number,title --jq '.[] | "- #\(.number): \(.title)"' >> qa-data.txt || echo "- No critical bugs" >> qa-data.txt
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Generate QA Recommendations
+        run: |
+          cd .github/ai-team
+          
+          PROMPT=$(cat <<'EOF'
+          You are the QA Lead analyzing test results and quality metrics.
+          
+          QA Data:
+          $(cat ../qa-data.txt)
+          
+          Provide comprehensive quality analysis:
+          
+          # 🧪 QA Analysis Report
+          
+          ## 🎯 Quality Assessment
+          [Overall quality status and confidence level]
+          
+          ## 🐛 Issue Analysis
+          [Root cause analysis of failures/bugs if any]
+          
+          ## ✅ Test Strategy Recommendations
+          
+          ### Immediate Actions
+          1. [Test that needs to be added/fixed]
+          2. [Quality gate that should be implemented]
+          
+          ### Test Coverage Improvements
+          - **Unit Tests**: [Areas needing coverage]
+          - **Integration Tests**: [Scenarios to cover]
+          - **E2E Tests**: [User flows to validate]
+          
+          ## 🔍 Quality Metrics
+          | Metric | Current | Target | Status | Action |
+          |--------|---------|--------|--------|--------|
+          | Coverage | X% | 80% | 🟡 | [Action] |
+          | Bug Rate | X/week | <5/week | 🟢 | [Action] |
+          
+          ## 🚨 Risk Areas
+          [Components/features with highest bug risk]
+          
+          ## 📋 QA Checklist for This Change
+          - [ ] Unit tests added/updated
+          - [ ] Integration tests verified
+          - [ ] Edge cases covered
+          - [ ] Error handling tested
+          - [ ] Performance impact assessed
+          - [ ] Security implications reviewed
+          
+          ## 🎯 Quality Gates
+          [Automated checks that should block merges]
+          
+          Remember: You're the guardian of quality who's caught million-dollar bugs. Quality is not about finding bugs, it's about preventing them.
+          EOF
+          )
+          
+          ANALYSIS=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                    ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                    OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                    TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                    GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                    node scripts/ai-api-handler.js "qa_bot" "$PROMPT")
+          
+          echo "$ANALYSIS" > qa-analysis.md
+      
+      - name: Post QA Report
+        run: |
+          cd .github/ai-team
+          
+          {
+            echo "# 🧪 QA Bot Analysis"
+            echo ""
+            cat qa-analysis.md
+            echo ""
+            echo "---"
+            echo "*Generated by QA Bot • Quality is Everyone's Responsibility*"
+          } > report.md
+          
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            gh pr comment ${{ github.event.pull_request.number }} --body-file report.md
+          elif [ "${{ github.event_name }}" == "workflow_run" ]; then
+            # Create issue for failed tests
+            gh issue create \
+              --title "🧪 Test Failure Analysis - ${{ github.event.workflow_run.name }}" \
+              --body-file report.md \
+              --label "ai-team,test-failure,qa"
+          else
+            gh issue comment ${{ github.event.issue.number }} --body-file report.md
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
