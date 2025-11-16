@@ -1,0 +1,232 @@
+name: Analytics Bot - Data Insights
+
+on:
+  schedule:
+    # Run every Friday at 4 PM UTC
+    - cron: '0 16 * * 5'
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+jobs:
+  analytics-insights:
+    if: |
+      github.event_name == 'schedule' || 
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/analytics'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Gather Analytics Data
+        run: |
+          echo "## Analytics Report - $(date '+%Y-%m-%d')" > analytics-data.txt
+          
+          # Repository analytics
+          echo "### Repository Metrics" >> analytics-data.txt
+          gh api repos/${{ github.repository }} --jq '. | {
+            created: .created_at,
+            stars: .stargazers_count,
+            watchers: .watchers_count,
+            forks: .forks_count,
+            open_issues: .open_issues_count,
+            size: .size
+          }' | jq -r 'to_entries | .[] | "- \(.key|ascii_upcase): \(.value)"' >> analytics-data.txt
+          
+          # Contributor analytics (30 days)
+          echo -e "\n### Contributor Analytics (30 days)" >> analytics-data.txt
+          CONTRIBUTORS=$(gh api repos/${{ github.repository }}/stats/contributors --jq '
+            map(select(.weeks[-4:] | map(.c) | add > 0)) | length
+          ')
+          echo "- Active contributors: $CONTRIBUTORS" >> analytics-data.txt
+          
+          # Commit frequency
+          COMMITS_WEEK=$(gh api repos/${{ github.repository }}/commits?since=$(date -d '7 days ago' --iso-8601) --jq 'length')
+          COMMITS_MONTH=$(gh api repos/${{ github.repository }}/commits?since=$(date -d '30 days ago' --iso-8601) --jq 'length')
+          echo "- Commits (7 days): $COMMITS_WEEK" >> analytics-data.txt
+          echo "- Commits (30 days): $COMMITS_MONTH" >> analytics-data.txt
+          echo "- Daily average: $(echo "scale=1; $COMMITS_MONTH / 30" | bc)" >> analytics-data.txt
+          
+          # Issue/PR velocity
+          echo -e "\n### Issue & PR Velocity" >> analytics-data.txt
+          
+          # Issues
+          ISSUES_CREATED_WEEK=$(gh issue list --state all --search "created:>$(date -d '7 days ago' +%Y-%m-%d)" --json number --jq 'length')
+          ISSUES_CLOSED_WEEK=$(gh issue list --state closed --search "closed:>$(date -d '7 days ago' +%Y-%m-%d)" --json number --jq 'length')
+          echo "- Issues created (7d): $ISSUES_CREATED_WEEK" >> analytics-data.txt
+          echo "- Issues closed (7d): $ISSUES_CLOSED_WEEK" >> analytics-data.txt
+          
+          # PRs
+          PRS_CREATED_WEEK=$(gh pr list --state all --search "created:>$(date -d '7 days ago' +%Y-%m-%d)" --json number --jq 'length')
+          PRS_MERGED_WEEK=$(gh pr list --state merged --search "merged:>$(date -d '7 days ago' +%Y-%m-%d)" --json number --jq 'length')
+          echo "- PRs created (7d): $PRS_CREATED_WEEK" >> analytics-data.txt
+          echo "- PRs merged (7d): $PRS_MERGED_WEEK" >> analytics-data.txt
+          
+          # Response times
+          echo -e "\n### Response Time Metrics" >> analytics-data.txt
+          
+          # Average time to first response on issues
+          echo "- Avg first response: [Webhook integration needed]" >> analytics-data.txt
+          echo "- Avg time to close: [Webhook integration needed]" >> analytics-data.txt
+          
+          # Label analytics
+          echo -e "\n### Label Distribution" >> analytics-data.txt
+          gh issue list --state all --json labels --jq '
+            map(.labels[].name) |
+            group_by(.) |
+            map({label: .[0], count: length}) |
+            sort_by(.count) |
+            reverse |
+            .[:10] |
+            .[] |
+            "- \(.label): \(.count) issues"
+          ' >> analytics-data.txt 2>/dev/null || echo "- No label data" >> analytics-data.txt
+          
+          # AI Team Performance
+          echo -e "\n### AI Team Performance" >> analytics-data.txt
+          if [ -f ".github/ai-team/cost-tracker.json" ]; then
+            WEEK_COST=$(jq -r '[.daily | to_entries | .[-7:] | .[].value.total] | add // 0' .github/ai-team/cost-tracker.json)
+            MONTH_COST=$(jq -r ".monthly[\"$(date +%Y-%m)\"].total // 0" .github/ai-team/cost-tracker.json)
+            echo "- Weekly AI cost: \$$WEEK_COST" >> analytics-data.txt
+            echo "- Monthly AI cost: \$$MONTH_COST" >> analytics-data.txt
+            
+            # Bot activity
+            echo "- Bot activity breakdown:" >> analytics-data.txt
+            jq -r '.bots | to_entries | sort_by(.value.total) | reverse | .[:5] | .[] | "  - \(.key): \(.value.total | tostring | .[0:6]) calls"' .github/ai-team/cost-tracker.json >> analytics-data.txt 2>/dev/null
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Generate Analytics Insights
+        run: |
+          cd .github/ai-team
+          
+          PROMPT=$(cat <<'EOF'
+          You are the Data Analytics Lead providing insights from repository metrics.
+          
+          Analytics Data:
+          $(cat ../analytics-data.txt)
+          
+          Generate comprehensive data insights:
+          
+          # 📊 Analytics Insights Report
+          
+          ## 📈 Executive Summary
+          [High-level insights and key trends]
+          
+          ## 🎯 Key Performance Indicators
+          | KPI | Current | Trend | Target | Status |
+          |-----|---------|-------|--------|---------|
+          | Developer Velocity | [Value] | ↑↓→ | [Goal] | 🟢🟡🔴 |
+          | Issue Resolution | [Value] | ↑↓→ | [Goal] | 🟢🟡🔴 |
+          | Code Quality | [Value] | ↑↓→ | [Goal] | 🟢🟡🔴 |
+          | Community Growth | [Value] | ↑↓→ | [Goal] | 🟢🟡🔴 |
+          
+          ## 📊 Trend Analysis
+          
+          ### Velocity Trends
+          [Analysis of development speed and efficiency]
+          
+          ### Quality Trends
+          [Analysis of bug rates, PR quality, test coverage]
+          
+          ### Engagement Trends
+          [Community participation and growth patterns]
+          
+          ## 💡 Data-Driven Insights
+          
+          ### What's Working Well
+          1. [Positive trend with data backing]
+          2. [Another success metric]
+          
+          ### Areas for Improvement
+          1. [Opportunity with quantified impact]
+          2. [Another improvement area]
+          
+          ## 🔮 Predictive Analytics
+          
+          ### 30-Day Forecast
+          - **Development velocity**: [Prediction based on trends]
+          - **Issue backlog**: [Expected change]
+          - **Resource needs**: [Anticipated requirements]
+          
+          ## 🎬 Recommended Actions
+          
+          ### Quick Wins (This Week)
+          1. [Action based on data insight]
+          2. [Another data-driven action]
+          
+          ### Strategic Initiatives (This Month)
+          1. [Longer-term improvement]
+          2. [Another strategic action]
+          
+          ## 📉 Risk Indicators
+          [Metrics showing concerning trends]
+          
+          ## 🏆 Success Metrics
+          [Define what success looks like with numbers]
+          
+          Remember: You're a data scientist who turns numbers into narratives. Every insight should be backed by data and lead to actionable recommendations. Correlation isn't causation, but patterns reveal possibilities.
+          EOF
+          )
+          
+          INSIGHTS=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                    ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                    OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                    TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                    GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                    node scripts/ai-api-handler.js "analytics_bot" "$PROMPT")
+          
+          echo "$INSIGHTS" > analytics-insights.md
+      
+      - name: Post Analytics Report
+        run: |
+          cd .github/ai-team
+          
+          {
+            echo "# 📊 Analytics Bot Insights"
+            echo ""
+            cat analytics-insights.md
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 📈 Interactive Analytics"
+            echo ""
+            echo "**Explore Further:**"
+            echo "- View [Insights](https://github.com/${{ github.repository }}/insights)"
+            echo "- Check [Pulse](https://github.com/${{ github.repository }}/pulse)"
+            echo "- See [Contributors](https://github.com/${{ github.repository }}/graphs/contributors)"
+            echo ""
+            echo "**Commands:**"
+            echo "- Reply \`/drill-down [metric]\` for detailed analysis"
+            echo "- Reply \`/compare [period]\` for historical comparison"
+            echo "- Reply \`/forecast [metric]\` for predictions"
+            echo ""
+            echo "---"
+            echo "*Generated by Analytics Bot • Data-Driven Decisions for Better Outcomes*"
+          } > report.md
+          
+          if [ "${{ github.event_name }}" == "issue_comment" ]; then
+            gh issue comment ${{ github.event.issue.number }} --body-file report.md
+          else
+            gh issue create \
+              --title "📊 Weekly Analytics Report - $(date '+%B %d')" \
+              --body-file report.md \
+              --label "ai-team,analytics,metrics" \
+              --assignee "${{ github.repository_owner }}"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,257 @@
+name: CEO Bot - Weekly Strategy
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+jobs:
+  weekly-strategy:
+    if: |
+      github.event_name == 'schedule' || 
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/strategy'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Gather Strategic Data
+        id: gather
+        run: |
+          # Set time range (last 7 days)
+          SINCE=$(date -u -d '7 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+          echo "SINCE=$SINCE" >> $GITHUB_ENV
+          
+          # Gather repository metrics
+          echo "## Repository Metrics" > strategic-data.txt
+          
+          # Get repository info
+          gh api repos/${{ github.repository }} --jq '. | {
+            stars: .stargazers_count,
+            watchers: .subscribers_count,
+            forks: .forks_count,
+            issues: .open_issues_count
+          }' >> strategic-data.txt
+          
+          # Get weekly activity
+          echo -e "\n## Weekly Activity Summary" >> strategic-data.txt
+          
+          # Commits
+          COMMITS=$(gh api repos/${{ github.repository }}/commits?since=$SINCE --jq 'length')
+          echo "- Commits: $COMMITS" >> strategic-data.txt
+          
+          # Pull Requests
+          PR_OPENED=$(gh pr list --state all --search "created:>$SINCE" --json number --jq 'length')
+          PR_MERGED=$(gh pr list --state merged --search "merged:>$SINCE" --json number --jq 'length')
+          PR_OPEN=$(gh pr list --state open --json number --jq 'length')
+          echo "- PRs: $PR_OPENED opened, $PR_MERGED merged, $PR_OPEN currently open" >> strategic-data.txt
+          
+          # Issues
+          ISSUES_OPENED=$(gh issue list --state all --search "created:>$SINCE" --json number --jq 'length')
+          ISSUES_CLOSED=$(gh issue list --state closed --search "closed:>$SINCE" --json number --jq 'length')
+          ISSUES_OPEN=$(gh issue list --state open --json number --jq 'length')
+          echo "- Issues: $ISSUES_OPENED opened, $ISSUES_CLOSED closed, $ISSUES_OPEN currently open" >> strategic-data.txt
+          
+          # Get milestone progress
+          echo -e "\n## Milestone Progress" >> strategic-data.txt
+          gh api repos/${{ github.repository }}/milestones --jq '.[] | "- \(.title): \(.open_issues)/\(.closed_issues + .open_issues) issues (\((.closed_issues * 100 / (.closed_issues + .open_issues)) | floor)% complete)"' >> strategic-data.txt || echo "No active milestones" >> strategic-data.txt
+          
+          # Get top contributors this week
+          echo -e "\n## Top Contributors This Week" >> strategic-data.txt
+          gh api repos/${{ github.repository }}/commits?since=$SINCE --jq 'group_by(.author.login) | map({contributor: .[0].author.login, commits: length}) | sort_by(.commits) | reverse | .[:5] | .[] | "- \(.contributor): \(.commits) commits"' >> strategic-data.txt || echo "No contributor data available" >> strategic-data.txt
+          
+          # Get labels distribution
+          echo -e "\n## Issue Label Distribution" >> strategic-data.txt
+          gh issue list --state open --json labels --jq 'map(.labels[].name) | group_by(.) | map({label: .[0], count: length}) | sort_by(.count) | reverse | .[:10] | .[] | "- \(.label): \(.count) issues"' >> strategic-data.txt || echo "No label data available" >> strategic-data.txt
+          
+          # Get recent releases
+          echo -e "\n## Recent Releases" >> strategic-data.txt
+          gh release list --limit 3 --json tagName,publishedAt,name --jq '.[] | "- \(.tagName) (\(.name)): \(.publishedAt | split("T")[0])"' >> strategic-data.txt || echo "No recent releases" >> strategic-data.txt
+          
+          # Get repository insights from AI team
+          echo -e "\n## AI Team Activity This Week" >> strategic-data.txt
+          if [ -f ".github/ai-team/cost-tracker.json" ]; then
+            WEEK_COST=$(jq -r '[.daily | to_entries | .[-7:] | .[].value.total] | add // 0' .github/ai-team/cost-tracker.json)
+            echo "- AI Team Cost: \$$WEEK_COST" >> strategic-data.txt
+            
+            # Get bot activity
+            jq -r '.bots | to_entries | sort_by(.value.total) | reverse | .[:5] | .[] | "- \(.key): $\(.value.total | tostring | .[0:5])"' .github/ai-team/cost-tracker.json >> strategic-data.txt 2>/dev/null || true
+          fi
+          
+          # Get open high-priority items
+          echo -e "\n## High Priority Items" >> strategic-data.txt
+          gh issue list --label "priority:high,P0,P1,critical" --state open --json number,title,labels --jq '.[] | "- #\(.number): \(.title)"' >> strategic-data.txt || echo "No high priority items" >> strategic-data.txt
+          
+          # Get blockers
+          echo -e "\n## Current Blockers" >> strategic-data.txt
+          gh issue list --label "blocker,blocked" --state open --json number,title --jq '.[] | "- #\(.number): \(.title)"' >> strategic-data.txt || echo "No blockers identified" >> strategic-data.txt
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Analyze Business Metrics
+        run: |
+          # Placeholder for future business metrics integration
+          echo -e "\n## Business Metrics" >> strategic-data.txt
+          echo "- MRR: [Connect payment system for real data]" >> strategic-data.txt
+          echo "- Active Users: [Connect analytics for real data]" >> strategic-data.txt
+          echo "- Conversion Rate: [Connect funnel analytics]" >> strategic-data.txt
+          echo "- NPS Score: [Connect feedback system]" >> strategic-data.txt
+      
+      - name: CEO Strategic Analysis
+        id: strategy
+        run: |
+          cd .github/ai-team
+          
+          # Create prompt for CEO bot
+          PROMPT=$(cat <<'EOF'
+          You are the CEO conducting weekly strategic planning. Analyze the data and set direction for the week ahead.
+          
+          Company Data:
+          $(cat ../strategic-data.txt)
+          
+          Create a comprehensive strategic plan in this format:
+          
+          # 🎯 Weekly Strategic Plan - $(date '+%B %d, %Y')
+          
+          ## 📊 Executive Summary
+          [High-level overview of where we are and where we're going]
+          
+          ## 💼 Business Health Assessment
+          [Evaluate overall business health, momentum, and market position]
+          
+          ## 🏆 Last Week's Achievements
+          [Highlight key wins and their business impact]
+          
+          ## 🎯 Strategic Priorities This Week
+          [Top 3-5 priorities ranked by business impact]
+          1. **[Priority Name]**
+             - Why it matters: [Business rationale]
+             - Success metric: [Measurable outcome]
+             - Owner: [Suggested bot/team]
+          
+          ## 🚧 Risk Assessment
+          [Identify top risks and mitigation strategies]
+          
+          ## 💰 Resource Allocation
+          [How to best deploy our AI team and human resources]
+          
+          ## 📈 Growth Opportunities
+          [Strategic initiatives to accelerate growth]
+          
+          ## 🤝 Stakeholder Communications
+          [Key messages for different stakeholder groups]
+          
+          ## 📋 Action Items
+          [Specific, assigned actions with deadlines]
+          
+          ## 🔮 30-Day Outlook
+          [Strategic forecast and preparation needed]
+          
+          ## 💬 Open Questions for the Team
+          [Strategic questions that need team input]
+          
+          Remember: You're a seasoned tech CEO who's taken companies from zero to IPO. Think in terms of market position, competitive advantage, and sustainable growth. Balance vision with execution. Your words should inspire action and provide clarity.
+          EOF
+          )
+          
+          # Call the AI API
+          STRATEGY=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                    ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                    OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                    TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                    GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                    node scripts/ai-api-handler.js "ceo_bot" "$PROMPT" "high")
+          
+          # Save strategy
+          echo "$STRATEGY" > weekly-strategy.md
+      
+      - name: Create Strategy Issue
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          cd .github/ai-team
+          
+          # Add footer to strategy
+          {
+            cat weekly-strategy.md
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 🤖 How to Engage with This Strategy"
+            echo ""
+            echo "- **Agree/Disagree?** React with 👍 or 👎"
+            echo "- **Questions?** Comment below and tag the relevant bot"
+            echo "- **Additions?** Suggest new priorities in comments"
+            echo "- **Updates?** The AI team will post progress throughout the week"
+            echo ""
+            echo "**AI Team Commands:**"
+            echo "- \`/update [priority]\` - Get status update on specific priority"
+            echo "- \`/pivot [reason]\` - Suggest strategy adjustment"
+            echo "- \`/metrics\` - Get latest metrics update"
+            echo ""
+            echo "Let's make this an exceptional week! 🚀"
+            echo ""
+            echo "---"
+            echo "*Generated by CEO Bot • [View AI Team Dashboard](https://github.com/${{ github.repository }}/issues?q=label%3Aai-team)*"
+          } > strategy-issue.md
+          
+          # Create the issue
+          gh issue create \
+            --title "🎯 Weekly Strategy: $(date '+%B %d, %Y')" \
+            --body-file strategy-issue.md \
+            --label "ai-team,weekly-strategy,priority:high" \
+            --assignee "${{ github.repository_owner }}"
+          
+          # Pin the issue (requires admin permissions)
+          # gh issue pin [issue-number]
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Post to Issue Comment
+        if: github.event_name == 'issue_comment'
+        run: |
+          cd .github/ai-team
+          
+          # Add context header
+          {
+            echo "## 🎯 Strategic Analysis"
+            echo ""
+            cat weekly-strategy.md
+            echo ""
+            echo "---"
+            echo "*Generated by CEO Bot*"
+          } > comment-body.md
+          
+          # Post the comment
+          gh issue comment ${{ github.event.issue.number }} \
+            --body-file comment-body.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Notify Other Bots
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          # Create signals for other bots based on priorities
+          # This would trigger specific workflows based on CEO priorities
+          
+          echo "::notice::Weekly strategy published. Other bots will align their activities."
+          
+          # Example: If strategy mentions "improve code quality", trigger CTO review
+          # if grep -q "code quality" weekly-strategy.md; then
+          #   gh workflow run cto-code-audit.yml
+          # fi
