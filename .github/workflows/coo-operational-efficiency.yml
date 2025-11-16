@@ -1,0 +1,340 @@
+name: COO Bot - Operational Efficiency
+
+on:
+  schedule:
+    # Run every Wednesday at 10 AM UTC
+    - cron: '0 10 * * 3'
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+jobs:
+  operational-analysis:
+    if: |
+      github.event_name == 'schedule' || 
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/operations'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Gather Operational Metrics
+        id: metrics
+        run: |
+          # Time range (last 14 days for operational analysis)
+          SINCE=$(date -u -d '14 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+          echo "SINCE=$SINCE" >> $GITHUB_ENV
+          
+          echo "## Operational Metrics Report" > ops-metrics.txt
+          echo "**Period:** Last 14 days" >> ops-metrics.txt
+          echo "**Generated:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> ops-metrics.txt
+          echo "" >> ops-metrics.txt
+          
+          # Team Velocity Metrics
+          echo "### 📊 Team Velocity" >> ops-metrics.txt
+          
+          # Cycle time analysis
+          echo "#### Cycle Time (Issue → Close)" >> ops-metrics.txt
+          gh issue list --state closed --search "closed:>$SINCE" --json number,closedAt,createdAt --jq '
+            map({
+              number: .number,
+              cycle_days: (((.closedAt | fromdateiso8601) - (.createdAt | fromdateiso8601)) / 86400 | floor)
+            }) |
+            {
+              avg: (map(.cycle_days) | add / length | floor),
+              min: (map(.cycle_days) | min),
+              max: (map(.cycle_days) | max),
+              count: length
+            } |
+            "- Average: \(.avg) days\n- Range: \(.min)-\(.max) days\n- Issues closed: \(.count)"
+          ' >> ops-metrics.txt 2>/dev/null || echo "- No data available" >> ops-metrics.txt
+          
+          # PR metrics
+          echo "" >> ops-metrics.txt
+          echo "#### PR Turnaround Time" >> ops-metrics.txt
+          gh pr list --state merged --search "merged:>$SINCE" --json number,mergedAt,createdAt --jq '
+            map({
+              number: .number,
+              merge_hours: (((.mergedAt | fromdateiso8601) - (.createdAt | fromdateiso8601)) / 3600 | floor)
+            }) |
+            {
+              avg: (map(.merge_hours) | add / length | floor),
+              under_24h: (map(select(.merge_hours < 24)) | length),
+              total: length
+            } |
+            "- Average time to merge: \(.avg) hours\n- PRs merged < 24h: \(.under_24h)/\(.total) (\(.under_24h * 100 / .total | floor)%)"
+          ' >> ops-metrics.txt 2>/dev/null || echo "- No data available" >> ops-metrics.txt
+          
+          # Workflow efficiency
+          echo "" >> ops-metrics.txt
+          echo "### ⚙️ Process Efficiency" >> ops-metrics.txt
+          
+          # CI/CD performance
+          echo "#### CI/CD Performance" >> ops-metrics.txt
+          SUCCESS_RATE=$(gh run list --limit 100 --json conclusion --jq '
+            group_by(.conclusion) |
+            map({conclusion: .[0].conclusion, count: length}) |
+            (map(select(.conclusion == "success").count) | add) as $success |
+            (map(.count) | add) as $total |
+            ($success * 100 / $total | floor)
+          ')
+          echo "- Build success rate: ${SUCCESS_RATE}%" >> ops-metrics.txt
+          
+          AVG_DURATION=$(gh run list --limit 50 --workflow "*.yml" --json durationMs --jq '
+            map(.durationMs) | add / length / 60000 | floor
+          ')
+          echo "- Average workflow duration: ${AVG_DURATION} minutes" >> ops-metrics.txt
+          
+          # Bottleneck identification
+          echo "" >> ops-metrics.txt
+          echo "### 🚧 Bottleneck Analysis" >> ops-metrics.txt
+          
+          # Long-running issues
+          echo "#### Issues Open >7 Days" >> ops-metrics.txt
+          STALE_ISSUES=$(gh issue list --state open --json number,title,createdAt --jq '
+            map(select((now - (.createdAt | fromdateiso8601)) > 604800)) |
+            length
+          ')
+          echo "- Stale issues: $STALE_ISSUES" >> ops-metrics.txt
+          
+          # Review bottlenecks
+          echo "#### PR Review Delays" >> ops-metrics.txt
+          AWAITING_REVIEW=$(gh pr list --state open --json number,createdAt,reviewRequests --jq '
+            map(select(.reviewRequests | length > 0) |
+            select((now - (.createdAt | fromdateiso8601)) > 172800)) |
+            length
+          ')
+          echo "- PRs waiting >48h for review: $AWAITING_REVIEW" >> ops-metrics.txt
+          
+          # Resource utilization
+          echo "" >> ops-metrics.txt
+          echo "### 👥 Resource Utilization" >> ops-metrics.txt
+          
+          # Contributor activity
+          echo "#### Active Contributors (14 days)" >> ops-metrics.txt
+          gh api repos/${{ github.repository }}/stats/contributors --jq '
+            map(select(.weeks[-2:] | map(.c) | add > 0)) |
+            length
+          ' >> ops-metrics.txt 2>/dev/null || echo "- Data not available" >> ops-metrics.txt
+          
+          # Label distribution for workload
+          echo "" >> ops-metrics.txt
+          echo "#### Work Distribution by Type" >> ops-metrics.txt
+          gh issue list --state all --search "created:>$SINCE" --json labels --jq '
+            map(.labels[].name) |
+            group_by(.) |
+            map({label: .[0], count: length}) |
+            sort_by(.count) |
+            reverse |
+            .[:5] |
+            .[] |
+            "- \(.label): \(.count) items"
+          ' >> ops-metrics.txt 2>/dev/null || echo "- No labeled items" >> ops-metrics.txt
+          
+          # Cost efficiency (from AI team)
+          echo "" >> ops-metrics.txt
+          echo "### 💰 Cost Efficiency" >> ops-metrics.txt
+          if [ -f ".github/ai-team/cost-tracker.json" ]; then
+            TWO_WEEK_COST=$(jq -r '[.daily | to_entries | .[-14:] | .[].value.total] | add // 0' .github/ai-team/cost-tracker.json)
+            echo "- AI team cost (14 days): \$$TWO_WEEK_COST" >> ops-metrics.txt
+            echo "- Daily average: \$$(echo "scale=2; $TWO_WEEK_COST / 14" | bc)" >> ops-metrics.txt
+          else
+            echo "- No cost data available" >> ops-metrics.txt
+          fi
+          
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Generate Operational Analysis
+        id: analysis
+        run: |
+          cd .github/ai-team
+          
+          # Create COO analysis prompt
+          PROMPT=$(cat <<'EOF'
+          You are the Chief Operating Officer conducting operational efficiency analysis. Analyze the metrics and provide actionable recommendations.
+          
+          Operational Data:
+          $(cat ../ops-metrics.txt)
+          
+          Provide comprehensive operational analysis:
+          
+          # 🔧 Operational Efficiency Report
+          
+          ## 📊 Executive Summary
+          [High-level assessment of operational health and key findings]
+          
+          ## ⚡ Velocity Analysis
+          [Evaluate team velocity trends and identify improvements]
+          - **Current State**: [Assessment]
+          - **Bottlenecks**: [Specific blockers]
+          - **Optimization Opportunities**: [Concrete suggestions]
+          
+          ## 🔄 Process Efficiency Scorecard
+          | Process Area | Current Performance | Target | Status | Action Required |
+          |--------------|-------------------|---------|---------|-----------------|
+          | Cycle Time | [X days] | [Y days] | 🟢/🟡/🔴 | [Action] |
+          | PR Turnaround | [X hours] | [Y hours] | 🟢/🟡/🔴 | [Action] |
+          | Build Success | [X%] | [95%] | 🟢/🟡/🔴 | [Action] |
+          | Review Time | [X hours] | [24 hours] | 🟢/🟡/🔴 | [Action] |
+          
+          ## 🚧 Critical Bottlenecks
+          [Identify top 3 bottlenecks impacting efficiency]
+          1. **[Bottleneck 1]**
+             - Impact: [Quantified impact]
+             - Root Cause: [Analysis]
+             - Solution: [Specific fix]
+             - Owner: [Suggested owner]
+          
+          ## 📈 Operational Improvements
+          [Specific process improvements with ROI]
+          
+          ### Quick Wins (Implement This Week)
+          1. [Improvement with immediate impact]
+          2. [Improvement with immediate impact]
+          
+          ### Medium-term (This Month)
+          1. [Process change requiring coordination]
+          2. [Process change requiring coordination]
+          
+          ### Strategic (This Quarter)
+          1. [Systematic improvement]
+          2. [Systematic improvement]
+          
+          ## 👥 Resource Optimization
+          [How to better utilize team resources]
+          - **Workload Balancing**: [Recommendations]
+          - **Skill Utilization**: [Optimization suggestions]
+          - **Automation Opportunities**: [What to automate next]
+          
+          ## 💰 Cost-Efficiency Analysis
+          [Operational cost vs value delivered]
+          - **Current Efficiency**: [Metrics]
+          - **Cost Reduction Opportunities**: [Specific areas]
+          - **Investment Recommendations**: [Where to spend for ROI]
+          
+          ## 🎯 OKRs for Next Period
+          [Measurable operational objectives]
+          1. **Objective**: [Clear goal]
+             - KR1: [Measurable result]
+             - KR2: [Measurable result]
+          
+          ## 📋 Action Plan
+          [Prioritized actions with owners and deadlines]
+          | Priority | Action | Owner | Deadline | Expected Impact |
+          |----------|--------|-------|----------|-----------------|
+          | P0 | [Action] | [Bot/Human] | [Date] | [Impact] |
+          
+          ## 🔮 Operational Forecast
+          [30-day operational outlook and risks]
+          
+          Remember: You're a world-class operator who turns chaos into systems. Be specific, quantitative, and focus on actionable improvements that will show measurable impact within 30 days.
+          EOF
+          )
+          
+          # Call the AI API
+          ANALYSIS=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                    ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                    OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                    TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                    GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                    node scripts/ai-api-handler.js "coo_bot" "$PROMPT")
+          
+          # Save analysis
+          echo "$ANALYSIS" > operational-analysis.md
+      
+      - name: Create Operational Report
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          cd .github/ai-team
+          
+          # Create comprehensive report
+          {
+            echo "# 🔧 COO Operational Efficiency Report"
+            echo ""
+            cat operational-analysis.md
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 📊 Raw Metrics Data"
+            echo ""
+            echo "<details>"
+            echo "<summary>View detailed metrics</summary>"
+            echo ""
+            echo '```'
+            cat ../ops-metrics.txt
+            echo '```'
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 💬 How to Act on This Report"
+            echo ""
+            echo "1. **Review** the bottlenecks and assign owners"
+            echo "2. **Implement** quick wins immediately"
+            echo "3. **Track** progress against OKRs"
+            echo "4. **Update** process documentation"
+            echo ""
+            echo "**Commands:**"
+            echo "- Reply \`/implement [action]\` to create implementation issue"
+            echo "- Reply \`/assign [action] @user\` to assign specific action"
+            echo "- Reply \`/track\` to see progress on previous recommendations"
+            echo ""
+            echo "---"
+            echo "*Generated by COO Bot • Operational Excellence through Systematic Improvement*"
+          } > operational-report.md
+          
+          # Create issue
+          gh issue create \
+            --title "🔧 Operational Efficiency Report - $(date '+%B %d')" \
+            --body-file operational-report.md \
+            --label "ai-team,operations,process-improvement" \
+            --assignee "${{ github.repository_owner }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Post to Issue Comment
+        if: github.event_name == 'issue_comment'
+        run: |
+          cd .github/ai-team
+          
+          # Add context header
+          {
+            echo "## 🔧 Operational Analysis"
+            echo ""
+            cat operational-analysis.md
+            echo ""
+            echo "---"
+            echo "*Generated by COO Bot*"
+          } > comment-body.md
+          
+          # Post the comment
+          gh issue comment ${{ github.event.issue.number }} \
+            --body-file comment-body.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Create Process Improvements
+        if: github.event_name == 'schedule'
+        run: |
+          # Placeholder for automated process improvement creation
+          # In a real implementation, this would:
+          # 1. Parse the quick wins from the analysis
+          # 2. Create GitHub issues for each improvement
+          # 3. Add to project board
+          # 4. Set up tracking
+          
+          echo "::notice::Operational analysis complete. Review the report for process improvements."
