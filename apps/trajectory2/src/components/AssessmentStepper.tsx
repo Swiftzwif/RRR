@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, AnimatedDiv, AnimatedButton } from "@/components/animation/AnimatedComponents";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { Question, AssessmentAnswers } from "@/types/assessment";
@@ -87,7 +87,7 @@ export default function AssessmentStepper({
           </span>
         </div>
         <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-          <motion.div
+          <AnimatedDiv
             className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
@@ -98,7 +98,7 @@ export default function AssessmentStepper({
 
       {/* Question */}
       <AnimatePresence mode="wait">
-        <motion.div
+        <AnimatedDiv
           key={currentIndex}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -113,13 +113,13 @@ export default function AssessmentStepper({
           <p className="text-lg text-slate-500 mb-8">
             Take a breath. Answer honestly.
           </p>
-        </motion.div>
+        </AnimatedDiv>
       </AnimatePresence>
 
       {/* Scale */}
       <div className="space-y-4 mb-12">
         {[1, 2, 3, 4, 5].map((value) => (
-          <motion.button
+          <AnimatedButton
             key={value}
             onClick={() => handleAnswer(value)}
             className={`w-full p-6 rounded-2xl border-2 transition-all duration-300 text-left group ${
@@ -149,22 +149,22 @@ export default function AssessmentStepper({
                 </span>
               </div>
               {answers[currentQuestion.id] === value && (
-                <motion.div
+                <AnimatedDiv
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center"
                 >
                   <span className="text-white text-sm">✓</span>
-                </motion.div>
+                </AnimatedDiv>
               )}
             </div>
-          </motion.button>
+          </AnimatedButton>
         ))}
       </div>
 
       {/* Navigation */}
       <div className="flex justify-between items-center">
-        <motion.button
+        <AnimatedButton
           onClick={handlePrevious}
           disabled={currentIndex === 0}
           className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 ${
@@ -177,9 +177,9 @@ export default function AssessmentStepper({
         >
           <ChevronLeft className="w-5 h-5" />
           Previous
-        </motion.button>
+        </AnimatedButton>
 
-        <motion.button
+        <AnimatedButton
           onClick={handleNext}
           disabled={!answers[currentQuestion.id]}
           className={`flex items-center gap-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
@@ -194,7 +194,7 @@ export default function AssessmentStepper({
             ? "Complete Assessment"
             : "Next Question"}
           <ChevronRight className="w-5 h-5" />
-        </motion.button>
+        </AnimatedButton>
       </div>
 
       {/* Keyboard hint */}

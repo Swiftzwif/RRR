@@ -3,7 +3,7 @@
 import { getCopy } from '@/lib/copy';
 import { supabase } from '@/lib/supabase';
 import { logger } from '@/lib/logger';
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { ArrowRight, CheckCircle, Clock, Target, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -68,7 +68,7 @@ export default function CoachingPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
       <div className="max-w-5xl mx-auto px-6">
         {/* Header */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -84,10 +84,10 @@ export default function CoachingPage() {
           <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
             {coachingData.description}
           </p>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Process Steps */}
-        <motion.div
+        <AnimatedDiv
           className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -98,7 +98,7 @@ export default function CoachingPage() {
           </h2>
           <div className="space-y-6">
             {processSteps.map((step: string, index: number) => (
-              <motion.div
+              <AnimatedDiv
                 key={index}
                 className="flex items-start gap-6 p-8 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg"
                 initial={{ opacity: 0, x: -20 }}
@@ -109,13 +109,13 @@ export default function CoachingPage() {
                   <span className="text-white font-bold text-lg">{index + 1}</span>
                 </div>
                 <p className="text-slate-600 leading-relaxed text-lg">{step}</p>
-              </motion.div>
+              </AnimatedDiv>
             ))}
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Features */}
-        <motion.div
+        <AnimatedDiv
           className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -159,10 +159,10 @@ export default function CoachingPage() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* CTA */}
-        <motion.div
+        <AnimatedDiv
           className="text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -207,7 +207,7 @@ export default function CoachingPage() {
               </button>
             </div>
           )}
-        </motion.div>
+        </AnimatedDiv>
       </div>
     </div>
   );

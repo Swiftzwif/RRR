@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { AnimatedDiv, AnimatedP } from '@/components/animation/AnimatedComponents';
 import { DollarSign, BookOpen, Zap, Trophy, Gift, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -40,7 +40,7 @@ export default function PrizeShowcase() {
     <section className="py-20 px-4 bg-white">
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,12 +58,12 @@ export default function PrizeShowcase() {
             <br />
             <span className="font-bold text-orange-500">16 total winners will be selected.</span>
           </p>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Prize cards */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {prizes.map((prize, index) => (
-            <motion.div
+            <AnimatedDiv
               key={prize.title}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -73,7 +73,7 @@ export default function PrizeShowcase() {
                 {/* Prize type badge */}
                 {prize.type === 'grand' && (
                   <div className="absolute -top-3 -right-3 z-10">
-                    <motion.div
+                    <AnimatedDiv
                       className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase shadow-lg"
                       animate={{
                         rotate: [0, 5, -5, 0],
@@ -85,19 +85,19 @@ export default function PrizeShowcase() {
                       }}
                     >
                       Grand Prize
-                    </motion.div>
+                    </AnimatedDiv>
                   </div>
                 )}
 
                 <CardHeader className="text-center pb-4">
                   {/* Icon with gradient background */}
-                  <motion.div
+                  <AnimatedDiv
                     className={`w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${prize.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
                     whileHover={{ rotate: 360 }}
                     transition={{ duration: 0.6 }}
                   >
                     <prize.icon className="w-10 h-10 text-white" />
-                  </motion.div>
+                  </AnimatedDiv>
 
                   <CardTitle className="text-2xl font-black text-sky-800">
                     {prize.title}
@@ -115,12 +115,12 @@ export default function PrizeShowcase() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </AnimatedDiv>
           ))}
         </div>
 
         {/* Total value highlight */}
-        <motion.div
+        <AnimatedDiv
           className="bg-gradient-to-r from-sky-50 to-orange-500/10 rounded-2xl p-8 text-center"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -149,17 +149,17 @@ export default function PrizeShowcase() {
               <div className="text-sky-600">Fair Drawing</div>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Trust message */}
-        <motion.p
+        <AnimatedP
           className="text-center text-sm text-sky-600 mt-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           Winners selected randomly via cryptographic algorithm. Drawing happens 24 hours after raffle ends.
-        </motion.p>
+        </AnimatedP>
       </div>
     </section>
   );

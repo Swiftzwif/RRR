@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { AnimatedSvg, AnimatedPath, AnimatedCircle } from '@/components/animation/AnimatedComponents';
 
 interface LogoMarkProps {
   className?: string;
@@ -30,7 +30,7 @@ export function LogoMark({ className = '', showGlow = true }: LogoMarkProps) {
       )}
       
       {/* Main logo */}
-      <motion.svg
+      <AnimatedSvg
         width="48"
         height="48"
         viewBox="0 0 100 100"
@@ -40,7 +40,7 @@ export function LogoMark({ className = '', showGlow = true }: LogoMarkProps) {
         transition={{ type: "spring", stiffness: 300 }}
       >
         {/* Golden arc path representing trajectory */}
-        <motion.path
+        <AnimatedPath
           d="M20 80 Q 50 20, 80 40"
           stroke="url(#goldGradient)"
           strokeWidth="4"
@@ -50,9 +50,9 @@ export function LogoMark({ className = '', showGlow = true }: LogoMarkProps) {
           animate={{ pathLength: 1 }}
           transition={{ duration: 1.5, ease: "easeInOut" }}
         />
-        
+
         {/* Arrow at the end */}
-        <motion.path
+        <AnimatedPath
           d="M80 40 L75 35 M80 40 L75 45"
           stroke="url(#goldGradient)"
           strokeWidth="4"
@@ -62,9 +62,9 @@ export function LogoMark({ className = '', showGlow = true }: LogoMarkProps) {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.3 }}
         />
-        
+
         {/* Starting point */}
-        <motion.circle
+        <AnimatedCircle
           cx="20"
           cy="80"
           r="3"
@@ -81,7 +81,7 @@ export function LogoMark({ className = '', showGlow = true }: LogoMarkProps) {
             <stop offset="100%" stopColor="var(--brand-gold-600)" />
           </linearGradient>
         </defs>
-      </motion.svg>
+      </AnimatedSvg>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -9,7 +9,7 @@ export default function KillTheBoyPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
       <div className="max-w-5xl mx-auto px-6">
         {/* Hero */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -26,10 +26,10 @@ export default function KillTheBoyPage() {
             The story that changed everything. The moment that transformed a
             life from reactive to intentional.
           </p>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Main Story */}
-        <motion.div
+        <AnimatedDiv
           className="mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -159,10 +159,10 @@ export default function KillTheBoyPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* The Transformation Process */}
-        <motion.div
+        <AnimatedDiv
           className="mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -209,10 +209,10 @@ export default function KillTheBoyPage() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* CTA */}
-        <motion.div
+        <AnimatedDiv
           className="text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -234,7 +234,7 @@ export default function KillTheBoyPage() {
               <ArrowRight className="ml-3 w-6 h-6" />
             </Link>
           </div>
-        </motion.div>
+        </AnimatedDiv>
       </div>
     </div>
   );

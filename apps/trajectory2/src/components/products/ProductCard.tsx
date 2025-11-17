@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -45,7 +45,7 @@ export default function ProductCard({
   };
 
   return (
-    <motion.div
+    <AnimatedDiv
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -103,6 +103,6 @@ export default function ProductCard({
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </AnimatedDiv>
   );
 }

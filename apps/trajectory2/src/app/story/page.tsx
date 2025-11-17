@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { AnimatedDiv, AnimatedSection } from '@/components/animation/AnimatedComponents';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -9,7 +9,7 @@ export default function StoryPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
       <div className="max-w-5xl mx-auto px-6">
         {/* Hero */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -27,11 +27,11 @@ export default function StoryPage() {
             frustration. The difference isn&apos;t luck—it&apos;s the systems,
             habits, and choices that shape your path.
           </p>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Story Sections */}
         <div className="space-y-20">
-          <motion.section
+          <AnimatedSection
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -55,9 +55,9 @@ export default function StoryPage() {
                 building the future you actually want.
               </p>
             </div>
-          </motion.section>
+          </AnimatedSection>
 
-          <motion.section
+          <AnimatedSection
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -84,9 +84,9 @@ export default function StoryPage() {
                 exponential growth in your overall trajectory.
               </p>
             </div>
-          </motion.section>
+          </AnimatedSection>
 
-          <motion.section
+          <AnimatedSection
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -109,11 +109,11 @@ export default function StoryPage() {
                 individuals on their own transformation journeys.
               </p>
             </div>
-          </motion.section>
+          </AnimatedSection>
         </div>
 
         {/* CTA */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mt-20"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -136,7 +136,7 @@ export default function StoryPage() {
               <ArrowRight className="ml-3 w-6 h-6" />
             </Link>
           </div>
-        </motion.div>
+        </AnimatedDiv>
       </div>
     </div>
   );
