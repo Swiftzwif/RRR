@@ -1,0 +1,18 @@
+# Python dependencies for GitHub Actions AI Team
+# Python 3.11+ required
+
+# Official AI SDKs
+openai>=1.12.0
+anthropic>=0.18.0
+
+# Configuration and data handling
+pyyaml>=6.0.1
+pydantic>=2.5.0
+
+# HTTP client for OpenRouter (if needed)
+aiohttp>=3.9.0
+httpx>=0.25.0
+
+# Utilities
+python-dotenv>=1.0.0
+
