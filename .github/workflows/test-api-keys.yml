@@ -1,0 +1,95 @@
+name: Test API Keys
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  test-keys:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+          
+      - name: Test OpenAI Key
+        if: env.OPENAI_API_KEY != ''
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          echo "::notice::OpenAI API key is configured ✓"
+          
+      - name: Test Anthropic Key
+        if: env.ANTHROPIC_API_KEY != ''
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "::notice::Anthropic API key is configured ✓"
+          
+      - name: Test OpenRouter Key
+        if: env.OPENROUTER_API_KEY != ''
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          echo "::notice::OpenRouter API key is configured ✓"
+          
+      - name: Test Together Key
+        if: env.TOGETHER_API_KEY != ''
+        env:
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+        run: |
+          echo "::notice::Together API key is configured ✓"
+          
+      - name: Test Groq Key
+        if: env.GROQ_API_KEY != ''
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          echo "::notice::Groq API key is configured ✓"
+          
+      - name: Summary
+        run: |
+          echo "## API Keys Configuration Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -n "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "✅ OpenAI API key is configured" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ OpenAI API key is NOT configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -n "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
+            echo "✅ Anthropic API key is configured" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Anthropic API key is NOT configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -n "${{ secrets.OPENROUTER_API_KEY }}" ]; then
+            echo "✅ OpenRouter API key is configured (optional)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ OpenRouter API key is NOT configured (optional)" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -n "${{ secrets.TOGETHER_API_KEY }}" ]; then
+            echo "✅ Together API key is configured (optional)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Together API key is NOT configured (optional)" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -n "${{ secrets.GROQ_API_KEY }}" ]; then
+            echo "✅ Groq API key is configured (optional)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Groq API key is NOT configured (optional)" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Note**: You need at least one API key configured to use the AI team." >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,236 @@
+name: Standup Bot - Daily Summary
+
+on:
+  schedule:
+    # Run at 9 AM UTC (adjust for your timezone)
+    - cron: '0 9 * * 1-5'  # Monday to Friday
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+jobs:
+  daily-standup:
+    if: |
+      github.event_name == 'schedule' || 
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/standup'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd .github/ai-team
+          npm install
+      
+      - name: Gather Activity Data
+        id: gather
+        run: |
+          # Set time range (last 24 hours for daily, last 7 days for weekly)
+          if [[ "${{ github.event_name }}" == "issue_comment" ]] && [[ "${{ github.event.comment.body }}" == *"weekly"* ]]; then
+            SINCE=$(date -u -d '7 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+            PERIOD="weekly"
+          else
+            SINCE=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
+            PERIOD="daily"
+          fi
+          
+          echo "SINCE=$SINCE" >> $GITHUB_ENV
+          echo "PERIOD=$PERIOD" >> $GITHUB_ENV
+          
+          # Gather commits
+          echo "## Commits" > activity-data.txt
+          gh api repos/${{ github.repository }}/commits?since=$SINCE --jq '.[] | "- \(.commit.message | split("\n")[0]) by @\(.author.login // .commit.author.name)"' >> activity-data.txt || echo "No commits in the period" >> activity-data.txt
+          
+          # Gather PRs
+          echo -e "\n## Pull Requests" >> activity-data.txt
+          echo "### Opened:" >> activity-data.txt
+          gh pr list --state all --search "created:>$SINCE" --json number,title,author,state,createdAt --jq '.[] | "- #\(.number) \(.title) by @\(.author.login) (\(.state))"' >> activity-data.txt || echo "None" >> activity-data.txt
+          
+          echo "### Merged:" >> activity-data.txt
+          gh pr list --state merged --search "merged:>$SINCE" --json number,title,author,mergedAt --jq '.[] | "- #\(.number) \(.title) by @\(.author.login)"' >> activity-data.txt || echo "None" >> activity-data.txt
+          
+          # Gather Issues
+          echo -e "\n## Issues" >> activity-data.txt
+          echo "### Opened:" >> activity-data.txt
+          gh issue list --state all --search "created:>$SINCE" --json number,title,author,state,createdAt --jq '.[] | "- #\(.number) \(.title) by @\(.author.login) (\(.state))"' >> activity-data.txt || echo "None" >> activity-data.txt
+          
+          echo "### Closed:" >> activity-data.txt
+          gh issue list --state closed --search "closed:>$SINCE" --json number,title,author,closedAt --jq '.[] | "- #\(.number) \(.title) by @\(.author.login)"' >> activity-data.txt || echo "None" >> activity-data.txt
+          
+          # Get workflow runs
+          echo -e "\n## Workflow Activity" >> activity-data.txt
+          gh run list --limit 10 --created ">$SINCE" --json conclusion,name,headBranch,createdAt --jq '.[] | "- \(.name) on \(.headBranch): \(.conclusion // "in progress")"' >> activity-data.txt || echo "No workflow runs" >> activity-data.txt
+          
+          # Get current open PRs needing review
+          echo -e "\n## PRs Needing Review" >> activity-data.txt
+          gh pr list --state open --json number,title,author,reviewRequests,isDraft --jq '.[] | select(.isDraft == false) | select(.reviewRequests | length > 0) | "- #\(.number) \(.title) (waiting for: \(.reviewRequests | map(.login) | join(", ")))"' >> activity-data.txt || echo "None" >> activity-data.txt
+          
+          # Get blockers (issues/PRs with blocker label)
+          echo -e "\n## Current Blockers" >> activity-data.txt
+          gh issue list --label "blocker,blocked,blocking" --state open --json number,title,labels --jq '.[] | "- #\(.number) \(.title) (labels: \(.labels | map(.name) | join(", ")))"' >> activity-data.txt || echo "None" >> activity-data.txt
+          gh pr list --label "blocker,blocked,blocking" --state open --json number,title,labels --jq '.[] | "- #\(.number) \(.title) (labels: \(.labels | map(.name) | join(", ")))"' >> activity-data.txt || echo "None" >> activity-data.txt
+          
+          # Count statistics
+          COMMIT_COUNT=$(gh api repos/${{ github.repository }}/commits?since=$SINCE --jq 'length' || echo "0")
+          PR_OPENED=$(gh pr list --state all --search "created:>$SINCE" --json number --jq 'length' || echo "0")
+          PR_MERGED=$(gh pr list --state merged --search "merged:>$SINCE" --json number --jq 'length' || echo "0")
+          ISSUES_OPENED=$(gh issue list --state all --search "created:>$SINCE" --json number --jq 'length' || echo "0")
+          ISSUES_CLOSED=$(gh issue list --state closed --search "closed:>$SINCE" --json number --jq 'length' || echo "0")
+          
+          echo "COMMIT_COUNT=$COMMIT_COUNT" >> $GITHUB_ENV
+          echo "PR_OPENED=$PR_OPENED" >> $GITHUB_ENV
+          echo "PR_MERGED=$PR_MERGED" >> $GITHUB_ENV
+          echo "ISSUES_OPENED=$ISSUES_OPENED" >> $GITHUB_ENV
+          echo "ISSUES_CLOSED=$ISSUES_CLOSED" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Generate Standup Summary
+        id: standup
+        run: |
+          cd .github/ai-team
+          
+          # Create prompt for standup bot
+          PROMPT=$(cat <<'EOF'
+          You are the Scrum Master running a standup meeting. Analyze the activity data and create a comprehensive standup summary.
+          
+          Activity Data:
+          $(cat ../activity-data.txt)
+          
+          Statistics:
+          - Commits: ${{ env.COMMIT_COUNT }}
+          - PRs Opened: ${{ env.PR_OPENED }}
+          - PRs Merged: ${{ env.PR_MERGED }}
+          - Issues Opened: ${{ env.ISSUES_OPENED }}
+          - Issues Closed: ${{ env.ISSUES_CLOSED }}
+          
+          Create a standup summary in this format:
+          
+          ## 📅 ${{ env.PERIOD }} Standup - $(date '+%B %d, %Y')
+          
+          ### 🏃 Sprint Velocity
+          [Summarize the team's velocity and progress]
+          
+          ### ✅ Completed Since Last Standup
+          [List key accomplishments with impact]
+          
+          ### 🚧 In Progress
+          [Current work items and who's working on them]
+          
+          ### 🚨 Blockers & Attention Needed
+          [Critical items that need immediate attention]
+          
+          ### 📊 Key Metrics
+          [Present the statistics in a meaningful way]
+          
+          ### 🎯 Focus for Today
+          [Top 3-5 priorities the team should focus on]
+          
+          ### 💡 Process Observations
+          [Any patterns or improvements you notice]
+          
+          ### 🤝 Shoutouts
+          [Recognize good work or collaboration]
+          
+          Remember: You're an experienced Scrum Master who keeps meetings focused and actionable. Be concise but thorough. Identify patterns and help the team improve.
+          EOF
+          )
+          
+          # Call the AI API
+          SUMMARY=$(OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+                   ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+                   OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+                   TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+                   GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
+                   node scripts/ai-api-handler.js "standup_bot" "$PROMPT")
+          
+          # Save summary
+          echo "$SUMMARY" > standup-summary.md
+      
+      - name: Create Discussion
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          cd .github/ai-team
+          
+          # Add header and footer to summary
+          {
+            echo "# 🤖 AI Team Standup"
+            echo ""
+            cat standup-summary.md
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 💬 Team Discussion"
+            echo ""
+            echo "Please add your updates, concerns, or questions below. The AI team is monitoring this discussion."
+            echo ""
+            echo "**Quick Actions:**"
+            echo "- Reply with \`/cto [question]\` to ask the CTO bot"
+            echo "- Reply with \`/blocker [description]\` to escalate a blocker"
+            echo "- Reply with \`/focus [area]\` to suggest a focus area"
+            echo ""
+            echo "---"
+            echo "*Generated by AI Standup Bot • [View Cost Report](${{ github.server_url }}/${{ github.repository }}/actions/workflows/cost-tracker.yml)*"
+          } > discussion-body.md
+          
+          # Create the discussion
+          DISCUSSION_ID=$(gh api graphql -f query='
+            mutation($repositoryId: ID!, $categoryId: ID!, $title: String!, $body: String!) {
+              createDiscussion(input: {
+                repositoryId: $repositoryId,
+                categoryId: $categoryId,
+                title: $title,
+                body: $body
+              }) {
+                discussion {
+                  id
+                  url
+                }
+              }
+            }
+          ' -f repositoryId="${{ github.repository_id }}" \
+            -f categoryId="$(gh api repos/${{ github.repository }}/discussion-categories --jq '.[] | select(.name == "General") | .id')" \
+            -f title="${{ env.PERIOD }} Standup - $(date '+%B %d, %Y')" \
+            -f body="$(cat discussion-body.md)" \
+            --jq '.createDiscussion.discussion.url')
+          
+          echo "Discussion created: $DISCUSSION_ID"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Post to Issue
+        if: github.event_name == 'issue_comment'
+        run: |
+          cd .github/ai-team
+          
+          # Add context header
+          {
+            echo "## 🤖 Standup Summary"
+            echo ""
+            cat standup-summary.md
+            echo ""
+            echo "---"
+            echo "*Generated by AI Standup Bot*"
+          } > comment-body.md
+          
+          # Post the comment
+          gh issue comment ${{ github.event.issue.number }} \
+            --body-file comment-body.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: Update Project Board
+        if: always()
+        run: |
+          # Add standup summary to project board if exists
+          # This is a placeholder for future project board integration
+          echo "::notice::Standup complete. Check the discussion or issue for the summary."
