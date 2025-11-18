@@ -8,21 +8,24 @@ const requiredEnvVars = {
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-  
+
   // Square payment configuration (disabled - preserved for future use)
   SQUARE_WEBHOOK_SIGNATURE_KEY: process.env.SQUARE_WEBHOOK_SIGNATURE_KEY,
   SQUARE_ACCESS_TOKEN: process.env.SQUARE_ACCESS_TOKEN,
   SQUARE_LOCATION_ID: process.env.SQUARE_LOCATION_ID,
-  
+
   // Thinkific integration
   NEXT_PUBLIC_THINKIFIC_COURSE_URL: process.env.NEXT_PUBLIC_THINKIFIC_COURSE_URL,
-  
+
   // Email configuration
   RESEND_API_KEY: process.env.RESEND_API_KEY,
-  
+
   // Cron configuration
   CRON_SECRET: process.env.CRON_SECRET,
-  
+
+  // Admin configuration
+  ADMIN_EMAILS: process.env.ADMIN_EMAILS,
+
   // App configuration
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://trajectorygroup.org',
 } as const;
@@ -49,6 +52,7 @@ export function validateEnvVars(): ValidationResult {
     'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     'SUPABASE_SERVICE_ROLE_KEY',
     'RESEND_API_KEY',
+    'ADMIN_EMAILS',
   ];
 
   // Optional but recommended for production
@@ -125,6 +129,32 @@ export function getEnvVar(key: EnvVarKey): string {
  */
 export function getOptionalEnvVar(key: EnvVarKey): string | undefined {
   return requiredEnvVars[key];
+}
+
+/**
+ * Get admin emails as an array
+ * Parses comma-separated ADMIN_EMAILS environment variable
+ */
+export function getAdminEmails(): string[] {
+  const adminEmailsStr = requiredEnvVars.ADMIN_EMAILS;
+  if (!adminEmailsStr) {
+    return [];
+  }
+
+  return adminEmailsStr
+    .split(',')
+    .map(email => email.trim().toLowerCase())
+    .filter(email => email.length > 0);
+}
+
+/**
+ * Check if an email is an admin email
+ */
+export function isAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false;
+
+  const adminEmails = getAdminEmails();
+  return adminEmails.includes(email.trim().toLowerCase());
 }
 
 // Validate on module load (but don't throw in client components)
