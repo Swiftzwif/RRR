@@ -22,8 +22,8 @@ export default function AuthModal({
   isOpen,
   onClose,
   onSuccess,
-  title = "Join the Raffle",
-  description = "Create your account to enter the raffle and get instant access to the digital product"
+  title = "Create Your Account",
+  description = "Join Kill The Boy and start your transformation journey"
 }: AuthModalProps) {
   const [mode, setMode] = useState<'signin' | 'signup'>('signup');
   const [loading, setLoading] = useState(false);
@@ -45,7 +45,7 @@ export default function AuthModal({
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/api/auth/callback?redirect=/raffle&action=payment`,
+          redirectTo: `${window.location.origin}/api/auth/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -73,10 +73,9 @@ export default function AuthModal({
           password: formData.password,
           options: {
             data: {
-              full_name: formData.fullName,
-              source: 'raffle'
+              full_name: formData.fullName
             },
-            emailRedirectTo: `${window.location.origin}/api/auth/callback?redirect=/raffle&action=payment`
+            emailRedirectTo: `${window.location.origin}/api/auth/callback`
           }
         });
 
@@ -269,7 +268,7 @@ export default function AuthModal({
                       {mode === 'signup' ? 'Creating account...' : 'Signing in...'}
                     </>
                   ) : (
-                    <>{mode === 'signup' ? 'Create Account & Enter Raffle' : 'Sign In & Enter Raffle'}</>
+                    <>{mode === 'signup' ? 'Create Account' : 'Sign In'}</>
                   )}
                 </Button>
               </form>

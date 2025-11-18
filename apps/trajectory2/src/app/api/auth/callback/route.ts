@@ -91,13 +91,6 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      if (action === 'payment') {
-        // Redirect to payment with user ID
-        return NextResponse.redirect(
-          new URL(`/raffle?auth=success&user=${user.id}`, requestUrl.origin)
-        );
-      }
-
       // Handle redirect from login page or stored redirect
       const redirectUrl = redirect !== '/' ? redirect : '/';
       return NextResponse.redirect(new URL(redirectUrl, requestUrl.origin));
@@ -106,6 +99,6 @@ export async function GET(request: NextRequest) {
 
   // Return to origin on error
   return NextResponse.redirect(
-    new URL('/raffle?auth=error', requestUrl.origin)
+    new URL('/?auth=error', requestUrl.origin)
   );
 }
