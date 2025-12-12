@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { AnimatePresence, AnimatedDiv, AnimatedButton } from "@/components/animation/AnimatedComponents";
@@ -12,6 +11,15 @@ interface AssessmentStepperProps {
   className?: string;
 }
 
+// Move constant data outside component to prevent recreation
+const SCALE_LABELS = {
+  1: "Never / Very Low",
+  2: "Rarely",
+  3: "Sometimes",
+  4: "Often",
+  5: "Always / Excellent",
+} as const;
+
 export default function AssessmentStepper({
   questions,
   onComplete,
@@ -19,32 +27,30 @@ export default function AssessmentStepper({
 }: AssessmentStepperProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<AssessmentAnswers>({});
-  const [, setIsComplete] = useState(false);
 
   const currentQuestion = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
-  const handleAnswer = (value: number) => {
+  const handleAnswer = useCallback((value: number) => {
     setAnswers((prev) => ({
       ...prev,
       [currentQuestion.id]: value,
     }));
-  };
+  }, [currentQuestion.id]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      setIsComplete(true);
       onComplete(answers);
     }
-  };
+  }, [currentIndex, questions.length, answers, onComplete]);
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentIndex > 0) {
       setCurrentIndex((prev) => prev - 1);
     }
-  };
+  }, [currentIndex]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -65,14 +71,6 @@ export default function AssessmentStepper({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
-
-  const scaleLabels = {
-    1: "Never / Very Low",
-    2: "Rarely",
-    3: "Sometimes",
-    4: "Often",
-    5: "Always / Excellent",
-  };
 
   return (
     <div className={`max-w-3xl mx-auto px-6 ${className}`}>
@@ -145,7 +143,7 @@ export default function AssessmentStepper({
                   {value}
                 </div>
                 <span className="text-lg font-medium">
-                  {scaleLabels[value as keyof typeof scaleLabels]}
+                  {SCALE_LABELS[value as keyof typeof SCALE_LABELS]}
                 </span>
               </div>
               {answers[currentQuestion.id] === value && (

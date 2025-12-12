@@ -27,16 +27,19 @@ import {
   Zap,
 } from "lucide-react";
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import ProductCard from '@/components/products/ProductCard';
 import PricingDisplay from '@/components/products/PricingDisplay';
 import LimitedTimeOffer from '@/components/products/LimitedTimeOffer';
 import { PRODUCTS } from '@/lib/config';
 
+// Move constant arrays outside component to prevent recreation
+const HERO_WORDS = ["attention", "energy", "money"] as const;
+const TAB_OPTIONS = ["story", "assessment", "resources"] as const;
+
 export default function Home() {
   const [currentWord, setCurrentWord] = useState(0);
-  const words = ["attention", "energy", "money"];
-  const [activeTab, setActiveTab] = useState("story");
+  const [activeTab, setActiveTab] = useState<typeof TAB_OPTIONS[number]>("story");
   const [isLoading, setIsLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
 
@@ -89,29 +92,28 @@ export default function Home() {
     };
   }, []);
 
-  // Handle loader completion
-  const handleLoaderComplete = () => {
+  // Handle loader completion - memoize to prevent recreation
+  const handleLoaderComplete = useCallback(() => {
     setIsLoading(false);
     setTimeout(() => {
       setShowContent(true);
     }, 100);
-  };
+  }, []);
+
   // Combine and slow down animations for subtlety
   useEffect(() => {
     if (!showContent) return;
 
-    const tabs = ["story", "assessment", "resources"];
-
     // Word cycling - slower and more subtle (6s)
     const wordInterval = setInterval(() => {
-      setCurrentWord((prev) => (prev + 1) % words.length);
+      setCurrentWord((prev) => (prev + 1) % HERO_WORDS.length);
     }, 6000);
 
     // Tab cycling - slower to reduce distraction (8s)
     const tabInterval = setInterval(() => {
       setActiveTab((prev) => {
-        const currentIndex = tabs.indexOf(prev);
-        return tabs[(currentIndex + 1) % tabs.length];
+        const currentIndex = TAB_OPTIONS.indexOf(prev);
+        return TAB_OPTIONS[(currentIndex + 1) % TAB_OPTIONS.length];
       });
     }, 8000);
 
@@ -119,7 +121,7 @@ export default function Home() {
       clearInterval(wordInterval);
       clearInterval(tabInterval);
     };
-  }, [words.length, showContent]);
+  }, [showContent]);
 
   return (
     <>
@@ -191,7 +193,7 @@ export default function Home() {
                     transition={{ duration: 0.3 }}
                     className="ml-2"
                   >
-                    {words[currentWord]}
+                    {HERO_WORDS[currentWord]}
                   </AnimatedSpan>
                 </h2>
               </div>
@@ -257,13 +259,13 @@ export default function Home() {
                   <div className="relative">
                     {/* Indicator dots - subtle animations */}
                     <div className="flex justify-center gap-3 mb-6">
-                      {["story", "assessment", "resources"].map((tab) => (
+                      {TAB_OPTIONS.map((tab) => (
                         <button
                           key={tab}
                           onClick={() => setActiveTab(tab)}
                           className={`rounded-full transition-all duration-500 ease-out ${
-                            activeTab === tab 
-                              ? 'w-8 h-3 bg-gradient-to-r from-orange-500 to-red-500' 
+                            activeTab === tab
+                              ? 'w-8 h-3 bg-gradient-to-r from-orange-500 to-red-500'
                               : 'w-3 h-3 bg-orange-500/30 hover:bg-orange-500/50'
                           }`}
                         />
