@@ -2,7 +2,7 @@
 
 import { getCopy } from '@/lib/copy';
 import { Avatar } from '@/lib/scoring';
-import { motion } from 'framer-motion';
+import { AnimatedDiv, AnimatedP } from '@/components/animation/AnimatedComponents';
 
 interface AvatarBadgeProps {
   avatar: Avatar;
@@ -57,19 +57,19 @@ export default function AvatarBadge({
   };
 
   return (
-    <motion.div
+    <AnimatedDiv
       className={`flex flex-col items-center space-y-6 ${className}`}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
-      <motion.div
+      <AnimatedDiv
         className={`${sizeClasses[size]} rounded-full border-2 ${getAvatarColor(avatar)} flex items-center justify-center backdrop-blur-sm shadow-lg`}
         whileHover={{ scale: 1.05 }}
         transition={{ duration: 0.2 }}
       >
         <span className="text-3xl">{getAvatarIcon(avatar)}</span>
-      </motion.div>
+      </AnimatedDiv>
       
       <div className="text-center">
         <h3 className="text-3xl font-display font-bold text-slate-800 mb-4">
@@ -77,18 +77,18 @@ export default function AvatarBadge({
         </h3>
         
         {showDescription && (
-          <motion.p
+          <AnimatedP
             className="text-slate-600 max-w-lg leading-relaxed text-lg"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             {avatarData.description}
-          </motion.p>
+          </AnimatedP>
         )}
-        
+
         {showDescription && avatarData.traits && (
-          <motion.div
+          <AnimatedDiv
             className="flex flex-wrap gap-3 mt-6 justify-center"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -102,9 +102,9 @@ export default function AvatarBadge({
                 {trait}
               </span>
             ))}
-          </motion.div>
+          </AnimatedDiv>
         )}
       </div>
-    </motion.div>
+    </AnimatedDiv>
   );
 }

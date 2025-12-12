@@ -8,7 +8,7 @@ import { Domain, getSuggestedActions } from "@/lib/scoring";
 import { supabase } from "@/lib/supabase";
 import { logger } from "@/lib/logger";
 import { THINKIFIC_COURSE_URL } from "@/lib/config";
-import { motion } from "framer-motion";
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -190,7 +190,7 @@ export default function ResultsPage() {
         {/* Email Capture Modal */}
         {showEmailCapture && (
           <div className="fixed inset-0 bg-slate-800/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-            <motion.div
+            <AnimatedDiv
               className="bg-white p-10 max-w-md w-full rounded-2xl border border-slate-200 shadow-2xl"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -224,12 +224,12 @@ export default function ResultsPage() {
                   {isSubmittingEmail ? "Saving..." : "View Results"}
                 </button>
               </form>
-            </motion.div>
+            </AnimatedDiv>
           </div>
         )}
 
         {/* Header */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -243,20 +243,20 @@ export default function ResultsPage() {
             {getCopy("results.title") as string}
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">{getCopy("results.subtitle") as string}</p>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Avatar Section */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <AvatarBadge avatar={results.avatar} size="lg" />
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Domain Scores */}
-        <motion.div
+        <AnimatedDiv
           className="mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -275,10 +275,10 @@ export default function ResultsPage() {
               />
             ))}
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Suggested Actions */}
-        <motion.div
+        <AnimatedDiv
           className="mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -299,10 +299,10 @@ export default function ResultsPage() {
               actions={suggestedActions.thirtyDay}
             />
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Transform Your Trajectory CTA */}
-        <motion.div
+        <AnimatedDiv
           className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -360,10 +360,10 @@ export default function ResultsPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* CTAs */}
-        <motion.div
+        <AnimatedDiv
           className="grid grid-cols-1 md:grid-cols-2 gap-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -410,7 +410,7 @@ export default function ResultsPage() {
               Get Started
             </button>
           </div>
-        </motion.div>
+        </AnimatedDiv>
       </div>
     </div>
   );

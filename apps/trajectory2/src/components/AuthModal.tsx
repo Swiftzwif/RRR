@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Lock, User, CheckCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatedDiv, AnimatePresence } from '@/components/animation/AnimatedComponents';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -136,7 +136,7 @@ export default function AuthModal({
 
         <AnimatePresence mode="wait">
           {success ? (
-            <motion.div
+            <AnimatedDiv
               key="success"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -146,9 +146,9 @@ export default function AuthModal({
               <CheckCircle className="w-16 h-16 mx-auto mb-4 text-green-500" />
               <h3 className="text-xl font-bold text-gray-900 mb-2">Welcome aboard!</h3>
               <p className="text-gray-600">Redirecting to payment...</p>
-            </motion.div>
+            </AnimatedDiv>
           ) : (
-            <motion.div
+            <AnimatedDiv
               key="form"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -287,7 +287,7 @@ export default function AuthModal({
                     : 'Already have an account? Sign in'}
                 </button>
               </div>
-            </motion.div>
+            </AnimatedDiv>
           )}
         </AnimatePresence>
       </DialogContent>
