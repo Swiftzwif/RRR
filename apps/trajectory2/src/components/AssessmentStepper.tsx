@@ -1,9 +1,11 @@
 "use client";
 
-import { AnimatePresence, AnimatedDiv, AnimatedButton } from "@/components/animation/AnimatedComponents";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import type { Question, AssessmentAnswers } from "@/types/assessment";
+import { useAssessmentForm } from "@/hooks/useAssessmentForm";
+import { useAssessmentKeyboard } from "@/hooks/useAssessmentKeyboard";
 
 interface AssessmentStepperProps {
   questions: Question[];
@@ -11,66 +13,45 @@ interface AssessmentStepperProps {
   className?: string;
 }
 
-// Move constant data outside component to prevent recreation
-const SCALE_LABELS = {
-  1: "Never / Very Low",
-  2: "Rarely",
-  3: "Sometimes",
-  4: "Often",
-  5: "Always / Excellent",
-} as const;
-
 export default function AssessmentStepper({
   questions,
   onComplete,
   className = "",
 }: AssessmentStepperProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<AssessmentAnswers>({});
+  const [, setIsComplete] = useState(false);
+  const { currentIndex, answers, handleAnswer, handleNext, handlePrevious } = useAssessmentForm();
 
   const currentQuestion = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
-  const handleAnswer = useCallback((value: number) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [currentQuestion.id]: value,
-    }));
-  }, [currentQuestion.id]);
+  const handleAnswerWrapper = (value: number) => {
+    handleAnswer(currentQuestion.id, value);
+  };
 
-  const handleNext = useCallback(() => {
+  const handleNextWrapper = () => {
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
+      handleNext();
     } else {
+      setIsComplete(true);
       onComplete(answers);
     }
-  }, [currentIndex, questions.length, answers, onComplete]);
+  };
 
-  const handlePrevious = useCallback(() => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
-    }
-  }, [currentIndex]);
+  useAssessmentKeyboard({
+    currentQuestionId: currentQuestion.id,
+    answers,
+    onAnswer: handleAnswerWrapper,
+    onNext: handleNextWrapper,
+    onPrevious: handlePrevious,
+  });
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key >= "1" && e.key <= "5") {
-        handleAnswer(parseInt(e.key));
-      } else if (e.key === "ArrowLeft") {
-        handlePrevious();
-      } else if (e.key === "ArrowRight" || e.key === "Enter") {
-        if (answers[currentQuestion.id]) {
-          handleNext();
-        }
-      }
-    },
-    [currentQuestion.id, answers, handleAnswer, handleNext, handlePrevious]
-  );
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
+  const scaleLabels = {
+    1: "Never / Very Low",
+    2: "Rarely",
+    3: "Sometimes",
+    4: "Often",
+    5: "Always / Excellent",
+  };
 
   return (
     <div className={`max-w-3xl mx-auto px-6 ${className}`}>
@@ -85,7 +66,7 @@ export default function AssessmentStepper({
           </span>
         </div>
         <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-          <AnimatedDiv
+          <motion.div
             className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
@@ -96,7 +77,7 @@ export default function AssessmentStepper({
 
       {/* Question */}
       <AnimatePresence mode="wait">
-        <AnimatedDiv
+        <motion.div
           key={currentIndex}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -111,15 +92,15 @@ export default function AssessmentStepper({
           <p className="text-lg text-slate-500 mb-8">
             Take a breath. Answer honestly.
           </p>
-        </AnimatedDiv>
+        </motion.div>
       </AnimatePresence>
 
       {/* Scale */}
       <div className="space-y-4 mb-12">
         {[1, 2, 3, 4, 5].map((value) => (
-          <AnimatedButton
+          <motion.button
             key={value}
-            onClick={() => handleAnswer(value)}
+            onClick={() => handleAnswerWrapper(value)}
             className={`w-full p-6 rounded-2xl border-2 transition-all duration-300 text-left group ${
               answers[currentQuestion.id] === value
                 ? "border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 text-slate-800 shadow-lg"
@@ -143,26 +124,26 @@ export default function AssessmentStepper({
                   {value}
                 </div>
                 <span className="text-lg font-medium">
-                  {SCALE_LABELS[value as keyof typeof SCALE_LABELS]}
+                  {scaleLabels[value as keyof typeof scaleLabels]}
                 </span>
               </div>
               {answers[currentQuestion.id] === value && (
-                <AnimatedDiv
+                <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center"
                 >
                   <span className="text-white text-sm">✓</span>
-                </AnimatedDiv>
+                </motion.div>
               )}
             </div>
-          </AnimatedButton>
+          </motion.button>
         ))}
       </div>
 
       {/* Navigation */}
       <div className="flex justify-between items-center">
-        <AnimatedButton
+        <motion.button
           onClick={handlePrevious}
           disabled={currentIndex === 0}
           className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 ${
@@ -175,10 +156,10 @@ export default function AssessmentStepper({
         >
           <ChevronLeft className="w-5 h-5" />
           Previous
-        </AnimatedButton>
+        </motion.button>
 
-        <AnimatedButton
-          onClick={handleNext}
+        <motion.button
+          onClick={handleNextWrapper}
           disabled={!answers[currentQuestion.id]}
           className={`flex items-center gap-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
             answers[currentQuestion.id]
@@ -192,7 +173,7 @@ export default function AssessmentStepper({
             ? "Complete Assessment"
             : "Next Question"}
           <ChevronRight className="w-5 h-5" />
-        </AnimatedButton>
+        </motion.button>
       </div>
 
       {/* Keyboard hint */}
