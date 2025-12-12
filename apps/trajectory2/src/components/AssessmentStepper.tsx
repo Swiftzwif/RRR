@@ -19,7 +19,6 @@ export default function AssessmentStepper({
 }: AssessmentStepperProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<AssessmentAnswers>({});
-  const [, setIsComplete] = useState(false);
 
   const currentQuestion = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
@@ -35,7 +34,6 @@ export default function AssessmentStepper({
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      setIsComplete(true);
       onComplete(answers);
     }
   };
