@@ -10,7 +10,7 @@ import type {
 import { LogOut, Menu, User, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { LogoMark } from "./LogoMark";
 import UserStatus from "./UserStatus";
 
@@ -20,8 +20,8 @@ export default function Navigation() {
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
 
-  // Determine if we're on a dark page (home) or light page (others)
-  const isDarkPage = pathname === "/";
+  // Memoize style calculation to prevent recalculation on every render
+  const isDarkPage = useMemo(() => pathname === "/", [pathname]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -42,14 +42,15 @@ export default function Navigation() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSignOut = async () => {
+  // Memoize handler to prevent recreation on every render
+  const handleSignOut = useCallback(async () => {
     // Create a form and submit it to sign out
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/auth/signout';
     document.body.appendChild(form);
     form.submit();
-  };
+  }, []);
 
 
   return (

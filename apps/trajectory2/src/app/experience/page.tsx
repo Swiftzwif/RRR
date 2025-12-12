@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { ArrowRight, BookOpen, CheckCircle, Lock, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -50,7 +50,7 @@ export default function ExperiencePage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <motion.div
+        <AnimatedDiv
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -76,11 +76,11 @@ export default function ExperiencePage() {
             </div>
             <p className="text-slate-600">Experience the transformation. Unlock all 31 days after meeting with Jean</p>
           </div>
-        </motion.div>
+        </AnimatedDiv>
 
         {/* Progress Overview */}
         {completedDays.length > 0 && (
-          <motion.div
+          <AnimatedDiv
             className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-200 shadow-lg mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -93,20 +93,20 @@ export default function ExperiencePage() {
               </span>
             </div>
             <div className="w-full bg-slate-200 rounded-full h-4">
-              <motion.div
+              <AnimatedDiv
                 className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${(completedDays.length / (hasAccess ? 31 : 7)) * 100}%` }}
                 transition={{ duration: 1, ease: 'easeOut' }}
               />
             </div>
-          </motion.div>
+          </AnimatedDiv>
         )}
 
         {/* Days Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {days.map((day, index) => (
-            <motion.div
+            <AnimatedDiv
               key={day.day}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -182,13 +182,13 @@ export default function ExperiencePage() {
                   </div>
                 </div>
               </Link>
-            </motion.div>
+            </AnimatedDiv>
           ))}
         </div>
 
         {/* Unlock CTA */}
         {!hasAccess && (
-          <motion.div
+          <AnimatedDiv
             className="bg-gradient-to-br from-slate-900 via-orange-900 to-red-900 text-white rounded-3xl p-12 shadow-2xl text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -211,7 +211,7 @@ export default function ExperiencePage() {
               Contact Jean for Access
               <ArrowRight className="ml-3 w-6 h-6" />
             </button>
-          </motion.div>
+          </AnimatedDiv>
         )}
       </div>
     </div>
