@@ -1,5 +1,7 @@
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Toaster } from "@/components/Toast";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -39,9 +41,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="antialiased font-body">
-        <Navigation />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <ErrorBoundary>
+          <Navigation />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+          <Toaster />
+        </ErrorBoundary>
       </body>
     </html>
   );
