@@ -1,7 +1,7 @@
 'use client';
 
 import { labelForScore } from '@/lib/scoring';
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { useEffect, useState } from 'react';
 
 interface MeterProps {
@@ -59,7 +59,7 @@ export default function Meter({
       )}
 
       <div className="w-full bg-sky-100 rounded-full h-4 overflow-hidden shadow-inner">
-        <motion.div
+        <AnimatedDiv
           className={`h-full bg-gradient-to-r ${getScoreColor(value)} rounded-full`}
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
