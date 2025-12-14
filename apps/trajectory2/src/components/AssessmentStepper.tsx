@@ -1,10 +1,11 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import type { Question, AssessmentAnswers } from "@/types/assessment";
+import { useAssessmentForm } from "@/hooks/useAssessmentForm";
+import { useAssessmentKeyboard } from "@/hooks/useAssessmentKeyboard";
 
 interface AssessmentStepperProps {
   questions: Question[];
@@ -17,54 +18,32 @@ export default function AssessmentStepper({
   onComplete,
   className = "",
 }: AssessmentStepperProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<AssessmentAnswers>({});
   const [, setIsComplete] = useState(false);
+  const { currentIndex, answers, handleAnswer, handleNext, handlePrevious } = useAssessmentForm();
 
   const currentQuestion = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
-  const handleAnswer = (value: number) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [currentQuestion.id]: value,
-    }));
+  const handleAnswerWrapper = (value: number) => {
+    handleAnswer(currentQuestion.id, value);
   };
 
-  const handleNext = () => {
+  const handleNextWrapper = () => {
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
+      handleNext();
     } else {
       setIsComplete(true);
       onComplete(answers);
     }
   };
 
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
-    }
-  };
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key >= "1" && e.key <= "5") {
-        handleAnswer(parseInt(e.key));
-      } else if (e.key === "ArrowLeft") {
-        handlePrevious();
-      } else if (e.key === "ArrowRight" || e.key === "Enter") {
-        if (answers[currentQuestion.id]) {
-          handleNext();
-        }
-      }
-    },
-    [currentQuestion.id, answers, handleAnswer, handleNext, handlePrevious]
-  );
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
+  useAssessmentKeyboard({
+    currentQuestionId: currentQuestion.id,
+    answers,
+    onAnswer: handleAnswerWrapper,
+    onNext: handleNextWrapper,
+    onPrevious: handlePrevious,
+  });
 
   const scaleLabels = {
     1: "Never / Very Low",
@@ -121,7 +100,7 @@ export default function AssessmentStepper({
         {[1, 2, 3, 4, 5].map((value) => (
           <motion.button
             key={value}
-            onClick={() => handleAnswer(value)}
+            onClick={() => handleAnswerWrapper(value)}
             aria-label={`Select rating ${value}: ${scaleLabels[value as keyof typeof scaleLabels]}`}
             aria-pressed={answers[currentQuestion.id] === value}
             className={`w-full p-6 rounded-2xl border-2 transition-all duration-300 text-left group ${
@@ -184,7 +163,7 @@ export default function AssessmentStepper({
         </motion.button>
 
         <motion.button
-          onClick={handleNext}
+          onClick={handleNextWrapper}
           disabled={!answers[currentQuestion.id]}
           aria-label={currentIndex === questions.length - 1 ? "Complete assessment and view results" : "Go to next question"}
           aria-disabled={!answers[currentQuestion.id]}

@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { motion } from 'framer-motion'
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents'
 import { ArrowRight, LogIn, Shield, UserPlus, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from 'next/navigation'
@@ -98,7 +98,7 @@ function LoginContent() {
       </div>
 
       <div className="max-w-md w-full space-y-8 relative z-10">
-        <motion.div
+        <AnimatedDiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -294,7 +294,7 @@ function LoginContent() {
 
               {/* Security Note */}
               {mode === 'signup' && (
-                <motion.div
+                <AnimatedDiv
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   className="mt-6 p-4 bg-elev-1 rounded-lg border border-[var(--border-default)]"
@@ -309,7 +309,7 @@ function LoginContent() {
                       </p>
                     </div>
                   </div>
-                </motion.div>
+                </AnimatedDiv>
               )}
             </CardContent>
           </Card>
@@ -323,7 +323,7 @@ function LoginContent() {
               ← Back to home
             </Link>
           </div>
-        </motion.div>
+        </AnimatedDiv>
       </div>
     </div>
   )

@@ -1,0 +1,199 @@
+# Multi-Agent Development System Configuration
+# Global configuration for client-ready website development
+
+system:
+  name: "WebDev Agent System"
+  version: "1.0.0"
+  mode: "hybrid"  # MCP + Claude Code agents + Custom coordinator
+
+communication:
+  protocol: "shared-context"
+  context_file: ".claude/project-context.md"
+
+  # All agents must report to GitHub Admin before making changes
+  git_coordination: true
+  github_admin_approval_required: true
+
+  # Coordinator manages task delegation
+  coordinator_mode: "medium-control"  # Asks for approval at key decision points
+
+agents:
+  # Core Development Team
+  coordinator:
+    name: "Coordinator/Architect"
+    role: "Main interface, system design, task delegation"
+    invocation: ["automatic", "/build", "/coord"]
+    priority: 1
+
+  ui_designer:
+    name: "UI/UX Designer"
+    role: "Design systems, component libraries, Figma integration"
+    libraries: ["shadcn-ui", "magic-ui", "aceternity-ui", "awesome-shadcn-ecosystem"]
+    priority: 2
+
+  frontend:
+    name: "Frontend Engineer"
+    role: "React/Next.js implementation"
+    priority: 2
+
+  backend:
+    name: "Backend Engineer"
+    role: "APIs, business logic, server operations"
+    priority: 2
+
+  database:
+    name: "Database Architect"
+    role: "Schema design, migrations, optimization"
+    priority: 2
+
+  # Infrastructure & Quality
+  devops:
+    name: "DevOps/Infrastructure"
+    role: "Docker, deployment, CI/CD"
+    priority: 3
+
+  security:
+    name: "Security Specialist"
+    role: "Auth, validation, security headers"
+    priority: 3
+
+  api_integration:
+    name: "API Integration Specialist"
+    role: "Third-party APIs, Stripe, CMS"
+    priority: 3
+
+  performance:
+    name: "Performance Optimizer"
+    role: "Bundle optimization, caching, Core Web Vitals"
+    priority: 3
+
+  # Polish & Compliance
+  seo:
+    name: "SEO & Analytics Specialist"
+    role: "Meta tags, structured data, analytics"
+    priority: 4
+
+  accessibility:
+    name: "Accessibility Specialist"
+    role: "WCAG compliance, screen readers"
+    priority: 4
+
+  content:
+    name: "Content & Copy Specialist"
+    role: "Professional copy, CTAs, messaging"
+    priority: 4
+
+  # Quality Gates
+  qa:
+    name: "QA/Testing Specialist"
+    role: "Test writing, bug detection"
+    priority: 5
+
+  code_reviewer:
+    name: "Code Reviewer"
+    role: "Quality gate, best practices enforcement"
+    priority: 5
+    required_before_commit: true
+
+  documentation:
+    name: "Documentation Writer"
+    role: "READMEs, API docs, comments"
+    priority: 6
+
+  # Management
+  project_manager:
+    name: "Project Manager"
+    role: "Progress tracking, coordination, reporting"
+    priority: 1
+
+  github_admin:
+    name: "GitHub Admin"
+    role: "Git workflow orchestration, version control"
+    priority: 1
+    required_for_all_changes: true
+
+tech_stacks:
+  # Tech stack determined conversationally at project start
+  conversational_setup: true
+
+  common_stacks:
+    modern_react:
+      - "Next.js 15 + App Router"
+      - "React 19"
+      - "TypeScript (strict)"
+      - "Tailwind CSS"
+      - "shadcn/ui"
+
+    animated_landing:
+      - "Next.js 15"
+      - "TypeScript"
+      - "Tailwind CSS"
+      - "Framer Motion"
+      - "MagicUI"
+
+    fullstack_saas:
+      - "Next.js 15 + App Router"
+      - "TypeScript"
+      - "Tailwind + shadcn/ui"
+      - "Prisma + PostgreSQL"
+      - "NextAuth.js"
+      - "Stripe"
+
+    ecommerce:
+      - "Next.js 15"
+      - "TypeScript"
+      - "Tailwind + shadcn/ui"
+      - "Prisma + PostgreSQL"
+      - "Stripe"
+      - "Sanity CMS"
+
+templates:
+  # Project templates available
+  landing_page:
+    path: "~/.claude/templates/landing-page"
+    description: "Modern landing page with hero, features, pricing, CTA"
+
+  saas_app:
+    path: "~/.claude/templates/saas-app"
+    description: "Full-stack SaaS with auth, dashboard, settings, billing"
+
+  ecommerce:
+    path: "~/.claude/templates/ecommerce"
+    description: "E-commerce platform with products, cart, checkout, admin"
+
+  component_library:
+    path: "~/.claude/templates/component-library"
+    description: "Component library monorepo with Storybook"
+
+preview:
+  # Preview system integration
+  dev_server: "vite"
+  component_playground: "storybook"
+  hot_reload: true
+  browser_sync: true
+
+mcp_servers:
+  required:
+    - "filesystem"
+    - "git"
+    - "github"
+    - "web-search"
+    - "time"
+
+  optional:
+    - "figma"  # If available
+
+workflow:
+  stages:
+    - "task_analysis"      # Coordinator analyzes task
+    - "tech_discussion"    # Determine tech stack (if new project)
+    - "planning"           # Create detailed plan
+    - "user_approval"      # Get approval (medium control)
+    - "delegation"         # Assign to specialists
+    - "implementation"     # Agents work in parallel
+    - "code_review"        # Code Reviewer validates
+    - "git_coordination"   # GitHub Admin manages commits
+    - "testing"            # QA validates
+    - "documentation"      # Docs written
+    - "deployment"         # DevOps deploys
+    - "handoff"            # Project Manager reports completion

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from 'framer-motion';
+import { AnimatedDiv } from '@/components/animation/AnimatedComponents';
 import { Badge } from '@/components/ui/badge';
 import ProductCard from '@/components/products/ProductCard';
 import PricingDisplay from '@/components/products/PricingDisplay';
@@ -38,7 +38,7 @@ export default function ProductsPage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <motion.div
+          <AnimatedDiv
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -52,7 +52,7 @@ export default function ProductsPage() {
             <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
               Command your attention, energy, and resources. Transform from drifter to architect.
             </p>
-          </motion.div>
+          </AnimatedDiv>
         </div>
       </section>
 
@@ -150,7 +150,7 @@ export default function ProductsPage() {
       {/* Testimonials */}
       <section className="py-20 bg-base">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <AnimatedDiv
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -166,7 +166,7 @@ export default function ProductsPage() {
             <p className="text-xl text-slate-300 max-w-2xl mx-auto">
               Join 1,000+ men who have transformed their trajectory
             </p>
-          </motion.div>
+          </AnimatedDiv>
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
@@ -183,7 +183,7 @@ export default function ProductsPage() {
       {/* FAQ Section */}
       <section className="py-20 bg-elev-1">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <AnimatedDiv
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -193,7 +193,7 @@ export default function ProductsPage() {
             <h2 className="text-4xl font-bold text-white mb-6">
               Common Questions
             </h2>
-          </motion.div>
+          </AnimatedDiv>
 
           <div className="space-y-6">
             {[
@@ -214,7 +214,7 @@ export default function ProductsPage() {
                 a: "Yes. 30-day money-back guarantee. If you're not satisfied, email us and we'll refund you immediately."
               }
             ].map((faq, index) => (
-              <motion.div
+              <AnimatedDiv
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -224,7 +224,7 @@ export default function ProductsPage() {
               >
                 <h3 className="text-xl font-bold text-white mb-3">{faq.q}</h3>
                 <p className="text-slate-300 leading-relaxed">{faq.a}</p>
-              </motion.div>
+              </AnimatedDiv>
             ))}
           </div>
         </div>
@@ -233,7 +233,7 @@ export default function ProductsPage() {
       {/* Final CTA */}
       <section className="py-20 bg-base">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
+          <AnimatedDiv
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
@@ -245,7 +245,7 @@ export default function ProductsPage() {
             <p className="text-xl text-slate-300 mb-8">
               Your transformation starts now. Choose your path.
             </p>
-          </motion.div>
+          </AnimatedDiv>
         </div>
       </section>
     </div>

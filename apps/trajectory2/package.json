@@ -7,7 +7,11 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -20,7 +24,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.13",
     "@react-email/components": "^0.5.6",
-    "@sentry/nextjs": "^10.22.0",
+    "@sentry/nextjs": "^10.30.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.56.1",
     "@types/canvas-confetti": "^1.9.0",
@@ -29,13 +33,15 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.12",
+    "isomorphic-dompurify": "^2.34.0",
     "lucide-react": "^0.542.0",
-    "next": "15.5.4",
+    "next": "^15.5.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-email": "^4.3.0",
     "react-hook-form": "^7.64.0",
     "resend": "^6.1.2",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "zod": "^4.1.12"
   },
@@ -43,12 +49,20 @@
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@vitest/coverage-v8": "^4.0.9",
+    "@vitest/ui": "^4.0.9",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
+    "happy-dom": "^20.0.10",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.9"
   }
 }

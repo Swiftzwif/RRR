@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
         // Replay the webhook by calling the webhook handler logic
         // We'll need to extract the core processing logic into a shared function
         // For now, we'll simulate a retry by attempting to process the payload
-        const payload = event.payload as any;
+        const payload = event.payload as WebhookPayload;
         
         // Process the webhook event (simplified - in production, extract shared logic)
         // This is a placeholder - the actual retry logic should reuse the webhook handler
@@ -182,8 +182,7 @@ async function processWebhookPayload(
     // 2. Process payment creation/updates
     // 3. Create purchase records
     // 4. Send confirmation emails
-    // 5. Handle raffle entries
-    
+
     // For now, return success to avoid infinite retry loops
     // In production, implement the full retry logic
     logger.info('Processing webhook payload retry', payload.type);
