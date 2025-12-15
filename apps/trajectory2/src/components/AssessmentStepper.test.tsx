@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import AssessmentStepper from './AssessmentStepper';
 import type { Question } from '@/types/assessment';
@@ -78,7 +79,7 @@ describe('AssessmentStepper Component', () => {
       await user.click(option3);
 
       // Should show checkmark on selected option (check for selected styling)
-      expect(option3).toHaveClass('border-blue-500');
+      expect(option3).toHaveClass('border-sky-500');
     });
 
     it('should enable Next button after selecting an answer', async () => {
@@ -109,7 +110,7 @@ describe('AssessmentStepper Component', () => {
       await user.click(option5);
 
       // Option 5 should be selected
-      expect(option5).toHaveClass('border-blue-500');
+      expect(option5).toHaveClass('border-sky-500');
     });
   });
 
@@ -166,7 +167,7 @@ describe('AssessmentStepper Component', () => {
 
       // Option 4 should still be selected
       const option4 = screen.getByRole('button', { name: /4 Often/i });
-      expect(option4).toHaveClass('border-blue-500');
+      expect(option4).toHaveClass('border-sky-500');
     });
 
     it('should enable Previous button after advancing', async () => {
@@ -193,7 +194,7 @@ describe('AssessmentStepper Component', () => {
 
       await waitFor(() => {
         const option3 = screen.getByRole('button', { name: /3 Sometimes/i });
-        expect(option3).toHaveClass('border-blue-500');
+        expect(option3).toHaveClass('border-sky-500');
       });
     });
 
@@ -225,7 +226,7 @@ describe('AssessmentStepper Component', () => {
       // Wait for answer to register
       await waitFor(() => {
         const option4 = screen.getByRole('button', { name: /4 Often/i });
-        expect(option4).toHaveClass('border-blue-500');
+        expect(option4).toHaveClass('border-sky-500');
       });
 
       // Press ArrowRight
@@ -246,7 +247,7 @@ describe('AssessmentStepper Component', () => {
       // Wait for answer
       await waitFor(() => {
         const option5 = screen.getByRole('button', { name: /5 Always/i });
-        expect(option5).toHaveClass('border-blue-500');
+        expect(option5).toHaveClass('border-sky-500');
       });
 
       // Press Enter

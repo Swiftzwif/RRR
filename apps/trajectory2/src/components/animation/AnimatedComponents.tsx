@@ -1,7 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
+// Type-only import: Does NOT bundle any runtime code, only provides TypeScript types
+import type { HTMLMotionProps, SVGMotionProps } from 'framer-motion';
 
 /**
  * Lazy-loaded wrapper components for framer-motion
@@ -9,31 +11,13 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react';
  * This module provides performance-optimized alternatives to direct framer-motion imports.
  * By lazy-loading the motion components, we reduce the initial bundle size significantly.
  *
- * CRITICAL: Do NOT import types from framer-motion here - it will bundle the entire library!
- * Instead, we define compatible prop types that match framer-motion's API.
+ * IMPORTANT: We use `import type` which does NOT bundle any runtime code.
+ * The actual motion components are loaded dynamically at runtime only when used.
  *
  * Usage:
  * - Replace: import { motion } from 'framer-motion'; <motion.div />
  * - With: import { AnimatedDiv } from '@/components/animation/AnimatedComponents'; <AnimatedDiv />
  */
-
-// Define animation prop types without importing from framer-motion
-interface AnimationProps {
-  initial?: Record<string, unknown> | boolean;
-  animate?: Record<string, unknown>;
-  exit?: Record<string, unknown>;
-  transition?: Record<string, unknown>;
-  whileHover?: Record<string, unknown>;
-  whileTap?: Record<string, unknown>;
-  whileInView?: Record<string, unknown>;
-  viewport?: Record<string, unknown>;
-  layout?: boolean | 'position' | 'size';
-  layoutId?: string;
-  drag?: boolean | 'x' | 'y';
-  dragConstraints?: Record<string, unknown>;
-  onAnimationComplete?: () => void;
-  style?: Record<string, unknown>;
-}
 
 // Lazy load framer-motion components with proper SSR support
 const MotionDiv = dynamic(
@@ -111,65 +95,65 @@ const MotionForm = dynamic(
   { ssr: true }
 );
 
-// Export wrapper components with proper typing
-// Use any to avoid TypeScript issues with dynamic components
-export function AnimatedDiv(props: any) {
+// Export wrapper components with proper typing from framer-motion
+// Use HTMLMotionProps which includes all framer-motion animation props
+export function AnimatedDiv(props: HTMLMotionProps<'div'>) {
   return <MotionDiv {...props} />;
 }
 
-export function AnimatedSection(props: any) {
+export function AnimatedSection(props: HTMLMotionProps<'section'>) {
   return <MotionSection {...props} />;
 }
 
-export function AnimatedButton(props: any) {
+export function AnimatedButton(props: HTMLMotionProps<'button'>) {
   return <MotionButton {...props} />;
 }
 
-export function AnimatedH1(props: any) {
+export function AnimatedH1(props: HTMLMotionProps<'h1'>) {
   return <MotionH1 {...props} />;
 }
 
-export function AnimatedH2(props: any) {
+export function AnimatedH2(props: HTMLMotionProps<'h2'>) {
   return <MotionH2 {...props} />;
 }
 
-export function AnimatedSpan(props: any) {
+export function AnimatedSpan(props: HTMLMotionProps<'span'>) {
   return <MotionSpan {...props} />;
 }
 
-export function AnimatedP(props: any) {
+export function AnimatedP(props: HTMLMotionProps<'p'>) {
   return <MotionP {...props} />;
 }
 
-export function AnimatedUl(props: any) {
+export function AnimatedUl(props: HTMLMotionProps<'ul'>) {
   return <MotionUl {...props} />;
 }
 
-export function AnimatedLi(props: any) {
+export function AnimatedLi(props: HTMLMotionProps<'li'>) {
   return <MotionLi {...props} />;
 }
 
-export function AnimatedSvg(props: any) {
+export function AnimatedSvg(props: SVGMotionProps<SVGSVGElement>) {
   return <MotionSvg {...props} />;
 }
 
-export function AnimatedPath(props: any) {
+export function AnimatedPath(props: SVGMotionProps<SVGPathElement>) {
   return <MotionPath {...props} />;
 }
 
-export function AnimatedCircle(props: any) {
+export function AnimatedCircle(props: SVGMotionProps<SVGCircleElement>) {
   return <MotionCircle {...props} />;
 }
 
-export function AnimatedImg(props: any) {
+export function AnimatedImg(props: HTMLMotionProps<'img'>) {
   return <MotionImg {...props} />;
 }
 
-export function AnimatedA(props: any) {
+export function AnimatedA(props: HTMLMotionProps<'a'>) {
   return <MotionA {...props} />;
 }
 
-export function AnimatedForm(props: any) {
+export function AnimatedForm(props: HTMLMotionProps<'form'>) {
   return <MotionForm {...props} />;
 }
 

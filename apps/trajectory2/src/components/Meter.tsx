@@ -24,9 +24,9 @@ export default function Meter({
   const scoreLabel = labelForScore(value);
   
   const getScoreColor = (score: number) => {
-    if (score <= 3.1) return 'from-red-500 to-red-600';
-    if (score <= 4.1) return 'from-yellow-500 to-yellow-600';
-    return 'from-green-500 to-green-600';
+    if (score <= 3.1) return 'from-danger to-red-600';
+    if (score <= 4.1) return 'from-warn to-gold-600';
+    return 'from-success to-green-600';
   };
 
   const getScoreEmoji = (score: number) => {
@@ -50,15 +50,15 @@ export default function Meter({
     <div className={`space-y-4 ${className}`}>
       {showLabel && (
         <div className="flex items-center justify-between">
-          <span className="text-lg font-semibold text-slate-700">{label}</span>
+          <span className="text-lg font-semibold text-sky-800">{label}</span>
           <div className="flex items-center gap-3">
-            <span className="text-lg font-bold text-slate-800">{displayValue.toFixed(1)}</span>
+            <span className="text-lg font-bold text-sky-900">{displayValue.toFixed(1)}</span>
             <span className="text-xl">{getScoreEmoji(value)}</span>
           </div>
         </div>
       )}
 
-      <div className="w-full bg-slate-200 rounded-full h-4 overflow-hidden shadow-inner">
+      <div className="w-full bg-sky-100 rounded-full h-4 overflow-hidden shadow-inner">
         <AnimatedDiv
           className={`h-full bg-gradient-to-r ${getScoreColor(value)} rounded-full`}
           initial={{ width: 0 }}
@@ -70,11 +70,11 @@ export default function Meter({
           }}
         />
       </div>
-      
+
       {showLabel && (
-        <div className="flex justify-between text-sm text-slate-500">
+        <div className="flex justify-between text-sm text-sky-600">
           <span>1.0</span>
-          <span className="font-semibold text-slate-700">{scoreLabel}</span>
+          <span className="font-semibold text-sky-800">{scoreLabel}</span>
           <span>5.0</span>
         </div>
       )}

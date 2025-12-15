@@ -58,16 +58,16 @@ export default function AssessmentStepper({
       {/* Progress bar */}
       <div className="mb-12">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-sm font-semibold text-slate-600">
+          <span className="text-sm font-semibold text-sky-700">
             Question {currentIndex + 1} of {questions.length}
           </span>
-          <span className="text-sm font-semibold text-slate-600">
+          <span className="text-sm font-semibold text-sky-700">
             {Math.round(progress)}%
           </span>
         </div>
-        <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+        <div className="w-full bg-sky-100 rounded-full h-3 overflow-hidden">
           <motion.div
-            className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"
+            className="h-full bg-gradient-to-r from-sky-500 to-gold-500 rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -85,11 +85,11 @@ export default function AssessmentStepper({
           transition={{ duration: 0.4 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-800 mb-8 leading-relaxed">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-sky-900 mb-8 leading-relaxed">
             {currentQuestion.prompt}
           </h2>
 
-          <p className="text-lg text-slate-500 mb-8">
+          <p className="text-lg text-sky-600 mb-8">
             Take a breath. Answer honestly.
           </p>
         </motion.div>
@@ -103,8 +103,8 @@ export default function AssessmentStepper({
             onClick={() => handleAnswerWrapper(value)}
             className={`w-full p-6 rounded-2xl border-2 transition-all duration-300 text-left group ${
               answers[currentQuestion.id] === value
-                ? "border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 text-slate-800 shadow-lg"
-                : "border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md"
+                ? "border-sky-500 bg-gradient-to-r from-sky-50 to-gold-50 text-sky-900 shadow-lg"
+                : "border-sky-200 bg-white text-sky-700 hover:border-sky-400 hover:bg-gradient-to-r hover:from-sky-50 hover:to-gold-50 hover:shadow-md"
             }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -117,8 +117,8 @@ export default function AssessmentStepper({
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg ${
                     answers[currentQuestion.id] === value
-                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
-                      : "bg-slate-100 text-slate-600 group-hover:bg-gradient-to-r group-hover:from-blue-500 group-hover:to-purple-600 group-hover:text-white"
+                      ? "bg-gradient-to-r from-sky-500 to-gold-500 text-white"
+                      : "bg-sky-100 text-sky-700 group-hover:bg-gradient-to-r group-hover:from-sky-500 group-hover:to-gold-500 group-hover:text-white"
                   }`}
                 >
                   {value}
@@ -131,7 +131,7 @@ export default function AssessmentStepper({
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center"
+                  className="w-6 h-6 bg-gradient-to-r from-sky-500 to-gold-500 rounded-full flex items-center justify-center"
                 >
                   <span className="text-white text-sm">✓</span>
                 </motion.div>
@@ -148,8 +148,8 @@ export default function AssessmentStepper({
           disabled={currentIndex === 0}
           className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 ${
             currentIndex === 0
-              ? "text-slate-400 cursor-not-allowed"
-              : "text-slate-600 hover:text-slate-800 hover:bg-slate-100"
+              ? "text-sky-300 cursor-not-allowed"
+              : "text-sky-600 hover:text-sky-800 hover:bg-sky-50"
           }`}
           whileHover={currentIndex > 0 ? { scale: 1.05 } : {}}
           whileTap={currentIndex > 0 ? { scale: 0.95 } : {}}
@@ -163,8 +163,8 @@ export default function AssessmentStepper({
           disabled={!answers[currentQuestion.id]}
           className={`flex items-center gap-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
             answers[currentQuestion.id]
-              ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl"
-              : "bg-slate-200 text-slate-400 cursor-not-allowed"
+              ? "bg-gradient-to-r from-sky-500 to-gold-500 text-white hover:from-sky-600 hover:to-gold-600 shadow-lg hover:shadow-xl"
+              : "bg-sky-100 text-sky-300 cursor-not-allowed"
           }`}
           whileHover={answers[currentQuestion.id] ? { scale: 1.05 } : {}}
           whileTap={answers[currentQuestion.id] ? { scale: 0.95 } : {}}
@@ -178,7 +178,7 @@ export default function AssessmentStepper({
 
       {/* Keyboard hint */}
       <div className="mt-8 text-center">
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-sky-600">
           Use number keys 1-5 to answer, arrow keys to navigate
         </p>
       </div>
