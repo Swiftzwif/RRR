@@ -2,6 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import type { ComponentPropsWithoutRef } from 'react';
+// Type-only import: Does NOT bundle any runtime code, only provides TypeScript types
+import type { HTMLMotionProps } from 'framer-motion';
 
 /**
  * Lazy-loaded wrapper components for framer-motion
@@ -9,31 +11,13 @@ import type { ComponentPropsWithoutRef } from 'react';
  * This module provides performance-optimized alternatives to direct framer-motion imports.
  * By lazy-loading the motion components, we reduce the initial bundle size significantly.
  *
- * CRITICAL: Do NOT import types from framer-motion here - it will bundle the entire library!
- * Instead, we define compatible prop types that match framer-motion's API.
+ * IMPORTANT: We use `import type` which does NOT bundle any runtime code.
+ * The actual motion components are loaded dynamically at runtime only when used.
  *
  * Usage:
  * - Replace: import { motion } from 'framer-motion'; <motion.div />
  * - With: import { AnimatedDiv } from '@/components/animation/AnimatedComponents'; <AnimatedDiv />
  */
-
-// Define animation prop types without importing from framer-motion
-interface AnimationProps {
-  initial?: Record<string, unknown> | boolean;
-  animate?: Record<string, unknown>;
-  exit?: Record<string, unknown>;
-  transition?: Record<string, unknown>;
-  whileHover?: Record<string, unknown>;
-  whileTap?: Record<string, unknown>;
-  whileInView?: Record<string, unknown>;
-  viewport?: Record<string, unknown>;
-  layout?: boolean | 'position' | 'size';
-  layoutId?: string;
-  drag?: boolean | 'x' | 'y';
-  dragConstraints?: Record<string, unknown>;
-  onAnimationComplete?: () => void;
-  style?: Record<string, unknown>;
-}
 
 // Lazy load framer-motion components with proper SSR support
 const MotionDiv = dynamic(
@@ -111,83 +95,65 @@ const MotionForm = dynamic(
   { ssr: true }
 );
 
-// Export wrapper components with proper typing
-// Omit React's event handlers that conflict with framer-motion's API
-type OmittedReactEvents = 'onDrag' | 'onDragEnd' | 'onDragStart' | 'onAnimationStart' | 'onAnimationEnd';
-
-type AnimatedDivProps = Omit<ComponentPropsWithoutRef<'div'>, OmittedReactEvents> & AnimationProps;
-type AnimatedSectionProps = Omit<ComponentPropsWithoutRef<'section'>, OmittedReactEvents> & AnimationProps;
-type AnimatedButtonProps = Omit<ComponentPropsWithoutRef<'button'>, OmittedReactEvents> & AnimationProps;
-type AnimatedH1Props = Omit<ComponentPropsWithoutRef<'h1'>, OmittedReactEvents> & AnimationProps;
-type AnimatedH2Props = Omit<ComponentPropsWithoutRef<'h2'>, OmittedReactEvents> & AnimationProps;
-type AnimatedSpanProps = Omit<ComponentPropsWithoutRef<'span'>, OmittedReactEvents> & AnimationProps;
-type AnimatedPProps = Omit<ComponentPropsWithoutRef<'p'>, OmittedReactEvents> & AnimationProps;
-type AnimatedUlProps = Omit<ComponentPropsWithoutRef<'ul'>, OmittedReactEvents> & AnimationProps;
-type AnimatedLiProps = Omit<ComponentPropsWithoutRef<'li'>, OmittedReactEvents> & AnimationProps;
-type AnimatedSvgProps = Omit<ComponentPropsWithoutRef<'svg'>, OmittedReactEvents> & AnimationProps;
-type AnimatedPathProps = Omit<ComponentPropsWithoutRef<'path'>, OmittedReactEvents> & AnimationProps;
-type AnimatedCircleProps = Omit<ComponentPropsWithoutRef<'circle'>, OmittedReactEvents> & AnimationProps;
-type AnimatedImgProps = Omit<ComponentPropsWithoutRef<'img'>, OmittedReactEvents> & AnimationProps;
-type AnimatedAProps = Omit<ComponentPropsWithoutRef<'a'>, OmittedReactEvents> & AnimationProps;
-type AnimatedFormProps = Omit<ComponentPropsWithoutRef<'form'>, OmittedReactEvents> & AnimationProps;
-
-export function AnimatedDiv(props: AnimatedDivProps) {
+// Export wrapper components with proper typing from framer-motion
+// Use HTMLMotionProps which includes all framer-motion animation props
+export function AnimatedDiv(props: HTMLMotionProps<'div'>) {
   return <MotionDiv {...props} />;
 }
 
-export function AnimatedSection(props: AnimatedSectionProps) {
+export function AnimatedSection(props: HTMLMotionProps<'section'>) {
   return <MotionSection {...props} />;
 }
 
-export function AnimatedButton(props: AnimatedButtonProps) {
+export function AnimatedButton(props: HTMLMotionProps<'button'>) {
   return <MotionButton {...props} />;
 }
 
-export function AnimatedH1(props: AnimatedH1Props) {
+export function AnimatedH1(props: HTMLMotionProps<'h1'>) {
   return <MotionH1 {...props} />;
 }
 
-export function AnimatedH2(props: AnimatedH2Props) {
+export function AnimatedH2(props: HTMLMotionProps<'h2'>) {
   return <MotionH2 {...props} />;
 }
 
-export function AnimatedSpan(props: AnimatedSpanProps) {
+export function AnimatedSpan(props: HTMLMotionProps<'span'>) {
   return <MotionSpan {...props} />;
 }
 
-export function AnimatedP(props: AnimatedPProps) {
+export function AnimatedP(props: HTMLMotionProps<'p'>) {
   return <MotionP {...props} />;
 }
 
-export function AnimatedUl(props: AnimatedUlProps) {
+export function AnimatedUl(props: HTMLMotionProps<'ul'>) {
   return <MotionUl {...props} />;
 }
 
-export function AnimatedLi(props: AnimatedLiProps) {
+export function AnimatedLi(props: HTMLMotionProps<'li'>) {
   return <MotionLi {...props} />;
 }
 
-export function AnimatedSvg(props: AnimatedSvgProps) {
+export function AnimatedSvg(props: HTMLMotionProps<'svg'>) {
   return <MotionSvg {...props} />;
 }
 
-export function AnimatedPath(props: AnimatedPathProps) {
+export function AnimatedPath(props: HTMLMotionProps<'path'>) {
   return <MotionPath {...props} />;
 }
 
-export function AnimatedCircle(props: AnimatedCircleProps) {
+export function AnimatedCircle(props: HTMLMotionProps<'circle'>) {
   return <MotionCircle {...props} />;
 }
 
-export function AnimatedImg(props: AnimatedImgProps) {
+export function AnimatedImg(props: HTMLMotionProps<'img'>) {
   return <MotionImg {...props} />;
 }
 
-export function AnimatedA(props: AnimatedAProps) {
+export function AnimatedA(props: HTMLMotionProps<'a'>) {
   return <MotionA {...props} />;
 }
 
-export function AnimatedForm(props: AnimatedFormProps) {
+export function AnimatedForm(props: HTMLMotionProps<'form'>) {
   return <MotionForm {...props} />;
 }
 
