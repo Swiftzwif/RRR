@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
 /**
  * Lazy-loaded wrapper components for framer-motion
@@ -112,64 +112,80 @@ const MotionForm = dynamic(
 );
 
 // Export wrapper components with proper typing
-// Use any to avoid TypeScript issues with dynamic components
-export function AnimatedDiv(props: any) {
+// Combine HTML element props with animation props for type safety
+type AnimatedDivProps = ComponentPropsWithoutRef<'div'> & AnimationProps;
+type AnimatedSectionProps = ComponentPropsWithoutRef<'section'> & AnimationProps;
+type AnimatedButtonProps = ComponentPropsWithoutRef<'button'> & AnimationProps;
+type AnimatedH1Props = ComponentPropsWithoutRef<'h1'> & AnimationProps;
+type AnimatedH2Props = ComponentPropsWithoutRef<'h2'> & AnimationProps;
+type AnimatedSpanProps = ComponentPropsWithoutRef<'span'> & AnimationProps;
+type AnimatedPProps = ComponentPropsWithoutRef<'p'> & AnimationProps;
+type AnimatedUlProps = ComponentPropsWithoutRef<'ul'> & AnimationProps;
+type AnimatedLiProps = ComponentPropsWithoutRef<'li'> & AnimationProps;
+type AnimatedSvgProps = ComponentPropsWithoutRef<'svg'> & AnimationProps;
+type AnimatedPathProps = ComponentPropsWithoutRef<'path'> & AnimationProps;
+type AnimatedCircleProps = ComponentPropsWithoutRef<'circle'> & AnimationProps;
+type AnimatedImgProps = ComponentPropsWithoutRef<'img'> & AnimationProps;
+type AnimatedAProps = ComponentPropsWithoutRef<'a'> & AnimationProps;
+type AnimatedFormProps = ComponentPropsWithoutRef<'form'> & AnimationProps;
+
+export function AnimatedDiv(props: AnimatedDivProps) {
   return <MotionDiv {...props} />;
 }
 
-export function AnimatedSection(props: any) {
+export function AnimatedSection(props: AnimatedSectionProps) {
   return <MotionSection {...props} />;
 }
 
-export function AnimatedButton(props: any) {
+export function AnimatedButton(props: AnimatedButtonProps) {
   return <MotionButton {...props} />;
 }
 
-export function AnimatedH1(props: any) {
+export function AnimatedH1(props: AnimatedH1Props) {
   return <MotionH1 {...props} />;
 }
 
-export function AnimatedH2(props: any) {
+export function AnimatedH2(props: AnimatedH2Props) {
   return <MotionH2 {...props} />;
 }
 
-export function AnimatedSpan(props: any) {
+export function AnimatedSpan(props: AnimatedSpanProps) {
   return <MotionSpan {...props} />;
 }
 
-export function AnimatedP(props: any) {
+export function AnimatedP(props: AnimatedPProps) {
   return <MotionP {...props} />;
 }
 
-export function AnimatedUl(props: any) {
+export function AnimatedUl(props: AnimatedUlProps) {
   return <MotionUl {...props} />;
 }
 
-export function AnimatedLi(props: any) {
+export function AnimatedLi(props: AnimatedLiProps) {
   return <MotionLi {...props} />;
 }
 
-export function AnimatedSvg(props: any) {
+export function AnimatedSvg(props: AnimatedSvgProps) {
   return <MotionSvg {...props} />;
 }
 
-export function AnimatedPath(props: any) {
+export function AnimatedPath(props: AnimatedPathProps) {
   return <MotionPath {...props} />;
 }
 
-export function AnimatedCircle(props: any) {
+export function AnimatedCircle(props: AnimatedCircleProps) {
   return <MotionCircle {...props} />;
 }
 
-export function AnimatedImg(props: any) {
+export function AnimatedImg(props: AnimatedImgProps) {
   return <MotionImg {...props} />;
 }
 
-export function AnimatedA(props: any) {
+export function AnimatedA(props: AnimatedAProps) {
   return <MotionA {...props} />;
 }
 
-export function AnimatedForm(props: any) {
+export function AnimatedForm(props: AnimatedFormProps) {
   return <MotionForm {...props} />;
 }
 
