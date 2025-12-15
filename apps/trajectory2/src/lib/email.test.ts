@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Create shared mock function before vi.mock
-let mockSendFn = vi.fn();
+const mockSendFn = vi.fn();
 
 // Mock Resend module
 vi.mock('resend', () => {

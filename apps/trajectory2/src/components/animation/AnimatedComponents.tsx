@@ -112,22 +112,24 @@ const MotionForm = dynamic(
 );
 
 // Export wrapper components with proper typing
-// Combine HTML element props with animation props for type safety
-type AnimatedDivProps = ComponentPropsWithoutRef<'div'> & AnimationProps;
-type AnimatedSectionProps = ComponentPropsWithoutRef<'section'> & AnimationProps;
-type AnimatedButtonProps = ComponentPropsWithoutRef<'button'> & AnimationProps;
-type AnimatedH1Props = ComponentPropsWithoutRef<'h1'> & AnimationProps;
-type AnimatedH2Props = ComponentPropsWithoutRef<'h2'> & AnimationProps;
-type AnimatedSpanProps = ComponentPropsWithoutRef<'span'> & AnimationProps;
-type AnimatedPProps = ComponentPropsWithoutRef<'p'> & AnimationProps;
-type AnimatedUlProps = ComponentPropsWithoutRef<'ul'> & AnimationProps;
-type AnimatedLiProps = ComponentPropsWithoutRef<'li'> & AnimationProps;
-type AnimatedSvgProps = ComponentPropsWithoutRef<'svg'> & AnimationProps;
-type AnimatedPathProps = ComponentPropsWithoutRef<'path'> & AnimationProps;
-type AnimatedCircleProps = ComponentPropsWithoutRef<'circle'> & AnimationProps;
-type AnimatedImgProps = ComponentPropsWithoutRef<'img'> & AnimationProps;
-type AnimatedAProps = ComponentPropsWithoutRef<'a'> & AnimationProps;
-type AnimatedFormProps = ComponentPropsWithoutRef<'form'> & AnimationProps;
+// Omit React's event handlers that conflict with framer-motion's API
+type OmittedReactEvents = 'onDrag' | 'onDragEnd' | 'onDragStart' | 'onAnimationStart' | 'onAnimationEnd';
+
+type AnimatedDivProps = Omit<ComponentPropsWithoutRef<'div'>, OmittedReactEvents> & AnimationProps;
+type AnimatedSectionProps = Omit<ComponentPropsWithoutRef<'section'>, OmittedReactEvents> & AnimationProps;
+type AnimatedButtonProps = Omit<ComponentPropsWithoutRef<'button'>, OmittedReactEvents> & AnimationProps;
+type AnimatedH1Props = Omit<ComponentPropsWithoutRef<'h1'>, OmittedReactEvents> & AnimationProps;
+type AnimatedH2Props = Omit<ComponentPropsWithoutRef<'h2'>, OmittedReactEvents> & AnimationProps;
+type AnimatedSpanProps = Omit<ComponentPropsWithoutRef<'span'>, OmittedReactEvents> & AnimationProps;
+type AnimatedPProps = Omit<ComponentPropsWithoutRef<'p'>, OmittedReactEvents> & AnimationProps;
+type AnimatedUlProps = Omit<ComponentPropsWithoutRef<'ul'>, OmittedReactEvents> & AnimationProps;
+type AnimatedLiProps = Omit<ComponentPropsWithoutRef<'li'>, OmittedReactEvents> & AnimationProps;
+type AnimatedSvgProps = Omit<ComponentPropsWithoutRef<'svg'>, OmittedReactEvents> & AnimationProps;
+type AnimatedPathProps = Omit<ComponentPropsWithoutRef<'path'>, OmittedReactEvents> & AnimationProps;
+type AnimatedCircleProps = Omit<ComponentPropsWithoutRef<'circle'>, OmittedReactEvents> & AnimationProps;
+type AnimatedImgProps = Omit<ComponentPropsWithoutRef<'img'>, OmittedReactEvents> & AnimationProps;
+type AnimatedAProps = Omit<ComponentPropsWithoutRef<'a'>, OmittedReactEvents> & AnimationProps;
+type AnimatedFormProps = Omit<ComponentPropsWithoutRef<'form'>, OmittedReactEvents> & AnimationProps;
 
 export function AnimatedDiv(props: AnimatedDivProps) {
   return <MotionDiv {...props} />;
