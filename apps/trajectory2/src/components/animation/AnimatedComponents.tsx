@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import type { ComponentPropsWithoutRef } from 'react';
 // Type-only import: Does NOT bundle any runtime code, only provides TypeScript types
-import type { HTMLMotionProps } from 'framer-motion';
+import type { HTMLMotionProps, SVGMotionProps } from 'framer-motion';
 
 /**
  * Lazy-loaded wrapper components for framer-motion
@@ -133,15 +133,15 @@ export function AnimatedLi(props: HTMLMotionProps<'li'>) {
   return <MotionLi {...props} />;
 }
 
-export function AnimatedSvg(props: HTMLMotionProps<'svg'>) {
+export function AnimatedSvg(props: SVGMotionProps<SVGSVGElement>) {
   return <MotionSvg {...props} />;
 }
 
-export function AnimatedPath(props: HTMLMotionProps<'path'>) {
+export function AnimatedPath(props: SVGMotionProps<SVGPathElement>) {
   return <MotionPath {...props} />;
 }
 
-export function AnimatedCircle(props: HTMLMotionProps<'circle'>) {
+export function AnimatedCircle(props: SVGMotionProps<SVGCircleElement>) {
   return <MotionCircle {...props} />;
 }
 
