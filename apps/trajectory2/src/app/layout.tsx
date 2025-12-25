@@ -2,6 +2,7 @@ import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Toaster } from "@/components/Toast";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -47,6 +48,7 @@ export default function RootLayout({
           <Footer />
           <Toaster />
         </ErrorBoundary>
+        <Analytics />
       </body>
     </html>
   );
