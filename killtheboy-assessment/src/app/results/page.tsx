@@ -35,7 +35,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Your Trajectory Snapshot
+            Your Trajectory Assessment Results
           </h1>
           <p className="text-lg text-gray-600">
             Thank you for your honesty. Here's your personalized scorecard.
@@ -47,6 +47,21 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Your Avatar: {submission.avatar}
           </h2>
+          {submission.avatar === 'Drifter' && (
+            <p className="text-lg text-gray-700 mb-4">
+              You're letting the noise steer your life. But awareness is your first win. You now see the game you're playing — and you can choose a different one.
+            </p>
+          )}
+          {submission.avatar === 'Balancer' && (
+            <p className="text-lg text-gray-700 mb-4">
+              You're walking the line between average and excellent. You've begun raising the floor, but there's still noise keeping you stuck. The next level requires intentional systems.
+            </p>
+          )}
+          {submission.avatar === 'Architect' && (
+            <p className="text-lg text-gray-700 mb-4">
+              You're building your life by design. You've raised your floor high, and you're moving on an upward trajectory. Now it's about mastery, consistency, and playing long games.
+            </p>
+          )}
           <p className="text-lg font-semibold text-gray-900">
             Kill the boy so the man may rise.
           </p>
@@ -69,14 +84,29 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           </div>
         </div>
 
-        {/* Lowest Domains */}
+        {/* Areas for Focus */}
         <div className="bg-white p-8 rounded-lg shadow-sm mb-8">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">
-            Your Biggest Opportunity
+            Areas for Focus
           </h3>
           <p className="text-gray-600 mb-4">
-            Lowest two domains: {lowestDomains.join(', ')}
+            Your lowest-scoring areas represent your greatest opportunities for growth:
           </p>
+          <div className="flex gap-4">
+            {lowestDomains.map((domain, index) => (
+              <div key={domain} className="flex items-center">
+                <span className="text-2xl mr-2">
+                  {domain === 'identity' ? '🧭' : 
+                   domain === 'health' ? '⚡' : 
+                   domain === 'finances' ? '💰' : 
+                   domain === 'relationships' ? '🤝' : 
+                   domain === 'emotions' ? '🌊' : '🎯'}
+                </span>
+                <span className="font-medium capitalize">{domain}</span>
+                {index < lowestDomains.length - 1 && <span className="mx-2">•</span>}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Rethink • Redesign • Reignite Reference */}
@@ -84,6 +114,9 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           <h3 className="text-xl font-semibold text-gray-900 mb-4">
             Rethink • Redesign • Reignite
           </h3>
+          <p className="text-gray-600">
+            Powered by the Rethink • Redesign • Reignite methodology
+          </p>
         </div>
 
         {/* Email Capture */}

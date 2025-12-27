@@ -5,11 +5,15 @@ export default function WelcomePage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="max-w-2xl mx-auto text-center px-6">
         <h1 className="text-4xl font-bold text-gray-900 mb-6">
-          Welcome to KillTheBoy
+          Trajectory Life Assessment
         </h1>
         
         <p className="text-lg text-gray-600 mb-8">
-          This is not just a quiz — it's a mirror. In 10 minutes, you'll discover what's shaping your trajectory, where you're strong, and where the noise is holding you back.
+          How strong is your signal above the noise?
+        </p>
+        
+        <p className="text-lg text-gray-600 mb-8">
+          This assessment will reveal where you stand across six critical areas of life. It takes 3 minutes to complete and provides immediate insights into your trajectory.
         </p>
         
         <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
@@ -45,7 +49,7 @@ export default function WelcomePage() {
           href="/assess"
           className="inline-block bg-gray-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
         >
-          Begin
+          Start Assessment
         </Link>
       </div>
     </div>

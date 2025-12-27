@@ -67,7 +67,7 @@ export default function AssessmentPage() {
         }
         
         // Load questions.json directly
-        const questionsResponse = await fetch('/content/questions.json');
+        const questionsResponse = await fetch('/questions.json');
         if (!questionsResponse.ok) {
           setError('Failed to load questions.json');
           setLoading(false);
@@ -170,7 +170,7 @@ export default function AssessmentPage() {
             Trajectory Life Assessment
           </h1>
           <p className="text-gray-600">
-            Answer honestly. Take your time.
+            How strong is your signal above the noise?
           </p>
         </div>
 

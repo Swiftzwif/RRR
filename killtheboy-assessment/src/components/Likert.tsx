@@ -4,11 +4,11 @@ interface LikertProps {
 }
 
 const LIKERT_LABELS = {
-  1: 'Never',
+  1: 'Never / Very Low',
   2: 'Rarely', 
   3: 'Sometimes',
   4: 'Often',
-  5: 'Always'
+  5: 'Always / Excellent'
 };
 
 export default function Likert({ value, onChange }: LikertProps) {

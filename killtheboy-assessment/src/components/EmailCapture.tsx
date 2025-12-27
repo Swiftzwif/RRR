@@ -42,7 +42,7 @@ export default function EmailCapture({ submissionId }: EmailCaptureProps) {
           Thank you!
         </h3>
         <p className="text-green-700">
-          Your scorecard has been sent to your email.
+          Your detailed results have been sent to your inbox.
         </p>
       </div>
     );
@@ -51,26 +51,36 @@ export default function EmailCapture({ submissionId }: EmailCaptureProps) {
   return (
     <div className="bg-white p-8 rounded-lg shadow-sm">
       <h3 className="text-xl font-semibold text-gray-900 mb-4">
-        Where can we send your personalized scorecard?
+        Want to dive deeper into your results?
       </h3>
+      <p className="text-gray-600 mb-4">
+        Get personalized insights and action steps delivered to your inbox.
+      </p>
       <form onSubmit={handleEmailSubmit} className="space-y-4">
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email"
+          placeholder="Email Address"
           required
           className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
         />
         <p className="text-sm text-gray-500">
-          Your answers are private. Your growth is personal.
+          Your email stays local. No spam. Unsubscribe anytime.
         </p>
         <button
           type="submit"
           disabled={!email || isSubmitting}
           className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50"
         >
-          {isSubmitting ? 'Submitting...' : 'Get My Scorecard'}
+          {isSubmitting ? 'Submitting...' : 'Send My Detailed Results'}
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsSubmitted(true)}
+          className="w-full text-gray-600 py-2 hover:text-gray-800"
+        >
+          Skip for now
         </button>
       </form>
     </div>
